@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Тёмный металл и нефрит — отчёт оформления PW Calculator</title>
+<style>
+:root{--paper:#f5f6f1;--surface:#fff;--ink:#203a31;--soft:#56695d;--rule:#dfe6dc;--green:#215c46;--warm:#f2e9db}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Arial,sans-serif}main{max-width:1220px;margin:auto;padding:36px 24px}header{border-top:5px solid var(--green);padding-top:24px}.eyebrow{font-size:13px;color:var(--soft)}h1,h2{font-family:Georgia,serif;font-weight:500;letter-spacing:-.025em}h1{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:12px 0 20px;max-width:900px}h2{margin-top:40px;font-size:26px}.intro{max-width:850px}.summary{display:flex;gap:38px;flex-wrap:wrap;border-block:1px solid var(--rule);padding:22px 0;margin:28px 0}.summary strong{display:block;font:36px/1.2 Georgia,serif}.summary span{font-size:13px;color:var(--soft)}.table-wrap{overflow:auto;background:var(--surface);border:1px solid var(--rule);border-radius:14px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:13px 15px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}th{background:#e6efe5;color:var(--green);font-weight:600}.pass{color:var(--green);font-weight:700}.note-cell{color:#875d2c;background:#fbf0df;font-weight:700}.note{padding:18px 22px;background:var(--warm);border-radius:8px}a{color:var(--green);text-underline-offset:4px}.screens{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}.screens.mobile{grid-template-columns:2fr 1fr}figure{margin:0;background:var(--surface);padding:12px;border:1px solid var(--rule);border-radius:14px}figure img{display:block;width:100%;height:auto}figcaption{font-size:12px;color:var(--soft);padding:10px 0}footer{border-top:1px solid var(--rule);margin-top:40px;padding-top:16px;color:var(--soft);font-size:13px}code{font-size:13px}@media(max-width:700px){main{padding:24px 15px}.screens,.screens.mobile{grid-template-columns:1fr}table{min-width:860px}.summary{gap:20px}}@media print{main{padding:0}.table-wrap{overflow:visible}table{font-size:10px}figure{break-inside:avoid}}
+</style>
+<main>
+<header>
+<div class="eyebrow">English Encyclopedia · формат отчётов · 2 ноября 2026</div>
+<h1>Тёмный металл и нефрит</h1>
+<p class="intro">Две игровые панели получили единое оформление: тёмный металл, холодные серебристые фаски, нефритовые вставки и утопленные ячейки. Пользователь выбрал это направление для замены прежнего обрамления. Декор отделён от настоящих кнопок и полей интерфейса.</p>
+</header>
+<div class="summary">
+<div><strong>2</strong><span>обновлённые панели</span></div>
+<div><strong>81 / 81</strong><span>автоматических тестов</span></div>
+<div><strong>15</strong><span>проверок в браузере</span></div>
+<div><strong>7</strong><span>ширин экрана</span></div>
+</div>
+<p><a href="jade-design-report.csv" download>CSV с теми же данными</a> · <a href="jade-panel-design.md">Описание визуального решения</a></p>
+<p class="note">Орнамент — оригинальное прозрачное изображение с видом 3D-рендера. Оно имеет разрешение 2172×724 и размер 656087 байт. Редактируемая трёхмерная модель не создавалась; объём граней и внутренних поверхностей дополняют стили CSS.</p>
+<h2>Результаты и границы проверки</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Область</th><th>Статус</th><th>Важность</th><th>Что проверено</th><th>Ограничения</th></tr></thead>
+<tbody>
+<tr><td>Направление</td><td class="pass">PASS</td><td>Дизайн</td><td>Пользователь выбрал тёмный металл и нефрит: холодное серебро и мягкие зелёные акценты.</td><td>Обновлено оформление двух панелей и связанных элементов калькулятора.</td></tr>
+<tr><td>Геометрия панелей</td><td class="pass">PASS</td><td>Интерфейс</td><td>Персонаж 320×615; экипировка 317×431; промежуток 20 px. При ширине до 719 px панели стоят в одну колонку.</td><td>Позиции действующих ячеек сохранены.</td></tr>
+<tr><td>Объёмный орнамент</td><td class="pass">PASS</td><td>Графика</td><td>Оригинальный прозрачный PNG RGBA: 2172×724; 656087 байт. Фаски и утопленные поверхности дополнены CSS.</td><td>Это растровое изображение с видом 3D-рендера; редактируемая 3D-модель не создавалась.</td></tr>
+<tr><td>Ячейки и ограничения</td><td class="pass">PASS</td><td>Функциональность</td><td>14 действующих ячеек экипировки и 32 ячейки сумки сохранены; 5 нефункциональных декоративных ячеек скрыты.</td><td>Чат и карты и правые мини-окна и боевой дух и исключённые классы/умения не возвращены.</td></tr>
+<tr><td>Сценарии браузера</td><td class="pass">PASS</td><td>Проверка</td><td>15 проверок прошли: классы и пол; бафы; титулы; предмет 4872 с заточкой +1; сохранение и загрузка; сумка; снятие экипировки; мобильный выбор предмета.</td><td>Числа в сценариях проверяют сохранение поведения интерфейса; точность игрового сервера этим отчётом не подтверждается.</td></tr>
+<tr><td>Автоматические проверки</td><td class="pass">PASS</td><td>Проверка</td><td>39 тестов Python и 42 теста JavaScript прошли; Django check — 0 ошибок; Ruff и git diff --check — без замечаний.</td><td>Числовой движок и каталог и JavaScript приложения в этом изменении не менялись.</td></tr>
+<tr><td>Размеры экрана</td><td class="pass">PASS</td><td>Проверка</td><td>Проверены ширины 360 / 390 / 681 / 719 / 720 / 768 / 1440 px: горизонтального переполнения нет.</td><td>Перестроение в одну колонку проверено на границе 719 и 720 px.</td></tr>
+<tr><td>Консоль и ресурсы</td><td class="pass">PASS</td><td>Проверка</td><td>В браузере 0 ошибок и 0 предупреждений. Оформление использует локальные изображения и стили.</td><td>Для отображения этого отчёта внешние ресурсы не требуются.</td></tr>
+<tr><td>Независимая проверка</td><td class="pass">PASS</td><td>Проверка</td><td>Блокирующих замечаний нет. Найденные старые золотые цвета кнопок окна бафа исправлены и перепроверены.</td><td>Независимая проверка Claude владельцем PR остаётся отдельным этапом.</td></tr>
+<tr><td>Стилевой скан</td><td class="note-cell">ИСКЛЮЧЕНИЕ ПО ДИЗАЙНУ</td><td>Дизайн</td><td>node lint.mjs --app static/css/jade-skin.css templates/index.html --json завершился с кодом 1: 8 FAIL для градиентов и 10 WARN для теней.</td><td>Осознанное исключение для выбранного пользователем объёмного металла и нефрита: светотень материалов не соответствует правилам плоских информационных панелей. Скан не объявлен пройденным.</td></tr>
+<tr><td>Границы результата</td><td class="note-cell">ПРИМЕЧАНИЕ</td><td>Справка</td><td>Созданы новое оформление двух панелей и согласованные состояния связанных окон.</td><td>Оригинальные игровые значки сохранены; расчёт и данные не изменены; полноценное трёхмерное моделирование не выполнялось.</td></tr>
+</tbody></table></div>
+<h2>До и после</h2>
+<div class="screens">
+<figure><img src="screenshots/jade-before.png" alt="Прежнее коричневое оформление панелей калькулятора"><figcaption>До: прежняя игровая рамка, плотное соединение двух панелей.</figcaption></figure>
+<figure><img src="screenshots/jade-desktop.png" alt="Обновлённые панели с тёмным металлом и нефритом"><figcaption>После: общее направление материалов, самостоятельный верхний орнамент, разделённые панели и новые ячейки.</figcaption></figure>
+</div>
+<h2>Размеры экрана и выбор класса</h2>
+<div class="screens mobile">
+<figure><img src="screenshots/jade-class-picker.png" alt="Открытый выбор десяти классов в обновлённой панели"><figcaption>Выбор класса остаётся внутри панели. Мистик и Страж сохраняют правильные портреты и оба пола.</figcaption></figure>
+<figure><img src="screenshots/jade-mobile.png" alt="Обновлённые панели в одной колонке на телефоне"><figcaption>На узком экране панели стоят друг под другом; ячейки и основные действия доступны.</figcaption></figure>
+</div>
+<h2>Связанные окна</h2>
+<div class="screens">
+<figure><img src="screenshots/jade-buff.png" alt="Окно настройки бафа в нефритовом оформлении"><figcaption>Окно бафа использует согласованные цвета заголовка, элементов управления и состояний.</figcaption></figure>
+<figure><img src="screenshots/jade-item-picker.png" alt="Выбор предмета в обновлённой цветовой системе"><figcaption>Выбор экипировки сохраняет поиск, свойства предмета и настройку заточки.</figcaption></figure>
+</div>
+<h2>Контрольные действия</h2>
+<p>В браузере проверены переключение десяти классов, женский Мистик с портретом <code>10/f</code> и мужской Страж с портретом <code>9/m</code>. Контрольные значения сохранились: ЖС Воина 3195 и 4154 после бафа; «Сила духа» Мага 102 уровня — 15504; бонус титула «Здоровье» +100 даёт Мистику 2230 ЖС. Эти числа подтверждают сохранение поведения приложения при смене оформления.</p>
+<p>Также проверены надевание нагрудника 4872 с заточкой +1, 32 ячейки сумки, сохранение и загрузка имени и экипировки, повторное открытие предмета из сумки, снятие вещей и надевание предмета на мобильном экране. Консоль браузера не показала ошибок или предупреждений.</p>
+<footer>Самостоятельный HTML и CSV читаются без интернета. В этом изменении не менялись движок расчётов, каталог и JavaScript приложения. Отчёт не заявляет полной сверки игровых формул с Comeback PW 1.4.6.</footer>
+</main>
+</html>

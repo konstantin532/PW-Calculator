@@ -39,7 +39,7 @@ def test_effects_api_lists_named_buffs_and_marks_them_unverified():
     assert not ({62, 61, 60, 310, 10048, 359, 360, 366, 367, 393, 394, 10040}
                 & {effect["sprite_id"] for effect in data["effects"]})
     assert [effect["sprite_id"] for effect in data["effects"] if effect["panel_default"]] == [
-        1, 2, 3, 4, 31, 42, 43, 44, 39, 40, 68, 29, 30,
+        1, 2, 3, 4, 31, 42, 43, 44, 39, 40, 29, 30,
     ]
     assert "{" not in data["effects"][0]["description"]
     assert {effect["kind"] for effect in data["effects"]} == {"buff", "debuff"}
@@ -53,24 +53,38 @@ def test_effects_api_lists_named_buffs_and_marks_them_unverified():
 def test_effects_api_class_panels_match_observed_original_order():
     data = Client().get("/api/effects/", HTTP_HOST="127.0.0.1").json()
     # Actual record IDs in gqSkillsIds[class].rk; the twelve excluded modern
-    # sprite families have been removed. These are not translation/sprite IDs.
+    # sprite families and the user-excluded Copper Leaf have been removed.
+    # These are not translation/sprite IDs.
     assert data["panels"] == {
-        "by": [17, 18, 19, 20, 5, 1, 3, 4, 6, 7, 92, 41, 42],
-        "ga": [22, 23, 24, 5, 1, 3, 4, 6, 7, 92],
-        "ya": [11, 12, 8, 5, 1, 3, 4, 6, 7, 92],
-        "rl": [25, 21, 5, 1, 3, 4, 6, 7, 92],
-        "ij": [26, 5, 1, 3, 4, 6, 7, 92],
-        "js": [28, 164, 5, 1, 3, 4, 6, 7, 92],
-        "fx": [29, 5, 1, 3, 4, 6, 7, 92, 54],
-        "sj": [34, 35, 5, 1, 3, 4, 6, 7, 92],
-        "ej": [38, 5, 1, 3, 4, 6, 7, 39, 109, 92],
-        "rg": [161, 5, 1, 3, 4, 6, 7, 40, 92],
+        "by": [17, 18, 19, 20, 5, 1, 3, 4, 6, 7, 41, 42],
+        "ga": [22, 23, 24, 5, 1, 3, 4, 6, 7],
+        "ya": [11, 12, 8, 5, 1, 3, 4, 6, 7],
+        "rl": [25, 21, 5, 1, 3, 4, 6, 7],
+        "ij": [26, 5, 1, 3, 4, 6, 7],
+        "js": [28, 164, 5, 1, 3, 4, 6, 7],
+        "fx": [29, 5, 1, 3, 4, 6, 7, 54],
+        "sj": [34, 35, 5, 1, 3, 4, 6, 7],
+        "ej": [38, 5, 1, 3, 4, 6, 7, 39, 109],
+        "rg": [161, 5, 1, 3, 4, 6, 7, 40],
     }
     effects = {effect["id"]: effect for effect in data["effects"]}
     assert [effects[skill_id]["sprite_id"] for skill_id in data["panels"]["ga"]] == [
-        5, 6, 7, 31, 42, 43, 44, 39, 40, 68,
+        5, 6, 7, 31, 42, 43, 44, 39, 40,
     ]
     assert all(skill_id in effects for panel in data["panels"].values() for skill_id in panel)
+
+
+def test_copper_leaf_is_never_offered_even_if_reintroduced_to_extra_panel(monkeypatch):
+    # User's Comeback client does not have this effect. Record 92 is not
+    # record 68: 68 is only its sprite number, shared numbering is unrelated.
+    monkeypatch.setattr(views, "PANEL_IDS", [*views.PANEL_IDS, 92])
+    views.panel_effects.cache_clear()
+    try:
+        data = Client().get("/api/effects/", HTTP_HOST="127.0.0.1").json()
+        assert all(effect["id"] != 92 for effect in data["effects"])
+        assert all(92 not in panel for panel in data["panels"].values())
+    finally:
+        views.panel_effects.cache_clear()
 
 
 def test_effects_api_exposes_original_level_and_cultivation_metadata():

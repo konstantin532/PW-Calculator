@@ -11,6 +11,7 @@ from pwcalc.classes import CLASS_NAMES
 from pwcalc.effect_panels import (
     CLASS_EFFECT_PANELS,
     DEFAULT_PANEL_IDS,
+    EXCLUDED_EFFECT_IDS,
     EXCLUDED_PANEL_SPRITES,
     PANEL_IDS,
     PARAMETER_LABELS,
@@ -33,6 +34,8 @@ def panel_effects() -> list[dict]:
     by_id = {skill["id"]: skill for skill in catalog["skills"]}
     effects = []
     for skill_id in dict.fromkeys(PANEL_IDS):
+        if skill_id in EXCLUDED_EFFECT_IDS:
+            continue
         skill = by_id.get(skill_id)
         if skill is None:
             continue

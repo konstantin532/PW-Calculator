@@ -2,22 +2,25 @@
 
 The record IDs come from cached gqSkillsIds[class].rk, checked against the
 live class changes on 2026-11-01. Sprite IDs and translation IDs are separate.
-The twelve modern sprite families explicitly excluded by the user are absent.
+The user's exclusions apply in addition to the observed order.
 """
 
 EXCLUDED_PANEL_SPRITES = frozenset({62, 61, 60, 310, 10048, 359, 360, 366, 367, 393, 394, 10040})
+# Unavailable in the user's Comeback client: Победа колдовства·Медный лист.
+# Exclude the record, not sprite 68, which is a separate numbering system.
+EXCLUDED_EFFECT_IDS = frozenset({92})
 
 CLASS_EFFECT_PANELS = {
-    "by": [17, 18, 19, 20, 5, 1, 3, 4, 6, 7, 92, 41, 42],
-    "ga": [22, 23, 24, 5, 1, 3, 4, 6, 7, 92],
-    "ya": [11, 12, 8, 5, 1, 3, 4, 6, 7, 92],
-    "rl": [25, 21, 5, 1, 3, 4, 6, 7, 92],
-    "ij": [26, 5, 1, 3, 4, 6, 7, 92],
-    "js": [28, 164, 5, 1, 3, 4, 6, 7, 92],
-    "fx": [29, 5, 1, 3, 4, 6, 7, 92, 54],
-    "sj": [34, 35, 5, 1, 3, 4, 6, 7, 92],
-    "ej": [38, 5, 1, 3, 4, 6, 7, 39, 109, 92],
-    "rg": [161, 5, 1, 3, 4, 6, 7, 40, 92],
+    "by": [17, 18, 19, 20, 5, 1, 3, 4, 6, 7, 41, 42],
+    "ga": [22, 23, 24, 5, 1, 3, 4, 6, 7],
+    "ya": [11, 12, 8, 5, 1, 3, 4, 6, 7],
+    "rl": [25, 21, 5, 1, 3, 4, 6, 7],
+    "ij": [26, 5, 1, 3, 4, 6, 7],
+    "js": [28, 164, 5, 1, 3, 4, 6, 7],
+    "fx": [29, 5, 1, 3, 4, 6, 7, 54],
+    "sj": [34, 35, 5, 1, 3, 4, 6, 7],
+    "ej": [38, 5, 1, 3, 4, 6, 7, 39, 109],
+    "rg": [161, 5, 1, 3, 4, 6, 7, 40],
 }
 
 # Retained for existing API consumers: panel_default means the warrior panel.
