@@ -10,9 +10,10 @@
   <link rel="stylesheet" href="{% static 'mypers/skin-assets.css' %}?v=20261102">
   <link rel="stylesheet" href="{% static 'css/replica.css' %}?v=20261102">
   <link rel="stylesheet" href="{% static 'css/effects-ui.css' %}?v=20261102">
+  <link rel="stylesheet" href="{% static 'css/jade-skin.css' %}?v=20261102-jade">
   <script type="module" src="{% static 'js/app.js' %}?v=20261102-spirit"></script>
 </head>
-<body>
+<body class="jade-skin">
 <main class="calc">
   <h1 class="visually-hidden">Калькулятор персонажа Comeback Perfect World 1.4.6</h1>
   <section class="effects" aria-labelledby="buffs-title">
@@ -27,6 +28,7 @@
       <nav class="toolbar" aria-label="Действия со сборкой"><button type="button" id="btn-new">Создать нового персонажа</button><button type="button" id="btn-load">Загрузить</button><button type="button" id="btn-save" class="accent">Сохранить</button></nav>
       <div class="board">
         <section class="window character" aria-label="Характеристики персонажа">
+          <span class="panel-crest" aria-hidden="true"></span><span class="panel-inlay panel-inlay--left" aria-hidden="true"></span><span class="panel-inlay panel-inlay--right" aria-hidden="true"></span>
           <header class="window__title"><label class="visually-hidden" for="char-name">Имя персонажа</label><input id="char-name" value="Без имени" maxlength="24" autocomplete="off"><button class="help" type="button" id="btn-help" aria-label="О калькуляторе">?</button></header>
           <div class="identity"><div class="portrait" id="portrait"><img src="{% static 'mypers/img/ns/default/1/m/face.png' %}" width="78" height="76" alt=""><span id="emblem" class="visually-hidden">Воин</span></div><dl class="identity__meta"><div><dt>Репутация</dt><dd title="Требования репутации пока не рассчитываются">—</dd></div><div><dt>Сервер</dt><dd>Comeback PW</dd></div><div><dt>Создано</dt><dd id="build-status">Новая</dd></div></dl><div class="identity-icons"><button type="button" id="class-icon" class="ref-race-2 is-active" data-character-control="class" aria-label="Выбрать класс"></button><button type="button" id="gender-icon" class="ref-gender-1 is-active" data-character-control="gender" aria-label="Выбрать пол"></button></div></div>
           <div id="class-panel" class="character-pane character-class-panel" hidden><div id="char-class" role="group" aria-label="Класс персонажа"></div></div>
@@ -41,7 +43,8 @@
           <div class="stats-frame"><table class="stats" aria-label="Боевые показатели"><tbody id="stats-body"></tbody></table></div>
         </section>
         <section class="window doll" aria-labelledby="doll-title">
-          <header class="window__title"><h2 id="doll-title" class="visually-hidden">Экипировка</h2><span id="gear-count" class="title-meta" title="Надето предметов">0 / 14</span></header>
+          <span class="panel-crest" aria-hidden="true"></span><span class="panel-inlay panel-inlay--left" aria-hidden="true"></span><span class="panel-inlay panel-inlay--right" aria-hidden="true"></span>
+          <header class="window__title"><h2 id="doll-title" class="panel-caption">Экипировка</h2><span id="gear-count" class="title-meta" title="Надето предметов">0 / 14</span></header>
           <div class="paperdoll" id="paperdoll"><div class="figure" aria-hidden="true"></div></div>
           <p class="doll-hint" id="doll-message" role="status">Нажмите на ячейку, чтобы выбрать предмет</p>
           <div class="bag-actions"><button type="button" id="btn-clear-gear" class="text-button">Снять всё</button></div>
