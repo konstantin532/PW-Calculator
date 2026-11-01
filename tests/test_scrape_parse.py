@@ -47,6 +47,29 @@ def test_weapon_item_fields():
     assert item["addons"]["count"] == "3"
     assert item["refine"]["stat"] == "Физ. атака" and item["refine"]["levels"][11] == 675
     assert item["decompose"].startswith("Дух оружия")
+    assert item["name_color"] == "#00ffae"
+
+
+def test_name_color_is_source_metadata_and_rejects_css_payloads():
+    html = load("item_weapon_14801.html")
+    assert "name_color" not in parse_item(html.replace('#00ffae', 'red; background: url(https://invalid)'), 14801)
+    styled = html.replace('<font color="#00ffae">', '<font style="color: #123abc;">')
+    assert parse_item(styled, 14801)["name_color"] == "#123abc"
+
+
+def test_fixed_gold_properties_keep_units_and_unsigned_speed_without_flavor():
+    html = '''<div id="content-block"><div class="data_specs"><ul><li>
+    <div><font color="#ffcb4a">Сила +25<br/>
+    Задержка атаки -0,05 сек.<br/>
+    Увеличение скорости передвижения на 0,1м /сек.<br/>
+    Знание - сила!<br/></font><font color="#00ffff">История в 3 главах.</font></div>
+    </li></ul></div></div>'''
+    item = parse_item(html, 36675)
+    assert item["fixed_properties"] == [
+        "Сила +25", "Задержка атаки -0,05 сек.",
+        "Увеличение скорости передвижения на 0,1м /сек.",
+    ]
+    assert "История в 3 главах." in item["description"][0]
 
 
 def test_stone_effects_parsed_from_description():
@@ -67,6 +90,21 @@ def test_stone_effects_with_abbreviations():
     effects = parse_stone_effects(desc)
     assert effects["weapon"]["stat"] == "физ. атака" and effects["weapon"]["value"] == 16
     assert effects["armor"]["stat"] == "физ. защита" and effects["armor"]["value"] == 26
+
+
+def test_source_stone_wording_aliases_keep_attack_and_defense_levels():
+    effects = parse_stone_effects([
+        "Действие на оружие: уровень атаки +1 Действие на броню: уровень атаки +1",
+    ])
+    assert effects["weapon"]["stat"] == "уровень атаки"
+    assert effects["armor"]["value"] == 1
+    ambiguous = parse_stone_effects([
+        "Эффект при инкрустации в оружие: Защита +2 Эффект при инкрустации в броню: Защита +2",
+    ])
+    assert ambiguous["armor"]["stat"] == "Защита"
+    assert ambiguous["armor"]["value"] is None
+    assert ambiguous["armor"]["source_value"] == 2
+    assert ambiguous["armor"]["ambiguity"] == "physical_defense_or_defense_level"
 
 
 def test_skill_book_has_no_stats():
