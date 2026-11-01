@@ -65,6 +65,21 @@ def test_catalog_retains_variants_and_flags_unverified_records():
     assert skill["sprite"] is None
 
 
+def test_catalog_has_exactly_ten_comeback_classes_and_preserves_shared_records():
+    expected_classes = {
+        "by": "Воин", "ga": "Маг", "ya": "Оборотень", "rl": "Друид", "js": "Лучник",
+        "ij": "Жрец", "rg": "Мистик", "ej": "Страж", "sj": "Шаман", "fx": "Убийца",
+    }
+    allowed_records = [{"id": index, "mi": index, "ir": code}
+                       for index, code in enumerate(expected_classes, start=1)]
+    shared_record = {"id": 50, "mi": 50}
+    excluded_records = [{"id": index, "mi": index, "ir": code}
+                        for index, code in enumerate(("uf", "he", "bard", "monkey", "unknown"), start=100)]
+    catalog = build_catalog(allowed_records + [shared_record] + excluded_records, {}, {})
+    assert catalog["classes"] == expected_classes
+    assert [skill["source_record"] for skill in catalog["skills"]] == allowed_records + [shared_record]
+
+
 def test_catalog_keeps_shared_skills_without_guessing_names():
     skill = build_catalog([{"id": 1, "mi": 99}], {}, {})["skills"][0]
     assert skill["class"] is None and skill["kind"] is None

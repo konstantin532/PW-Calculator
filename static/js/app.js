@@ -9,6 +9,10 @@ const range = (values) => values.map(fmt).join("–");
 const ATTR_NAMES = { vit: "Внсл", int: "Интл", str: "Сила", dex: "Ловк" };
 const FULL_ATTR_NAMES = { vit: "Выносливость", int: "Интеллект", str: "Сила", dex: "Ловкость" };
 const STORAGE_KEY = "pwcalc.comeback.builds.v1";
+const PORTRAITS = { by: 1, ga: 2, ya: 3, rl: 4, ij: 5, js: 6, fx: 7, sj: 8, ej: 9, rg: 10 };
+const CLASS_ICONS = { ga: 1, by: 2, ij: 3, js: 4, rl: 5, ya: 6, fx: 7, sj: 8, ej: 9, rg: 10 };
+const CLASS_NAMES = new Set(Object.values(CLASSES).map((cls) => cls.name));
+const SLOT_SKINS = { helmet: "ft", chest: "rv", legs: "tg", boots: "rx", weapon: "ta", necklace: "vx", cape: "wy", wrists: "mj", belt: "st", ring1: "oq-left", ring2: "oq-right", tome: "qn", ammo: "it", flight: "ic" };
 const STAT_NAMES = { hp: "ЖС", mp: "МЭ", phys_atk: "Физическая атака", mag_atk: "Магическая атака", phys_def: "Физическая защита", mag_def: "Магическая защита", def_metal: "Защита от металла", def_wood: "Защита от дерева", def_water: "Защита от воды", def_fire: "Защита от огня", def_earth: "Защита от земли", accuracy: "Меткость", evasion: "Уклонение", atk_speed: "Скорость атаки (исходное значение)", crit: "Шанс критического удара", range: "Дальность", speed: "Скорость" };
 const STAT_ROWS = [
   ["Физ. атака", (s) => range(s.physAtk), "Физ. защита", (s) => fmt(s.physDef)],
@@ -97,10 +101,15 @@ function setupCharacter() {
   $("btn-new").addEventListener("click", () => {
     state = freshState(); activeSavedId = null; clearShareHash();
     $("char-name").value = state.name; $("build-status").textContent = "Новая"; $("char-message").textContent = "";
-    render(); syncEffects(); status("Создан новый персонаж. Сохранённые сборки доступны справа.");
+    render(); syncEffects(); status("Создан новый персонаж. Сохранённые сборки доступны ниже.");
   });
   $("btn-clear-gear").addEventListener("click", () => { state.equipment = {}; dirty(); render(); status("Экипировка снята."); });
   $("btn-help").addEventListener("click", () => $("info-dialog").showModal());
+  document.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => $(button.dataset.action).click()));
+  document.querySelectorAll("[data-character-control]").forEach((button) => button.addEventListener("click", () => {
+    if (button.dataset.characterControl === "gender") $("gender-dialog").showModal();
+    else { $("char-class").focus(); $("char-class").showPicker?.(); }
+  }));
 }
 
 function render() {
@@ -110,7 +119,11 @@ function render() {
   $("char-level").value = stats.level;
   $("emblem").textContent = CLASSES[state.cls].name;
   $("portrait").dataset.gender = state.gender;
-  $("portrait").querySelector("img").src = `/static/img/portrait${state.gender === "female" ? "-female" : ""}.svg`;
+  const gender = state.cls === "ya" ? "m" : state.cls === "rl" ? "f" : state.gender === "female" ? "f" : "m";
+  $("portrait").querySelector("img").src = `/static/mypers/img/ns/default/${PORTRAITS[state.cls]}/${gender}/face.png`;
+  $("class-icon").className = `ref-race-${CLASS_ICONS[state.cls]} is-active`;
+  $("gender-icon").className = `ref-gender-${gender === "m" ? 1 : 2} is-active`;
+  $("paperdoll").dataset.gender = gender;
   for (const key of ["hp", "mp", "free"]) $(`out-${key}`).textContent = fmt(stats[key]);
   for (const key of ATTRS) {
     const input = $(`attr-${key}`);
@@ -129,12 +142,13 @@ function render() {
 function setupDoll() {
   const rows = { left: 0, right: 0, bottom: 0 };
   for (const slot of SLOTS) {
-    const button = el("button", { id: `slot-${slot.id}`, type: "button", className: `slot slot--${slot.side}` });
+    const button = el("button", { id: `slot-${slot.id}`, type: "button", className: `slot ref-ys ref-${SLOT_SKINS[slot.id]}-ys` });
     if (slot.side === "bottom") button.style.gridColumn = String(++rows.bottom);
     else button.style.gridRow = String(++rows[slot.side]);
     button.addEventListener("click", () => openPicker(slot.id));
     $("paperdoll").append(button);
   }
+  for (const skin of ["pp", "pk", "gv", "xoa", "cosmos"]) $("paperdoll").append(el("span", { className: `reference-only-slot ref-ys ref-${skin}-ys`, title: "Ячейка оригинального оформления: в текущем расчёте не используется", ariaHidden: "true" }));
 }
 function renderGear() {
   for (const slot of SLOTS) {
@@ -144,7 +158,7 @@ function renderGear() {
     const name = `${slot.name}${slot.id === "ring1" ? " 1" : slot.id === "ring2" ? " 2" : ""}`;
     button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}`);
     button.title = choice ? `${name}: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}` : name;
-    button.replaceChildren(choice ? itemImage(choice.item, slot.id) : symbol(slotSymbol(slot.id)));
+    button.replaceChildren(...(choice ? [itemImage(choice.item, slot.id)] : []));
     if (choice?.refine) button.append(el("span", { className: "slot__rank", textContent: `+${choice.refine}` }));
   }
   const equipped = Object.entries(state.equipment).filter(([, choice]) => choice);
@@ -218,7 +232,7 @@ function renderItemDetail() {
   if (!item) { box.replaceChildren(el("p", { className: "muted", textContent: "Выберите предмет из списка." })); return; }
   box.replaceChildren(el("h3", { textContent: item.name }), el("p", { className: "muted", textContent: `${item.type || "Предмет"} · ранг ${item.grade ?? "—"} · ID ${item.id}` }));
   box.append(el("p", { className: `requirement${fitsCharacter(item) ? "" : " unmet"}`, textContent: `Требуемый уровень: ${item.level ?? 1}` }));
-  if (item.classes?.length && !item.classes.includes(CLASSES[state.cls].name)) box.append(el("p", { className: "requirement unmet", textContent: `Классы: ${item.classes.join(", ")}` }));
+  if (item.classes?.length && !item.classes.includes(CLASSES[state.cls].name)) box.append(el("p", { className: "requirement unmet", textContent: `Классы: ${item.classes.filter((name) => CLASS_NAMES.has(name)).join(", ") || "Нет подходящего класса Comeback 1.4.6"}` }));
   const effective = computeStats(state).effectiveAttrs;
   for (const [key, value] of Object.entries(item.req ?? {})) box.append(el("p", { className: `requirement${effective[key] < value ? " unmet" : ""}`, textContent: `${FULL_ATTR_NAMES[key] ?? key}: ${value}` }));
   box.append(el("ul", { className: "detail-stats" }, Object.entries(item.stats ?? {}).map(([key, value]) => el("li", { textContent: `${STAT_NAMES[key] ?? key}: ${Array.isArray(value) ? range(value) : fmt(value)}` }))));
@@ -285,20 +299,28 @@ function syncEffects() {
   }
 }
 function renderEffects() {
-  const themes = ["#807f39", "#3c7b8b", "#974732", "#6276a8", "#3d926b", "#895295"];
-  const symbols = ["sword", "shield", "star", "wings", "flame", "leaf"];
+  const originalOrder = [1, 2, 3, 4, 31, 42, 43, 44, 39, 40, 68, 29, 30];
+  const stateIcons = { 31: 9, 42: 1, 43: 2, 44: 5, 39: 8, 40: 7, 68: 19, 29: 20, 30: 21 };
   for (const kind of ["buff", "debuff"]) {
-    const effects = allEffects.filter((effect) => effect.kind === kind);
+    const effects = allEffects.filter((effect) => effect.kind === kind).sort((a, b) => {
+      const ai = originalOrder.indexOf(a.sprite_id), bi = originalOrder.indexOf(b.sprite_id);
+      return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
+    });
     $(`${kind}-list`).replaceChildren(...effects.map((effect, index) => {
       const input = el("input", { type: "checkbox", value: String(effect.id), ariaLabel: effect.name });
       input.addEventListener("change", () => { state.effects = input.checked ? [...new Set([...state.effects, effect.id])] : state.effects.filter((id) => id !== effect.id); dirty(); syncEffects(); render(); });
-      const tile = el("span", { className: "effect__tile", ariaHidden: "true" }, [symbol(symbols[index % symbols.length])]);
+      const tile = el("span", { className: "effect__tile", ariaHidden: "true" }, [el("span", { className: `ref-skill ref-skill-${effect.sprite_id ?? effect.id}` })]);
       const tip = el("span", { className: "effect__tip", role: "tooltip" }, [el("b", { textContent: effect.name }), String(effect.description).replace(/<[^>]*>/g, " ")]);
-      const item = el("li", { className: `effect effect--${kind}`, hidden: !effectsExpanded && index >= (kind === "buff" ? 28 : 8) }, [el("label", {}, [input, tile]), tip]);
-      item.style.setProperty("--effect-color", themes[index % themes.length]);
+      const item = el("li", { className: `effect effect--${kind}`, hidden: !effectsExpanded && (kind === "debuff" || !effect.panel_default) }, [el("label", {}, [input, tile]), tip]);
+      if (kind === "buff" && effect.panel_default && stateIcons[effect.sprite_id]) item.append(el("span", { className: `effect-state ref-state ref-state-${stateIcons[effect.sprite_id]}`, ariaHidden: "true" }));
       return item;
     }));
-    if (!effects.length) $(`${kind}-list`).append(el("li", { className: "muted small-copy", textContent: "Нет доступных умений" }));
+    if (!effectsExpanded) {
+      const add = el("button", { type: "button", className: "effect-add", ariaLabel: kind === "buff" ? "Другие бафы" : "Выбрать дебафы", title: kind === "buff" ? "Другие бафы" : "Выбрать дебафы" });
+      add.addEventListener("click", () => { effectsExpanded = true; renderEffects(); });
+      $(`${kind}-list`).append(el("li", { className: "effect effect--add" }, [add]));
+    }
+    if (!effects.length && effectsExpanded) $(`${kind}-list`).append(el("li", { className: "muted small-copy", textContent: "Нет доступных умений" }));
   }
   $("effects-expand").setAttribute("aria-expanded", String(effectsExpanded));
   $("effects-expand").textContent = effectsExpanded ? "Свернуть" : `Все умения (${allEffects.length})`;

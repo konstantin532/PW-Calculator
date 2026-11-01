@@ -7,15 +7,17 @@
   <link rel="icon" href="data:,">
   <title>Калькулятор персонажа · Comeback PW 1.4.6</title>
   <link rel="stylesheet" href="{% static 'css/calc.css' %}">
+  <link rel="stylesheet" href="{% static 'mypers/skin-assets.css' %}">
+  <link rel="stylesheet" href="{% static 'css/replica.css' %}">
   <script type="module" src="{% static 'js/app.js' %}"></script>
 </head>
 <body>
 <main class="calc">
-  <header class="site-heading"><h1>Калькулятор персонажа <span>Perfect World</span></h1><span class="version">Comeback · 1.4.6</span></header>
+  <h1 class="visually-hidden">Калькулятор персонажа Comeback Perfect World 1.4.6</h1>
   <section class="effects" aria-labelledby="buffs-title">
-    <div class="effects__head"><h2 id="buffs-title">Бафы</h2><label class="check"><input type="checkbox" id="buffs-all"> все</label><button type="button" class="text-button" id="effects-expand" aria-expanded="false">Все умения</button></div>
+    <div class="effects__head"><h2 id="buffs-title">Бафы</h2><label class="check"><input type="checkbox" id="buffs-all" aria-label="Выбрать все бафы"></label><button type="button" class="text-button" id="effects-expand" aria-expanded="false">Все умения</button></div>
     <ul class="effects__grid" id="buff-list" aria-live="polite"><li class="muted loading">Загрузка умений…</li></ul>
-    <div class="effects__head"><h2 id="debuffs-title">Дебафы</h2><label class="check"><input type="checkbox" id="debuffs-all"> все</label></div>
+    <div class="effects__head"><h2 id="debuffs-title">Дебафы</h2><label class="check"><input type="checkbox" id="debuffs-all" aria-label="Выбрать все дебафы"></label></div>
     <ul class="effects__grid" id="debuff-list"></ul>
     <p class="effects-note" id="effects-note">Выбор бафов сохраняется в сборке. Их влияние на расчёт Comeback ещё не подтверждено.</p>
   </section>
@@ -25,18 +27,21 @@
       <div class="board">
         <section class="window character" aria-label="Характеристики персонажа">
           <header class="window__title"><label class="visually-hidden" for="char-name">Имя персонажа</label><input id="char-name" value="Без имени" maxlength="24" autocomplete="off"><button class="help" type="button" id="btn-help" aria-label="О калькуляторе">?</button></header>
-          <div class="identity"><div class="portrait" id="portrait"><img src="{% static 'img/portrait.svg' %}" width="76" height="88" alt=""><span id="emblem">Воин</span></div><dl class="identity__meta"><div><dt>Сервер</dt><dd>Comeback PW</dd></div><div><dt>Версия</dt><dd>1.4.6</dd></div><div><dt>Сборка</dt><dd id="build-status">Новая</dd></div></dl></div>
-          <div class="identity__fields"><label>Класс <select id="char-class"></select></label><label>Пол <select id="char-gender"><option value="male">Мужской</option><option value="female">Женский</option></select></label><label>Текущий ур. <input id="char-level" type="number" min="1" max="105" value="105" inputmode="numeric"></label></div>
+          <div class="identity"><div class="portrait" id="portrait"><img src="{% static 'mypers/img/ns/default/1/m/face.png' %}" width="78" height="76" alt=""><span id="emblem" class="visually-hidden">Воин</span></div><dl class="identity__meta"><div><dt>Репутация</dt><dd title="Требования репутации пока не рассчитываются">—</dd></div><div><dt>Сервер</dt><dd>Comeback PW</dd></div><div><dt>Создано</dt><dd id="build-status">Новая</dd></div></dl><div class="identity-icons"><button type="button" id="class-icon" class="ref-race-2 is-active" data-character-control="class" aria-label="Выбрать класс"></button><button type="button" id="gender-icon" class="ref-gender-1 is-active" data-character-control="gender" aria-label="Выбрать пол"></button></div></div>
+          <div class="identity__fields"><label class="class-field"><span class="visually-hidden">Класс</span><select id="char-class"></select></label><label class="level-field">Текущий ур. <input id="char-level" type="number" min="1" max="105" value="105" inputmode="numeric"></label></div>
+          <p class="bonus-level">Бонус ур. <span title="Перерождения не рассчитываются">—</span></p>
+          <div class="character-actions"><button type="button" data-character-control="class">Класс</button><button type="button" data-character-control="gender">Пол</button><button type="button" data-action="btn-load">Сборки</button><button type="button" data-action="btn-help">Справка</button><button type="button" data-action="btn-reset">Сбросить</button><button type="button" data-action="btn-export">Скачать</button><button type="button" data-action="btn-share">Ссылка</button></div>
           <div class="pools"><span>ЖС: <b id="out-hp">0</b></span><span>МЭ: <b id="out-mp">0</b></span></div>
           <fieldset class="attrs"><legend><span>Доступно <b id="out-free">520</b></span><span>Характеристики</span></legend><div class="attrs__grid" id="attr-list"></div><button type="button" id="btn-reset" class="text-button">Сбросить очки</button></fieldset>
           <p class="inline-status" id="char-message" role="status"></p>
-          <table class="stats" aria-label="Боевые показатели"><tbody id="stats-body"></tbody></table>
+          <div class="stats-frame"><table class="stats" aria-label="Боевые показатели"><tbody id="stats-body"></tbody></table></div>
         </section>
         <section class="window doll" aria-labelledby="doll-title">
-          <header class="window__title"><h2 id="doll-title">Экипировка</h2><span id="gear-count" class="title-meta">0 / 14</span></header>
+          <header class="window__title"><h2 id="doll-title" class="visually-hidden">Экипировка</h2><span id="gear-count" class="title-meta" title="Надето предметов">0 / 14</span></header>
           <div class="paperdoll" id="paperdoll"><div class="figure" aria-hidden="true"></div></div>
           <p class="doll-hint" id="doll-message" role="status">Нажмите на ячейку, чтобы выбрать предмет</p>
-          <div class="bag-head"><h3>Сумка</h3><button type="button" id="btn-clear-gear" class="text-button">Снять всё</button></div>
+          <div class="bag-actions"><button type="button" id="btn-clear-gear" class="text-button">Снять всё</button></div>
+          <div class="bag-head"><h3 class="visually-hidden">Сумка</h3></div>
           <div class="bag" id="bag" aria-label="Сумка: предметы из сборки"></div>
           <div class="doll-footer"><span id="equipped-summary">Нет экипировки</span><span>32 ячейки</span></div>
         </section>
@@ -44,14 +49,15 @@
       <p class="page-status" id="page-status" role="status" aria-live="polite"></p>
       <details class="calculation-notes"><summary>Особенности расчёта <span id="warning-count"></span></summary><p>Базовые формулы сверены с mypers; точное соответствие Comeback 1.4.6 ещё требует проверки. Неподдержанные свойства перечислены ниже.</p><ul id="gear-warnings"></ul></details>
     </div>
-    <aside class="side-panel" aria-label="Сборки и база предметов">
+    <details class="utility-panel"><summary>Мои сборки и база Comeback</summary><aside class="side-panel" aria-label="Сборки и база предметов">
       <section class="side-section"><h2>Мои персонажи</h2><p class="muted small-copy">Сборки хранятся в этом браузере.</p><ul id="saved-builds" class="saved-builds"></ul><button type="button" class="quiet-button" id="btn-export">Скачать сборку</button><button type="button" class="quiet-button" id="btn-share">Ссылка на сборку</button><button type="button" class="text-button import-button" id="btn-import">Загрузить из файла</button><input id="import-file" type="file" accept="application/json,.json" class="visually-hidden" tabindex="-1" aria-label="Файл сборки"></section>
       <section class="side-section catalog-summary"><h2>База Comeback</h2><dl><div><dt>Предметы</dt><dd id="catalog-items">…</dd></div><div><dt>Камни</dt><dd id="catalog-stones">…</dd></div></dl><p id="catalog-status" class="small-copy muted">Подключение к локальной базе…</p><button type="button" class="text-button" id="btn-retry-catalog" hidden>Повторить загрузку</button></section>
       <p class="reference-note">Интерфейс по образцу <a href="https://mypers.ru/" target="_blank" rel="noopener noreferrer">mypers.ru</a>.<br>Предметы — Comeback PW 1.4.6.</p>
-    </aside>
+    </aside></details>
   </div>
   <footer class="site-footer"><span>Perfect World · Comeback PW</span><span>Калькулятор персонажа · 1.4.6</span></footer>
 </main>
+<dialog id="gender-dialog" class="game-dialog" aria-labelledby="gender-title"><header class="dialog-title"><h2 id="gender-title">Пол персонажа</h2><button type="button" class="dialog-close" data-close="gender-dialog" aria-label="Закрыть выбор пола">×</button></header><div class="dialog-content"><label>Пол <select id="char-gender"><option value="male">Мужской</option><option value="female">Женский</option></select></label></div></dialog>
 <dialog id="item-dialog" class="game-dialog item-dialog" aria-labelledby="item-dialog-title">
   <header class="dialog-title"><h2 id="item-dialog-title">Выбор предмета</h2><button type="button" class="dialog-close" data-close="item-dialog" aria-label="Закрыть выбор предмета">×</button></header>
   <div class="picker-filters"><label class="search-field"><span class="visually-hidden">Найти предмет</span><input id="item-search" type="search" placeholder="Название или ID предмета" autocomplete="off"></label><label class="check"><input type="checkbox" id="item-available"> По уровню и классу</label></div>

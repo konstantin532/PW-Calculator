@@ -39,10 +39,13 @@ test("нельзя распределить больше очков, чем да
   assert.throws(() => computeStats({ cls: "by", level: 10, attrs: { ...naked, str: 4 } }), /Неверное/);
 });
 
-test("уровень ограничен 1…105, в игре ровно 12 классов", () => {
+test("уровень ограничен 1…105, в Comeback ровно 10 заданных классов", () => {
   assert.equal(computeStats({ cls: "by", level: 200, attrs: naked }).level, 105);
   assert.equal(computeStats({ cls: "by", level: 0, attrs: naked }).level, 1);
-  assert.equal(Object.keys(CLASSES).length, 12);
+  assert.deepEqual(Object.values(CLASSES).map((cls) => cls.name), [
+    "Воин", "Маг", "Оборотень", "Друид", "Лучник", "Жрец", "Мистик", "Страж", "Шаман", "Убийца",
+  ]);
+  for (const cls of ["he", "uf", "bard", "monkey"]) assert.throws(() => computeStats({ cls, level: 10, attrs: naked }), /Неизвестный класс/);
   assert.throws(() => computeStats({ cls: "paladin", level: 10, attrs: naked }), /Неизвестный класс/);
 });
 

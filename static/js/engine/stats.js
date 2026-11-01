@@ -13,17 +13,15 @@ const AGILE = { hp: 13, mp: 11, speed: 5.2, acc: 8, eva: 6, role: "phys" };
 
 export const CLASSES = {
   by: { name: "Воин", ...WARRIOR },
-  ej: { name: "Страж", ...WARRIOR },
   ga: { name: "Маг", ...CASTER },
-  ij: { name: "Жрец", ...CASTER },
-  sj: { name: "Шаман", ...CASTER },
-  he: { name: "Жнец", ...CASTER },
-  rg: { name: "Мистик", ...CASTER, acc: 8, eva: 6 },
   ya: { name: "Оборотень", hp: 17, mp: 7, speed: 4.9, acc: 8, eva: 8, role: "phys" },
   rl: { name: "Друид", hp: 12, mp: 12, speed: 5.1, acc: 7, eva: 6, role: "hybrid" },
   js: { name: "Лучник", ...AGILE },
+  ij: { name: "Жрец", ...CASTER },
+  rg: { name: "Мистик", ...CASTER, acc: 8, eva: 6 },
+  ej: { name: "Страж", ...WARRIOR },
+  sj: { name: "Шаман", ...CASTER },
   fx: { name: "Убийца", ...AGILE },
-  uf: { name: "Призрак", ...AGILE },
 };
 
 export function totalPoints(level) {

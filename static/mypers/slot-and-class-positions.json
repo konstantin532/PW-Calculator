@@ -1,0 +1,293 @@
+{
+  ".qdy-ys": {
+    "background-image": "url(../img/theme003/item-cells.webp)",
+    "background-position": "-160px 0",
+    "border": "1px solid #251D13",
+    "float": "left",
+    "height": "32px",
+    "width": "32px"
+  },
+  ".f": {
+    "background-position": "right top"
+  },
+  ".m": {
+    "background-position": "left top"
+  },
+  ".ft-ys": {
+    "top": "66px",
+    "left": "226px"
+  },
+  ".rv-ys": {
+    "background-position": "-32px 0",
+    "top": "110px",
+    "left": "226px"
+  },
+  ".tg-ys": {
+    "background-position": "-64px 0",
+    "top": "157px",
+    "left": "226px"
+  },
+  ".rx-ys": {
+    "background-position": "-96px 0",
+    "top": "201px",
+    "left": "226px"
+  },
+  ".xoa-ys": {
+    "background-position": "0 -160px",
+    "top": "201px",
+    "left": "185px"
+  },
+  ".ta-ys": {
+    "background-position": "-128px 0",
+    "top": "157px",
+    "left": "265px"
+  },
+  ".vx-ys": {
+    "background-position": "0 -32px",
+    "top": "110px",
+    "left": "20px"
+  },
+  ".wy-ys": {
+    "background-position": "-32px -32px",
+    "top": "110px",
+    "left": "58px"
+  },
+  ".mj-ys": {
+    "background-position": "-64px -32px",
+    "top": "157px",
+    "left": "20px"
+  },
+  ".st-ys": {
+    "background-position": "-96px -32px",
+    "top": "157px",
+    "left": "58px"
+  },
+  ".oq-left-ys": {
+    "background-position": "0 -64px",
+    "top": "201px",
+    "left": "20px"
+  },
+  ".oq-right-ys": {
+    "background-position": "-32px -64px",
+    "top": "201px",
+    "left": "58px"
+  },
+  ".qn-ys": {
+    "background-position": "-64px -64px",
+    "top": "110px",
+    "left": "97px",
+    "width": "30px"
+  },
+  ".pp-ys": {
+    "background-position": "-96px -64px",
+    "top": "157px",
+    "left": "97px"
+  },
+  ".pk-ys": {
+    "background-position": "-128px -64px",
+    "top": "201px",
+    "left": "97px"
+  },
+  ".ic-ys": {
+    "background-position": "-160px -96px",
+    "top": "67px",
+    "left": "97px"
+  },
+  ".it-ys": {
+    "background-position": "-128px -32px",
+    "top": "201px",
+    "left": "265px"
+  },
+  ".gv-ys": {
+    "background-position": "-160px -32px",
+    "top": "110px",
+    "left": "265px"
+  },
+  ".cosmos-ys": {
+    "background-position": "-64px -160px",
+    "top": "110px",
+    "left": "185px"
+  },
+  ".fu-ys": {
+    "background-position": "-128px -96px",
+    "-webkit-border-radius": "5px",
+    "-moz-border-radius": "5px",
+    "border-radius": "5px",
+    "border": "1px solid #9a916c"
+  },
+  ".pk-face-type-1": {
+    "background-position": "0 -55px"
+  },
+  ".pk-face-type-12": {
+    "background-position": "-55px -55px"
+  },
+  ".pk-face-type-13": {
+    "background-position": "-110px -55px"
+  },
+  ".pk-face-type-14": {
+    "background-position": "-165px -55px"
+  },
+  ".pk-face-type-2": {
+    "background-position": "0 -165px"
+  },
+  ".pk-face-type-22": {
+    "background-position": "-55px -165px"
+  },
+  ".pk-face-type-23": {
+    "background-position": "-110px -165px"
+  },
+  ".pk-face-type-24": {
+    "background-position": "-165px -165px"
+  },
+  ".pk-face-type-3": {
+    "background-position": "0 0"
+  },
+  ".pk-face-type-32": {
+    "background-position": "-55px 0"
+  },
+  ".pk-face-type-33": {
+    "background-position": "-110px 0"
+  },
+  ".pk-face-type-34": {
+    "background-position": "-165px 0"
+  },
+  ".pk-face-type-4": {
+    "background-position": "0 -110px"
+  },
+  ".pk-face-type-42": {
+    "background-position": "-55px -110px"
+  },
+  ".pk-face-type-43": {
+    "background-position": "-110px -110px"
+  },
+  ".pk-face-type-44": {
+    "background-position": "-165px -110px"
+  },
+  ".yt-bv-ys": {
+    "left": "21px",
+    "background-position": "0 -95px"
+  },
+  ".yt-tu-ys": {
+    "left": "82px",
+    "background-position": "-32px -95px"
+  },
+  ".yt-xs-ys": {
+    "left": "143px",
+    "background-position": "-64px -95px"
+  },
+  ".yt-oh-ys": {
+    "left": "205px",
+    "background-position": "-96px -95px"
+  },
+  ".race-ys-1": {
+    "background-position": "0 -32px"
+  },
+  ".race-ys-2": {
+    "background-position": "-32px -32px"
+  },
+  ".race-ys-3": {
+    "background-position": "-128px -32px"
+  },
+  ".race-ys-4": {
+    "background-position": "-160px -32px"
+  },
+  ".race-ys-5": {
+    "background-position": "-64px -32px"
+  },
+  ".race-ys-6": {
+    "background-position": "-96px -32px"
+  },
+  ".race-ys-7": {
+    "background-position": "-192px -32px"
+  },
+  ".race-ys-8": {
+    "background-position": "-224px -32px"
+  },
+  ".race-ys-9": {
+    "background-position": "-256px -32px"
+  },
+  ".race-ys-10": {
+    "background-position": "-288px -32px"
+  },
+  ".race-ys-11": {
+    "background-position": "-384px -32px"
+  },
+  ".race-ys-12": {
+    "background-position": "-416px -32px"
+  },
+  ".race-ys-13": {
+    "background-position": "-448px -32px"
+  },
+  ".race-ys-14": {
+    "background-position": "-480px -32px"
+  },
+  ".race-ys-1-fn, .race-ys-1:hover": {
+    "background-position": "0 0"
+  },
+  ".race-ys-2-fn, .race-ys-2:hover": {
+    "background-position": "-32px 0"
+  },
+  ".race-ys-3-fn, .race-ys-3:hover": {
+    "background-position": "-128px 0"
+  },
+  ".race-ys-4-fn, .race-ys-4:hover": {
+    "background-position": "-160px 0"
+  },
+  ".race-ys-5-fn, .race-ys-5:hover": {
+    "background-position": "-64px 0"
+  },
+  ".race-ys-6-fn, .race-ys-6:hover": {
+    "background-position": "-96px 0"
+  },
+  ".race-ys-7-fn, .race-ys-7:hover": {
+    "background-position": "-192px 0"
+  },
+  ".race-ys-8-fn, .race-ys-8:hover": {
+    "background-position": "-224px 0"
+  },
+  ".race-ys-9-fn, .race-ys-9:hover": {
+    "background-position": "-256px 0"
+  },
+  ".race-ys-10-fn, .race-ys-10:hover": {
+    "background-position": "-288px 0"
+  },
+  ".race-ys-11-fn, .race-ys-11:hover": {
+    "background-position": "-384px 0"
+  },
+  ".race-ys-12-fn, .race-ys-12:hover": {
+    "background-position": "-416px 0"
+  },
+  ".race-ys-13-fn, .race-ys-13:hover": {
+    "background-position": "-448px 0"
+  },
+  ".race-ys-14-fn, .race-ys-14:hover": {
+    "background-position": "-480px 0"
+  },
+  ".vxj-ys-1": {
+    "background-position": "-320px -32px"
+  },
+  ".vxj-ys-2": {
+    "background-position": "-352px -32px"
+  },
+  ".vxj-ys-1-fn, .vxj-ys-1:hover": {
+    "background-position": "-320px 0"
+  },
+  ".vxj-ys-2-fn, .vxj-ys-2:hover": {
+    "background-position": "-352px 0"
+  },
+  ".avatar-ys": {
+    "background-image": "url(../img/theme003/item-cells.webp)",
+    "background-position": "-160px -64px",
+    "border": "1px solid #9a916c",
+    "border-radius": "5px",
+    "cursor": "pointer",
+    "height": "32px",
+    "margin": "0 auto",
+    "width": "32px",
+    "position": "relative"
+  },
+  ".goh-ys": {
+    "position": "absolute",
+    "background-position": "-32px -160px"
+  }
+}

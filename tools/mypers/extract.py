@@ -15,20 +15,8 @@ from pathlib import Path
 
 import json5
 
-CLASS_NAMES = {
-    "by": "Воин",
-    "ga": "Маг",
-    "ya": "Оборотень",
-    "rl": "Друид",
-    "ij": "Жрец",
-    "js": "Лучник",
-    "fx": "Убийца",
-    "sj": "Шаман",
-    "ej": "Страж",
-    "rg": "Мистик",
-    "uf": "Призрак",
-    "he": "Жнец",
-}
+from pwcalc.classes import CLASS_NAMES
+
 KINDS = {"rk": "buff", "hb": "debuff"}
 
 

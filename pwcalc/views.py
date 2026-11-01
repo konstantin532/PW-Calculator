@@ -7,9 +7,16 @@ from functools import lru_cache
 from django.conf import settings
 from django.http import JsonResponse
 
-# Порядок панели баффов как на mypers; ID — номера умений в data/skills.json.
+from pwcalc.classes import CLASS_NAMES
+
+# Реальные IDs стартовой панели в исходном gqSkillsIds[1].rk.
+# Номер рисунка — source_record.an; mi служит ключом перевода.
+DEFAULT_PANEL_IDS = [17, 18, 19, 20, 5, 1, 3, 4, 6, 7, 92, 41, 42]
+# Современный блок, который пользователь явно исключил для Comeback 1.4.6.
+EXCLUDED_PANEL_SPRITES = frozenset({62, 61, 60, 310, 10048, 359, 360, 366, 367, 393, 394, 10040})
 PANEL_IDS = (
-    [1, 2, 3, 4, 62, 61, 60, 310, 10048, 359, 360, 366, 367, 393, 394, 10040, 31, 42, 43, 44, 39, 40, 68]
+    DEFAULT_PANEL_IDS
+    + [1, 2, 3, 4, 62, 61, 60, 310, 10048, 359, 360, 366, 367, 393, 394, 10040, 31, 42, 43, 44, 39, 40, 68]
     + [29, 30, 5, 6, 7, 24, 25, 26, 27, 28]
     + list(range(115, 131))
     + list(range(133, 140))
@@ -36,16 +43,26 @@ def panel_effects() -> list[dict]:
     effects = []
     for skill_id in dict.fromkeys(PANEL_IDS):
         skill = by_id.get(skill_id)
-        if skill is None or not skill["names"].get("mi"):
+        if skill is None:
+            continue
+        if skill["class"] is not None and skill["class"] not in CLASS_NAMES:
+            continue
+        name = skill["names"].get("mi")
+        if not name:
             continue
         record = skill["source_record"]
+        if record.get("an") in EXCLUDED_PANEL_SPRITES:
+            continue
+        description = skill["descriptions"].get("desc", "")
         effects.append(
             {
                 "id": skill_id,
-                "name": skill["names"]["mi"],
+                "sprite_id": record.get("an", skill_id),
+                "panel_default": skill_id in DEFAULT_PANEL_IDS,
+                "name": name,
                 "class": skill["class"],
                 "kind": "debuff" if skill["kind"] == "debuff" else "buff",
-                "description": _fill(skill["descriptions"].get("desc", ""), record.get("lm", {})),
+                "description": _fill(description, record.get("lm", {})),
             }
         )
     return effects

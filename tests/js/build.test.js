@@ -35,6 +35,8 @@ test("импорт проверяет очки, размер, версию, ти
   const doc = JSON.parse(serializeBuild(state));
   for (const mutation of [
     (b) => { b.attrs.str = 999; }, (b) => { b.version = 2; }, (b) => { b.cls = "alien"; },
+    (b) => { b.cls = "he"; }, (b) => { b.cls = "uf"; },
+    (b) => { b.cls = "bard"; }, (b) => { b.cls = "monkey"; },
     (b) => { b.equipment.ring1.itemId = "259"; }, (b) => { b.equipment.ring1.refine = 13; },
     (b) => { b.equipment.ring1.stones = [1996, 1996, 1996, 1996, 1996]; },
   ]) {
