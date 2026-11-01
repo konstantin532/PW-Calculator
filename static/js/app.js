@@ -29,7 +29,7 @@ const STAT_ROWS = [
   ["Атака ПА", (s) => fmt(s.attackLevel), "Защита ПЗ", (s) => fmt(s.defenseLevel)],
   ["Умен. физ. урона", (s) => pct(Math.round(s.physDefPct * 10) / 10), "Умен. маг. урона", (s) => pct(Math.round(s.magDefPct * 10) / 10)],
   ["Скорость", (s) => `${fmt(s.speed)} м/сек`, "Крит. урон", (s) => pct(s.critDamage)],
-  ["Боевой дух", () => "0", "Сила духа", (s) => fmt(s.spirit)],
+  ["", () => "", "Сила духа", (s) => fmt(s.spirit)],
   ["Скрытность", (s) => fmt(s.stealth), "Обнаружение", (s) => fmt(s.detection)],
 ];
 const freshState = () => ({ version: 1, name: "Без имени", cls: "by", gender: "male", level: MAX_LEVEL, attrs: Object.fromEntries(ATTRS.map((k) => [k, BASE_ATTR])), equipment: {}, effects: [], effectSettings: {}, addedEffects: [], hiddenEffects: [], titles: {} });
