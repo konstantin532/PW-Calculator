@@ -9,6 +9,17 @@ const catalog = source.skills.map((skill) => ({ ...skill, record: skill.source_r
 const find = (id) => catalog.find((effect) => effect.id === id);
 const naked = { cls: "by", level: 105, attrs: { vit: 5, int: 5, str: 5, dex: 5 } };
 
+test("старый Медный лист в сборке не даёт бонусов, когда исключён из каталога сервера", () => {
+  const allowed = catalog.filter((effect) => effect.id !== 92);
+  const baseline = computeStats({ ...naked, effectCatalog: allowed });
+  const restored = computeStats({ ...naked, effectCatalog: allowed, effects: [92],
+    effectSettings: { 92: { level: 1, variant: "normal", activeStates: ["0:0:normal"] } } });
+  for (const key of ["hp", "mp", "physDef", "magDef"]) assert.equal(restored[key], baseline[key]);
+  assert.deepEqual(restored.physAtk, baseline.physAtk);
+  assert.deepEqual(restored.magAtkRange, baseline.magAtkRange);
+  assert.ok(restored.gearWarnings.some((warning) => /92.*не учтён/.test(warning)));
+});
+
 test("Железный покров: исходные уровни 1, 2, 10 и светлый 11 совпадают с оригиналом", () => {
   const original = structuredClone(find(1));
   for (const [level, variant, required, range, mp, defense] of [

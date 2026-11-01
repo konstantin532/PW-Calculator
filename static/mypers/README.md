@@ -22,3 +22,8 @@ Important source details:
 - The original serves Montserrat weights 400, 600 and 800 plus italic 400; no 700 font file was confirmed.
 
 Verification: 88 downloaded/cached assets matched their recorded SHA-256 and image/font signatures; all eight URLs referenced by `skin-assets.css` resolve to existing local files.
+
+Comeback exclusion update: record 92, “Победа колдовства·Медный лист” (sprite 68),
+is absent from all runtime panels and the add-effect catalog. The archived source
+data stays intact. Current warrior defaults contain 12 records instead of the
+13 observed on the source site; record 68 is unrelated and remains available.
