@@ -1,5 +1,6 @@
-import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, spentPoints, totalPoints } from "./stats.js";
+import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, spentPoints, totalPoints, validateTitles } from "./stats.js";
 import { itemFitsSlot, SLOTS, validateEquipmentChoice } from "./equipment.js";
+import { validateEffectSettings } from "./effects.js";
 
 const MAX_BYTES = 1024 * 1024;
 const SLOT_IDS = new Set(SLOTS.map((slot) => slot.id));
@@ -17,9 +18,15 @@ function validateCharacter(data) {
   if (data.gender !== undefined && !["male", "female"].includes(data.gender)) throw new Error("Неизвестный внешний вид персонажа");
   const effects = data.effects ?? [];
   if (!Array.isArray(effects) || effects.length > 1000 || effects.some((id) => !validId(id))) throw new Error("Неверные IDs выбранных эффектов");
+  const addedEffects = data.addedEffects ?? [];
+  const hiddenEffects = data.hiddenEffects ?? [];
+  for (const ids of [addedEffects, hiddenEffects]) if (!Array.isArray(ids) || ids.length > 1000 || ids.some((id) => !validId(id))) throw new Error("Неверные IDs добавленных или скрытых эффектов");
+  const effectSettings = validateEffectSettings(data.effectSettings ?? {});
+  const titles = validateTitles(data.titles ?? {});
   if (!isRecord(data.equipment ?? {})) throw new Error("Неверный список экипировки");
   return { version: 1, name: data.name ?? "", cls: data.cls, level: data.level,
-    attrs: Object.fromEntries(ATTRS.map((k) => [k, data.attrs[k]])), equipment: {}, effects: [...new Set(effects)], gender: data.gender ?? "male" };
+    attrs: Object.fromEntries(ATTRS.map((k) => [k, data.attrs[k]])), equipment: {}, effects: [...new Set(effects)],
+    effectSettings, titles, addedEffects: [...new Set(addedEffects)], hiddenEffects: [...new Set(hiddenEffects)], gender: data.gender ?? "male" };
 }
 
 function catalogMap(records, label) {

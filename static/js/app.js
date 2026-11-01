@@ -1,6 +1,8 @@
 import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js";
 import { SLOTS, availableAddonTexts, itemFitsSlot, maxSockets, maximumAddons } from "./engine/equipment.js";
 import { parseBuild, serializeBuild } from "./engine/build.js";
+import { changeClass, changeGender, normalizeGender } from "./engine/character.js";
+import { createEffectsUI } from "./effects-ui.js";
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString("ru-RU", { maximumFractionDigits: 2 });
@@ -10,7 +12,9 @@ const ATTR_NAMES = { vit: "Внсл", int: "Интл", str: "Сила", dex: "Л
 const FULL_ATTR_NAMES = { vit: "Выносливость", int: "Интеллект", str: "Сила", dex: "Ловкость" };
 const STORAGE_KEY = "pwcalc.comeback.builds.v1";
 const PORTRAITS = { by: 1, ga: 2, ya: 3, rl: 4, ij: 5, js: 6, fx: 7, sj: 8, ej: 9, rg: 10 };
-const CLASS_ICONS = { ga: 1, by: 2, ij: 3, js: 4, rl: 5, ya: 6, fx: 7, sj: 8, ej: 9, rg: 10 };
+const CLASS_ICONS = { ga: 1, by: 2, ij: 3, js: 4, rl: 5, ya: 6, sj: 7, fx: 8, rg: 9, ej: 10 };
+const CLASS_GRID_ORDER = ["by", "ga", "rl", "ya", "js", "ij", "sj", "fx", "rg", "ej"];
+const TITLE_FIELDS = { phys_atk: "Физ. атака", mag_atk: "Маг. атака", phys_def: "Физ. защита", mag_def: "Маг. защита", accuracy: "Меткость", evasion: "Уклонение", attack_level: "Атака ПА", defense_level: "Защита ПЗ", hp: "Здоровье" };
 const CLASS_NAMES = new Set(Object.values(CLASSES).map((cls) => cls.name));
 const SLOT_SKINS = { helmet: "ft", chest: "rv", legs: "tg", boots: "rx", weapon: "ta", necklace: "vx", cape: "wy", wrists: "mj", belt: "st", ring1: "oq-left", ring2: "oq-right", tome: "qn", ammo: "it", flight: "ic" };
 const STAT_NAMES = { hp: "ЖС", mp: "МЭ", phys_atk: "Физическая атака", mag_atk: "Магическая атака", phys_def: "Физическая защита", mag_def: "Магическая защита", def_metal: "Защита от металла", def_wood: "Защита от дерева", def_water: "Защита от воды", def_fire: "Защита от огня", def_earth: "Защита от земли", accuracy: "Меткость", evasion: "Уклонение", atk_speed: "Скорость атаки (исходное значение)", crit: "Шанс критического удара", range: "Дальность", speed: "Скорость" };
@@ -28,14 +32,16 @@ const STAT_ROWS = [
   ["Боевой дух", () => "0", "Сила духа", (s) => fmt(s.spirit)],
   ["Скрытность", (s) => fmt(s.stealth), "Обнаружение", (s) => fmt(s.detection)],
 ];
-const freshState = () => ({ version: 1, name: "Без имени", cls: "by", gender: "male", level: MAX_LEVEL, attrs: Object.fromEntries(ATTRS.map((k) => [k, BASE_ATTR])), equipment: {}, effects: [] });
+const freshState = () => ({ version: 1, name: "Без имени", cls: "by", gender: "male", level: MAX_LEVEL, attrs: Object.fromEntries(ATTRS.map((k) => [k, BASE_ATTR])), equipment: {}, effects: [], effectSettings: {}, addedEffects: [], hiddenEffects: [], titles: {} });
 let state = freshState();
 let catalog = { items: [], stones: [] };
 let catalogReady = false;
 let activeSavedId = null;
 let picker = { slot: null, item: null, refine: 0, stones: [], addons: [] };
 let allEffects = [];
-let effectsExpanded = false;
+let effectsUI;
+let characterPane = null;
+const calculate = (candidate = state) => computeStats({ ...candidate, effectCatalog: allEffects });
 
 function el(tag, props = {}, children = []) {
   const node = Object.assign(document.createElement(tag), props);
@@ -79,9 +85,25 @@ function setAttr(key, value) {
 }
 
 function setupCharacter() {
-  for (const [code, cls] of Object.entries(CLASSES)) $("char-class").append(el("option", { value: code, textContent: cls.name }));
-  $("char-class").addEventListener("change", (e) => { state.cls = e.target.value; dirty(); render(); });
-  $("char-gender").addEventListener("change", (e) => { state.gender = e.target.value; dirty(); render(); });
+  for (const code of CLASS_GRID_ORDER) {
+    const button = el("button", { type: "button", className: `ref-race-${CLASS_ICONS[code]}`, ariaLabel: CLASSES[code].name, title: CLASSES[code].name });
+    button.dataset.class = code;
+    button.dataset.tooltip = CLASSES[code].name;
+    button.addEventListener("click", () => { state = changeClass(state, code); characterPane = null; effectsUI?.close(); dirty(); render(); });
+    $("char-class").append(button);
+  }
+  for (const button of document.querySelectorAll("[data-gender]")) button.addEventListener("click", () => {
+    state = changeGender(state, button.dataset.gender); characterPane = null; effectsUI?.close(); dirty(); render();
+  });
+  for (const [key, label] of Object.entries(TITLE_FIELDS)) {
+    const input = el("input", { id: `title-${key}`, type: "number", min: 0, max: 50000, value: 0, inputMode: "numeric", ariaLabel: `Титул: ${label}` });
+    input.addEventListener("change", () => {
+      const value = Number(input.value);
+      state.titles[key] = Number.isFinite(value) ? Math.min(50000, Math.max(0, Math.trunc(value))) : 0;
+      dirty(); render();
+    });
+    $("title-fields").append(el("label", {}, [label, input]));
+  }
   $("char-name").addEventListener("input", (e) => { state.name = e.target.value; dirty(); });
   $("char-level").addEventListener("change", (e) => {
     state.level = clampLevel(e.target.value);
@@ -99,29 +121,46 @@ function setupCharacter() {
   }
   $("btn-reset").addEventListener("click", () => { resetAttrs(); $("char-message").textContent = ""; dirty(); render(); });
   $("btn-new").addEventListener("click", () => {
-    state = freshState(); activeSavedId = null; clearShareHash();
+    state = freshState(); activeSavedId = null; characterPane = null; effectsUI?.close(); clearShareHash();
     $("char-name").value = state.name; $("build-status").textContent = "Новая"; $("char-message").textContent = "";
-    render(); syncEffects(); status("Создан новый персонаж. Сохранённые сборки доступны ниже.");
+    render(); status("Создан новый персонаж. Сохранённые сборки доступны ниже.");
   });
   $("btn-clear-gear").addEventListener("click", () => { state.equipment = {}; dirty(); render(); status("Экипировка снята."); });
   $("btn-help").addEventListener("click", () => $("info-dialog").showModal());
   document.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => $(button.dataset.action).click()));
   document.querySelectorAll("[data-character-control]").forEach((button) => button.addEventListener("click", () => {
-    if (button.dataset.characterControl === "gender") $("gender-dialog").showModal();
-    else { $("char-class").focus(); $("char-class").showPicker?.(); }
+    characterPane = characterPane === button.dataset.characterControl ? null : button.dataset.characterControl;
+    renderCharacterPane();
   }));
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && characterPane) { characterPane = null; renderCharacterPane(); } });
+}
+
+function renderCharacterPane() {
+  for (const name of ["class", "gender", "title"]) $(`${name}-panel`).hidden = characterPane !== name;
+  document.querySelector(".identity__meta").hidden = Boolean(characterPane);
+  document.querySelector(".identity-icons").hidden = Boolean(characterPane);
+  for (const button of document.querySelectorAll("[data-character-control]")) button.setAttribute("aria-expanded", String(characterPane === button.dataset.characterControl));
+  for (const button of document.querySelectorAll("[data-class]")) {
+    button.classList.toggle("is-active", button.dataset.class === state.cls);
+    button.setAttribute("aria-pressed", String(button.dataset.class === state.cls));
+  }
+  for (const button of document.querySelectorAll("#char-gender [data-gender]")) {
+    button.classList.toggle("is-active", button.dataset.gender === state.gender);
+    button.setAttribute("aria-pressed", String(button.dataset.gender === state.gender));
+  }
+  for (const key of Object.keys(TITLE_FIELDS)) $(`title-${key}`).value = state.titles?.[key] ?? 0;
 }
 
 function render() {
-  const stats = computeStats(state);
-  $("char-class").value = state.cls;
-  $("char-gender").value = state.gender;
+  const stats = calculate();
   $("char-level").value = stats.level;
   $("emblem").textContent = CLASSES[state.cls].name;
   $("portrait").dataset.gender = state.gender;
   const gender = state.cls === "ya" ? "m" : state.cls === "rl" ? "f" : state.gender === "female" ? "f" : "m";
   $("portrait").querySelector("img").src = `/static/mypers/img/ns/default/${PORTRAITS[state.cls]}/${gender}/face.png`;
   $("class-icon").className = `ref-race-${CLASS_ICONS[state.cls]} is-active`;
+  $("class-icon").dataset.tooltip = CLASSES[state.cls].name;
+  $("class-icon").title = CLASSES[state.cls].name;
   $("gender-icon").className = `ref-gender-${gender === "m" ? 1 : 2} is-active`;
   $("paperdoll").dataset.gender = gender;
   for (const key of ["hp", "mp", "free"]) $(`out-${key}`).textContent = fmt(stats[key]);
@@ -136,6 +175,8 @@ function render() {
   const warnings = [...new Set(stats.gearWarnings)];
   $("gear-warnings").replaceChildren(...warnings.map((warning) => el("li", { textContent: warning })));
   $("warning-count").textContent = warnings.length ? `(${warnings.length})` : "";
+  renderCharacterPane();
+  effectsUI?.render();
   renderGear();
 }
 
@@ -233,7 +274,7 @@ function renderItemDetail() {
   box.replaceChildren(el("h3", { textContent: item.name }), el("p", { className: "muted", textContent: `${item.type || "Предмет"} · ранг ${item.grade ?? "—"} · ID ${item.id}` }));
   box.append(el("p", { className: `requirement${fitsCharacter(item) ? "" : " unmet"}`, textContent: `Требуемый уровень: ${item.level ?? 1}` }));
   if (item.classes?.length && !item.classes.includes(CLASSES[state.cls].name)) box.append(el("p", { className: "requirement unmet", textContent: `Классы: ${item.classes.filter((name) => CLASS_NAMES.has(name)).join(", ") || "Нет подходящего класса Comeback 1.4.6"}` }));
-  const effective = computeStats(state).effectiveAttrs;
+  const effective = calculate().effectiveAttrs;
   for (const [key, value] of Object.entries(item.req ?? {})) box.append(el("p", { className: `requirement${effective[key] < value ? " unmet" : ""}`, textContent: `${FULL_ATTR_NAMES[key] ?? key}: ${value}` }));
   box.append(el("ul", { className: "detail-stats" }, Object.entries(item.stats ?? {}).map(([key, value]) => el("li", { textContent: `${STAT_NAMES[key] ?? key}: ${Array.isArray(value) ? range(value) : fmt(value)}` }))));
   if (item.refine?.levels?.some((n) => n !== null)) {
@@ -281,7 +322,7 @@ function setupPicker() {
     if (!picker.item) return;
     try {
       const next = { ...state, equipment: { ...state.equipment, [picker.slot]: { item: picker.item, refine: picker.refine, stones: picker.stones.filter(Boolean), addons: picker.addons } } };
-      computeStats(next); state = next; dirty(); render(); $("item-dialog").close();
+      calculate(next); state = next; dirty(); render(); $("item-dialog").close();
       status(`Надето: ${picker.item.name}${picker.refine ? ` +${picker.refine}` : ""}.`);
     } catch (error) { $("item-action-message").textContent = error.message; }
   });
@@ -290,51 +331,15 @@ function setupPicker() {
   $("btn-retry-catalog").addEventListener("click", loadCatalog);
 }
 
-function syncEffects() {
-  for (const box of document.querySelectorAll(".effect input")) box.checked = state.effects.includes(Number(box.value));
-  for (const kind of ["buff", "debuff"]) {
-    const boxes = [...document.querySelectorAll(`.effect--${kind} input`)];
-    $(`${kind}s-all`).checked = boxes.length > 0 && boxes.every((box) => box.checked);
-    $(`${kind}s-all`).indeterminate = boxes.some((box) => box.checked) && !boxes.every((box) => box.checked);
-  }
-}
-function renderEffects() {
-  const originalOrder = [1, 2, 3, 4, 31, 42, 43, 44, 39, 40, 68, 29, 30];
-  const stateIcons = { 31: 9, 42: 1, 43: 2, 44: 5, 39: 8, 40: 7, 68: 19, 29: 20, 30: 21 };
-  for (const kind of ["buff", "debuff"]) {
-    const effects = allEffects.filter((effect) => effect.kind === kind).sort((a, b) => {
-      const ai = originalOrder.indexOf(a.sprite_id), bi = originalOrder.indexOf(b.sprite_id);
-      return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
-    });
-    $(`${kind}-list`).replaceChildren(...effects.map((effect, index) => {
-      const input = el("input", { type: "checkbox", value: String(effect.id), ariaLabel: effect.name });
-      input.addEventListener("change", () => { state.effects = input.checked ? [...new Set([...state.effects, effect.id])] : state.effects.filter((id) => id !== effect.id); dirty(); syncEffects(); render(); });
-      const tile = el("span", { className: "effect__tile", ariaHidden: "true" }, [el("span", { className: `ref-skill ref-skill-${effect.sprite_id ?? effect.id}` })]);
-      const tip = el("span", { className: "effect__tip", role: "tooltip" }, [el("b", { textContent: effect.name }), String(effect.description).replace(/<[^>]*>/g, " ")]);
-      const item = el("li", { className: `effect effect--${kind}`, hidden: !effectsExpanded && (kind === "debuff" || !effect.panel_default) }, [el("label", {}, [input, tile]), tip]);
-      if (kind === "buff" && effect.panel_default && stateIcons[effect.sprite_id]) item.append(el("span", { className: `effect-state ref-state ref-state-${stateIcons[effect.sprite_id]}`, ariaHidden: "true" }));
-      return item;
-    }));
-    if (!effectsExpanded) {
-      const add = el("button", { type: "button", className: "effect-add", ariaLabel: kind === "buff" ? "Другие бафы" : "Выбрать дебафы", title: kind === "buff" ? "Другие бафы" : "Выбрать дебафы" });
-      add.addEventListener("click", () => { effectsExpanded = true; renderEffects(); });
-      $(`${kind}-list`).append(el("li", { className: "effect effect--add" }, [add]));
-    }
-    if (!effects.length && effectsExpanded) $(`${kind}-list`).append(el("li", { className: "muted small-copy", textContent: "Нет доступных умений" }));
-  }
-  $("effects-expand").setAttribute("aria-expanded", String(effectsExpanded));
-  $("effects-expand").textContent = effectsExpanded ? "Свернуть" : `Все умения (${allEffects.length})`;
-  syncEffects();
-}
 async function setupEffects() {
-  try { const result = await fetchJSON("/api/effects/"); allEffects = result.effects; renderEffects(); }
-  catch { $("buff-list").replaceChildren(el("li", { className: "muted small-copy", textContent: "Не удалось загрузить умения. Обновите страницу, чтобы повторить." })); }
-  $("effects-expand").addEventListener("click", () => { effectsExpanded = !effectsExpanded; renderEffects(); });
-  for (const kind of ["buff", "debuff"]) $(`${kind}s-all`).addEventListener("change", (e) => {
-    const ids = allEffects.filter((effect) => effect.kind === kind).map((effect) => effect.id);
-    state.effects = e.target.checked ? [...new Set([...state.effects, ...ids])] : state.effects.filter((id) => !ids.includes(id));
-    dirty(); syncEffects(); render();
-  });
+  try {
+    const result = await fetchJSON("/api/effects/");
+    allEffects = result.effects;
+    effectsUI.setCatalog(result);
+    render();
+  } catch {
+    $("buff-list").replaceChildren(el("li", { className: "muted small-copy", textContent: "Не удалось загрузить умения. Обновите страницу, чтобы повторить." }));
+  }
 }
 
 function readSaved() {
@@ -347,10 +352,11 @@ function readSaved() {
 function applyBuild(json, id = null, preserveShareHash = false) {
   if (!catalogReady) throw new Error("База предметов ещё не загружена");
   const next = parseBuild(json, catalog.items, catalog.stones);
-  computeStats(next); state = next; activeSavedId = id;
+  next.gender = normalizeGender(next.cls, next.gender);
+  calculate(next); state = next; activeSavedId = id; characterPane = null; effectsUI?.close();
   $("char-name").value = state.name; $("char-message").textContent = ""; $("build-status").textContent = id ? "Сохранена" : "Загружена";
   if (!preserveShareHash) clearShareHash();
-  render(); syncEffects(); status(`Загружен персонаж: ${state.name || "Без имени"}.`);
+  render(); status(`Загружен персонаж: ${state.name || "Без имени"}.`);
   if ($("load-dialog").open) $("load-dialog").close();
 }
 function savedRows(rows, canDelete = true) {
@@ -428,6 +434,7 @@ function setupSaves() {
   renderSaved();
 }
 
+effectsUI = createEffectsUI({ getState: () => state, onChange: () => { dirty(); render(); } });
 setupCharacter(); setupDoll(); setupPicker(); setupSaves(); render();
 await Promise.allSettled([loadCatalog(), setupEffects()]);
 if (catalogReady) loadHashBuild();

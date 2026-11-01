@@ -7,9 +7,10 @@
   <link rel="icon" href="data:,">
   <title>Калькулятор персонажа · Comeback PW 1.4.6</title>
   <link rel="stylesheet" href="{% static 'css/calc.css' %}">
-  <link rel="stylesheet" href="{% static 'mypers/skin-assets.css' %}">
-  <link rel="stylesheet" href="{% static 'css/replica.css' %}">
-  <script type="module" src="{% static 'js/app.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'mypers/skin-assets.css' %}?v=20261102">
+  <link rel="stylesheet" href="{% static 'css/replica.css' %}?v=20261102">
+  <link rel="stylesheet" href="{% static 'css/effects-ui.css' %}?v=20261102">
+  <script type="module" src="{% static 'js/app.js' %}?v=20261102"></script>
 </head>
 <body>
 <main class="calc">
@@ -19,7 +20,7 @@
     <ul class="effects__grid" id="buff-list" aria-live="polite"><li class="muted loading">Загрузка умений…</li></ul>
     <div class="effects__head"><h2 id="debuffs-title">Дебафы</h2><label class="check"><input type="checkbox" id="debuffs-all" aria-label="Выбрать все дебафы"></label></div>
     <ul class="effects__grid" id="debuff-list"></ul>
-    <p class="effects-note" id="effects-note">Выбор бафов сохраняется в сборке. Их влияние на расчёт Comeback ещё не подтверждено.</p>
+    <p class="effects-note" id="effects-note">Нажмите на умение для выбора уровня; флажок или значок под ним включает эффект.</p>
   </section>
   <div class="workspace">
     <div class="calculator-main">
@@ -28,9 +29,12 @@
         <section class="window character" aria-label="Характеристики персонажа">
           <header class="window__title"><label class="visually-hidden" for="char-name">Имя персонажа</label><input id="char-name" value="Без имени" maxlength="24" autocomplete="off"><button class="help" type="button" id="btn-help" aria-label="О калькуляторе">?</button></header>
           <div class="identity"><div class="portrait" id="portrait"><img src="{% static 'mypers/img/ns/default/1/m/face.png' %}" width="78" height="76" alt=""><span id="emblem" class="visually-hidden">Воин</span></div><dl class="identity__meta"><div><dt>Репутация</dt><dd title="Требования репутации пока не рассчитываются">—</dd></div><div><dt>Сервер</dt><dd>Comeback PW</dd></div><div><dt>Создано</dt><dd id="build-status">Новая</dd></div></dl><div class="identity-icons"><button type="button" id="class-icon" class="ref-race-2 is-active" data-character-control="class" aria-label="Выбрать класс"></button><button type="button" id="gender-icon" class="ref-gender-1 is-active" data-character-control="gender" aria-label="Выбрать пол"></button></div></div>
-          <div class="identity__fields"><label class="class-field"><span class="visually-hidden">Класс</span><select id="char-class"></select></label><label class="level-field">Текущий ур. <input id="char-level" type="number" min="1" max="105" value="105" inputmode="numeric"></label></div>
+          <div id="class-panel" class="character-pane character-class-panel" hidden><div id="char-class" role="group" aria-label="Класс персонажа"></div></div>
+          <div id="gender-panel" class="character-pane character-gender-panel" hidden><div id="char-gender" role="group" aria-label="Пол персонажа"><button type="button" class="ref-gender-1" data-gender="male" aria-label="Мужской пол" data-tooltip="Мужской"></button><button type="button" class="ref-gender-2" data-gender="female" aria-label="Женский пол" data-tooltip="Женский"></button></div></div>
+          <div id="title-panel" class="character-pane character-title-panel" hidden><h3>Суммарные дополнения</h3><div id="title-fields"></div></div>
+          <div class="identity__fields"><label class="level-field">Текущий ур. <input id="char-level" type="number" min="1" max="105" value="105" inputmode="numeric"></label></div>
           <p class="bonus-level">Бонус ур. <span title="Перерождения не рассчитываются">—</span></p>
-          <div class="character-actions"><button type="button" data-character-control="class">Класс</button><button type="button" data-character-control="gender">Пол</button><button type="button" data-action="btn-load">Сборки</button><button type="button" data-action="btn-help">Справка</button><button type="button" data-action="btn-reset">Сбросить</button><button type="button" data-action="btn-export">Скачать</button><button type="button" data-action="btn-share">Ссылка</button></div>
+          <div class="character-actions"><button type="button" data-character-control="class">Класс</button><button type="button" data-character-control="gender">Пол</button><button type="button" data-character-control="title">Титул</button><button type="button" data-action="btn-load">Сборки</button><button type="button" data-action="btn-reset">Сбросить</button><button type="button" data-action="btn-export">Скачать</button><button type="button" data-action="btn-share">Ссылка</button></div>
           <div class="pools"><span>ЖС: <b id="out-hp">0</b></span><span>МЭ: <b id="out-mp">0</b></span></div>
           <fieldset class="attrs"><legend><span>Доступно <b id="out-free">520</b></span><span>Характеристики</span></legend><div class="attrs__grid" id="attr-list"></div><button type="button" id="btn-reset" class="text-button">Сбросить очки</button></fieldset>
           <p class="inline-status" id="char-message" role="status"></p>
@@ -57,7 +61,6 @@
   </div>
   <footer class="site-footer"><span>Perfect World · Comeback PW</span><span>Калькулятор персонажа · 1.4.6</span></footer>
 </main>
-<dialog id="gender-dialog" class="game-dialog" aria-labelledby="gender-title"><header class="dialog-title"><h2 id="gender-title">Пол персонажа</h2><button type="button" class="dialog-close" data-close="gender-dialog" aria-label="Закрыть выбор пола">×</button></header><div class="dialog-content"><label>Пол <select id="char-gender"><option value="male">Мужской</option><option value="female">Женский</option></select></label></div></dialog>
 <dialog id="item-dialog" class="game-dialog item-dialog" aria-labelledby="item-dialog-title">
   <header class="dialog-title"><h2 id="item-dialog-title">Выбор предмета</h2><button type="button" class="dialog-close" data-close="item-dialog" aria-label="Закрыть выбор предмета">×</button></header>
   <div class="picker-filters"><label class="search-field"><span class="visually-hidden">Найти предмет</span><input id="item-search" type="search" placeholder="Название или ID предмета" autocomplete="off"></label><label class="check"><input type="checkbox" id="item-available"> По уровню и классу</label></div>
@@ -65,6 +68,6 @@
   <footer class="dialog-actions"><button type="button" id="btn-unequip" class="quiet-button">Снять предмет</button><span id="item-action-message" role="status"></span><button type="button" id="btn-equip" class="gold-button" disabled>Надеть</button></footer>
 </dialog>
 <dialog id="load-dialog" class="game-dialog load-dialog" aria-labelledby="load-dialog-title"><header class="dialog-title"><h2 id="load-dialog-title">Загрузить персонажа</h2><button type="button" class="dialog-close" data-close="load-dialog" aria-label="Закрыть загрузку">×</button></header><div class="dialog-content"><p id="load-message" class="inline-status" role="alert"></p><div id="load-builds"></div><button type="button" class="quiet-button" id="btn-load-file">Выбрать файл сборки</button></div></dialog>
-<dialog id="info-dialog" class="game-dialog info-dialog" aria-labelledby="info-title"><header class="dialog-title"><h2 id="info-title">О калькуляторе</h2><button type="button" class="dialog-close" data-close="info-dialog" aria-label="Закрыть справку">×</button></header><div class="dialog-content"><p>Соберите персонажа Comeback PW 1.4.6: выберите класс, распределите очки и нажимайте на ячейки экипировки.</p><p>Для предмета можно выбрать заточку, камни и дополнительные свойства. Требования и неподдержанные свойства видны рядом с расчётом.</p><p>«Сохранить» сохраняет персонажа в этом браузере. Файл и ссылка позволяют перенести сборку на другой компьютер.</p><p>Каталог — снимок доступных страниц Comeback. Бафы пока сохраняются как отметки и не меняют показатели. Формулы ещё требуют сверки с игрой.</p></div></dialog>
+<dialog id="info-dialog" class="game-dialog info-dialog" aria-labelledby="info-title"><header class="dialog-title"><h2 id="info-title">О калькуляторе</h2><button type="button" class="dialog-close" data-close="info-dialog" aria-label="Закрыть справку">×</button></header><div class="dialog-content"><p>Соберите персонажа Comeback PW 1.4.6: выберите класс, распределите очки и нажимайте на ячейки экипировки.</p><p>Для предмета можно выбрать заточку, камни и дополнительные свойства. Требования и неподдержанные свойства видны рядом с расчётом.</p><p>Нажмите на умение, чтобы выбрать уровень и светлый или тёмный вариант. Флажок или значок под умением включает его эффект. Кнопка «Титул» открывает дополнительные характеристики.</p><p>«Сохранить» сохраняет персонажа в этом браузере. Файл и ссылка позволяют перенести сборку на другой компьютер.</p><p>Каталог — снимок доступных страниц Comeback. Неподдержанные эффекты перечислены под расчётом. Формулы ещё требуют сверки с игрой.</p></div></dialog>
 </body>
 </html>

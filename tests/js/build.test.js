@@ -21,6 +21,37 @@ test("сохранение содержит IDs, загрузка восстан
   assert.equal(result.gender, "female");
 });
 
+test("уровни, свет/тьма, отдельные состояния и девять титулов сохраняются без данных каталога", () => {
+  const settings = { 1: { level: 11, variant: "rs", activeStates: ["11:0:rs"] }, 9: { level: 10, variant: "normal", activeStates: [] } };
+  const titles = { phys_atk: 8, mag_atk: 9, phys_def: 10, mag_def: 11, accuracy: 12, evasion: 13, attack_level: 14, defense_level: 15, hp: 100 };
+  const json = serializeBuild({ ...state, effectSettings: settings, titles, addedEffects: [9], hiddenEffects: [3] });
+  const loaded = parseBuild(json, [ring], [stone]);
+  assert.deepEqual(loaded.effectSettings, settings);
+  assert.deepEqual(loaded.titles, titles);
+  assert.deepEqual(loaded.addedEffects, [9]);
+  assert.deepEqual(loaded.hiddenEffects, [3]);
+  const legacy = JSON.parse(serializeBuild(state));
+  delete legacy.effectSettings; delete legacy.titles; delete legacy.addedEffects; delete legacy.hiddenEffects;
+  const old = parseBuild(JSON.stringify(legacy), [ring], [stone]);
+  assert.deepEqual(old.effectSettings, {});
+  assert.deepEqual(old.titles, {});
+  assert.deepEqual(old.addedEffects, []);
+  assert.deepEqual(old.hiddenEffects, []);
+});
+
+test("настройки эффектов и титулов отклоняют опасные ключи, неверные типы и выход за границы", () => {
+  const doc = JSON.parse(serializeBuild(state));
+  for (const overrides of [
+    { effectSettings: [] }, { effectSettings: { bad: { level: 1, variant: "normal" } } },
+    { effectSettings: { 1: { level: 100, variant: "normal" } } },
+    { effectSettings: { 1: { level: 1, variant: "evil" } } },
+    { effectSettings: { 1: { level: 1, variant: "normal", activeStates: ["<script>"] } } },
+    { effectSettings: JSON.parse('{"__proto__":{"level":1,"variant":"normal"}}') },
+    { addedEffects: ["1"] }, { hiddenEffects: [-1] }, { titles: { hp: -1 } }, { titles: { hp: 50001 } },
+    { titles: { hp: 0.5 } }, { titles: { hp: "100" } }, { titles: { script: 1 } },
+  ]) assert.throws(() => parseBuild(JSON.stringify({ ...doc, ...overrides }), [ring], [stone]));
+});
+
 test("импорт отклоняет неизвестный ID, чужой слот и подмену бонуса", () => {
   const doc = JSON.parse(serializeBuild(state));
   assert.throws(() => parseBuild(JSON.stringify(doc), [], [stone]), /259|каталог/i);

@@ -1,0 +1,58 @@
+/* Effect controls reuse the local calculator palette, sprites and dialog frame. */
+.calc { position:relative; }
+.effects__grid { grid-auto-rows:minmax(62px,auto); }
+.effects .effect--editable { height:auto; min-height:62px; position:relative; }
+.effects .effect--editable .effect__tile { display:block; position:relative; box-sizing:border-box; color:var(--text); cursor:pointer; }
+.effects .effect--editable .effect__tile:hover { border-color:var(--focus); }
+.effects .effect--editable .effect__tile.is-active { outline:1px solid var(--gold); outline-offset:0; }
+.effects .effect--editable .effect__tile[data-variant=rs] { border-color:var(--gold); }
+.effects .effect--editable .effect__tile[data-variant=je] { border-color:#9abde0; }
+.effects .effect--editable .effect__tile[data-variant]:not([data-variant=normal]):after { content:'С'; position:absolute; right:0; bottom:0; padding:1px 2px; color:var(--gold); background:var(--deep); font:600 9px/1 Arial,sans-serif; }
+.effects .effect--editable .effect__tile[data-variant=je]:after { content:'Т'; color:#b8d7f1; }
+.effects-state-row { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:1px; width:36px; margin-top:5px; }
+.effects .effect--editable .effect-state { display:inline-flex; align-items:center; justify-content:center; position:static; box-sizing:content-box; flex:none; width:16px; height:16px; padding:0; border:1px solid #ff2a00; border-radius:0; background:none; pointer-events:auto; opacity:.7; }
+.effects .effect--editable .effect-state[aria-pressed=true] { border-color:var(--gold); outline:1px solid var(--gold); opacity:1; }
+.effects .effect--editable .effects-passive { display:flex; align-items:center; justify-content:center; position:static; padding:0; margin:0; width:34px; min-height:18px; }
+.effects .effect--editable input[type=checkbox] { position:static; opacity:1; width:13px; height:13px; margin:0; cursor:pointer; }
+.effects .effect-add { color:var(--gold-dim); font:400 23px/30px Arial,sans-serif; }
+.effects .effect-add:hover { border-color:var(--focus); color:var(--focus); }
+.effects-popup.game-dialog { position:absolute; z-index:40; width:360px; max-width:calc(100vw - 16px); margin:0; overflow:auto; overscroll-behavior:contain; box-shadow:0 8px 32px #000c; font:12px/1.5 Montserrat,Arial,sans-serif; }
+.effects-popup .dialog-title { position:sticky; top:0; z-index:1; gap:var(--s2); padding:var(--s2) var(--s3); }
+.effects-popup .dialog-title h2 { font:600 13px/1.4 Montserrat,Arial,sans-serif; overflow-wrap:anywhere; }
+.effects-popup .dialog-close { flex:none; align-self:flex-start; min-width:24px; min-height:24px; }
+.effects-popup__content { padding:var(--s3); }
+.effects-skill-heading { display:flex; align-items:center; gap:var(--s2); margin-bottom:var(--s3); }
+.effects-skill-heading .ref-skill { display:block; flex:none; border:1px solid var(--line); box-sizing:content-box; }
+.effects-skill-heading strong { color:var(--value); }
+.effects-popup .effects-remove { margin-left:auto; color:var(--gold-dim); }
+.effects-parameters { display:grid; gap:var(--s1); margin:0 0 var(--s3); }
+.effects-parameters>div { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--s3); }
+.effects-parameters dt { color:var(--gold-dim); overflow-wrap:anywhere; }
+.effects-parameters dd { margin:0; color:#a8e5ef; font-variant-numeric:tabular-nums; }
+.effects-level-controls { display:flex; flex-wrap:wrap; gap:var(--s1); padding:var(--s2) 0; border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft); }
+.effects-level-controls button { min-height:28px; padding:var(--s1) var(--s2); border:1px solid var(--line); border-radius:2px; color:var(--text); background:var(--panel); }
+.effects-level-controls button:hover,.effects-level-controls button[aria-pressed=true] { color:var(--gold); border-color:var(--gold-dim); }
+.effects-state-options { display:grid; gap:var(--s1); margin-top:var(--s2); }
+.effects-state-option { display:flex; align-items:center; gap:var(--s2); width:100%; min-height:28px; margin:0; padding:var(--s1); text-align:left; color:var(--text); background:transparent; border:1px solid transparent; border-radius:0; cursor:pointer; }
+button.effects-state-option { border-color:var(--line-soft); }
+button.effects-state-option[aria-pressed=true] { border-color:var(--gold); background:var(--panel); }
+.effects-state-option input { flex:none; margin:0; }
+.effects-state-option .ref-state { display:block; flex:none; border:1px solid #ff2a00; box-sizing:content-box; }
+.effects-state-option[aria-pressed=true] .ref-state { border-color:var(--gold); }
+.effects-description { margin:var(--s3) 0 0; color:var(--text); white-space:pre-line; overflow-wrap:anywhere; }
+.effects-warnings { padding-left:var(--s4); margin:var(--s2) 0 0; color:var(--danger); }
+.effects-popup--chooser { width:400px; }
+.effects-popup input[type=search] { width:100%; min-height:32px; padding:var(--s1) var(--s2); border:1px solid var(--line); color:var(--text); background:var(--bg); }
+.effects-choice-count { margin:var(--s2) 0; color:var(--muted); }
+.effects-choices { display:grid; gap:var(--s1); max-height:340px; overflow:auto; overscroll-behavior:contain; }
+.effects-choice { display:flex; align-items:center; gap:var(--s2); width:100%; padding:var(--s1); color:var(--text); text-align:left; border:1px solid var(--line-soft); border-radius:0; background:var(--panel); }
+.effects-choice:hover,.effects-choice:focus-visible { color:var(--gold); border-color:var(--gold-dim); }
+.effects-choice .ref-skill { display:block; flex:none; }
+.effects-choice span:last-child { overflow-wrap:anywhere; }
+@media(max-width:680px) {
+  .effects-popup.game-dialog { width:min(360px,calc(100vw - 16px)); }
+  .effects-popup .dialog-title { padding:var(--s2); }
+  .effects-popup__content { padding:var(--s2); }
+  .effects-level-controls button { min-height:32px; }
+  .effects-choices { max-height:45vh; }
+}
