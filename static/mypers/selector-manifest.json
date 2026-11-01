@@ -1,0 +1,1576 @@
+[
+  {
+    "selector": "@font-face",
+    "url": "https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-regular.woff2",
+    "local": "static/mypers/fonts/montserrat-v26-cyrillic_latin-regular.woff2",
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "font-display": " swap",
+      "font-family": " 'Montserrat'",
+      "font-style": " normal",
+      "font-weight": " 400",
+      "src": " url('../fonts/montserrat-v26-cyrillic_latin-regular.woff2') format('woff2')"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": "@font-face",
+    "url": "https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-italic.woff2",
+    "local": "static/mypers/fonts/montserrat-v26-cyrillic_latin-italic.woff2",
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "font-display": " swap",
+      "font-family": " 'Montserrat'",
+      "font-style": " italic",
+      "font-weight": " 400",
+      "src": " url('../fonts/montserrat-v26-cyrillic_latin-italic.woff2') format('woff2')"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": "@font-face",
+    "url": "https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-600.woff2",
+    "local": "static/mypers/fonts/montserrat-v26-cyrillic_latin-600.woff2",
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "font-display": " swap",
+      "font-family": " 'Montserrat'",
+      "font-style": " normal",
+      "font-weight": " 600",
+      "src": " url('../fonts/montserrat-v26-cyrillic_latin-600.woff2') format('woff2')"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": "@font-face",
+    "url": "https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-800.woff2",
+    "local": "static/mypers/fonts/montserrat-v26-cyrillic_latin-800.woff2",
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "font-display": " swap",
+      "font-family": " 'Montserrat'",
+      "font-style": " normal",
+      "font-weight": " 800",
+      "src": " url('../fonts/montserrat-v26-cyrillic_latin-800.woff2') format('woff2')"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".fe-qt",
+    "url": "https://mypers.ru/img/theme003/tz.webp",
+    "local": "static/mypers/img/theme003/tz.webp",
+    "asset_width": 319,
+    "asset_height": 457,
+    "properties": {
+      "background-image": " url(../img/theme003/tz.webp)",
+      "height": " 250px",
+      "background-position": " center top"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".pn-hm",
+    "url": "https://mypers.ru/img/theme003/pn-hm.webp",
+    "local": "static/mypers/img/theme003/pn-hm.webp",
+    "asset_width": 582,
+    "asset_height": 212,
+    "properties": {
+      "background-image": " url(../img/theme003/pn-hm.webp)",
+      "height": " 213px",
+      "left": " 13px",
+      "position": " absolute",
+      "top": " 34px",
+      "width": " 292px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qdy-qt",
+    "url": "https://mypers.ru/img/theme003/tz.webp",
+    "local": "static/mypers/img/theme003/tz.webp",
+    "asset_width": 319,
+    "asset_height": 457,
+    "properties": {
+      "position": " relative",
+      "background-image": " url(../img/theme003/tz.webp)",
+      "background-position": " bottom center"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qdy-ol",
+    "url": "https://mypers.ru/img/theme003/tz.webp",
+    "local": "static/mypers/img/theme003/tz.webp",
+    "asset_width": 319,
+    "asset_height": 457,
+    "properties": {
+      "background-image": " url(../img/theme003/tz.webp)",
+      "background-position": " center 185px",
+      "height": " 10px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qdy-body",
+    "url": "https://mypers.ru/img/theme003/tz-line.webp",
+    "local": "static/mypers/img/theme003/tz-line.webp",
+    "asset_width": 318,
+    "asset_height": 1,
+    "properties": {
+      "background-image": " url(../img/theme003/tz-line.webp)",
+      "background-position": " -1px center"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qdy-footer",
+    "url": "https://mypers.ru/img/theme003/tz.webp",
+    "local": "static/mypers/img/theme003/tz.webp",
+    "asset_width": 319,
+    "asset_height": 457,
+    "properties": {
+      "background-image": " url(../img/theme003/tz.webp)",
+      "background-position": " bottom center",
+      "height": " 30px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qdy-add-ap",
+    "url": "https://mypers.ru/img/theme003/addBtn.webp",
+    "local": null,
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "background-image": " url(../img/theme003/addBtn.webp)",
+      "left": " 8px"
+    },
+    "status": "original URL unavailable"
+  },
+  {
+    "selector": ".qdy-rem-ap",
+    "url": "https://mypers.ru/img/theme003/remBtn.webp",
+    "local": "static/mypers/img/theme003/remBtn.webp",
+    "asset_width": 19,
+    "asset_height": 19,
+    "properties": {
+      "background-image": " url(../img/theme003/remBtn.webp)",
+      "right": " 8px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qdy-ys",
+    "url": "https://mypers.ru/img/theme003/item-cells.webp",
+    "local": "static/mypers/img/theme003/item-cells.webp",
+    "asset_width": 192,
+    "asset_height": 192,
+    "properties": {
+      "background-image": " url(../img/theme003/item-cells.webp)",
+      "background-position": " -160px 0",
+      "border": " 1px solid #251D13",
+      "float": " left",
+      "height": " 32px",
+      "width": " 32px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".search-qt",
+    "url": "https://mypers.ru/img/theme003/xe.webp",
+    "local": "static/mypers/img/theme003/xe.webp",
+    "asset_width": 260,
+    "asset_height": 307,
+    "properties": {
+      "background-image": " url(../img/theme003/xe.webp)",
+      "background-repeat": " no-repeat",
+      "height": " 50px",
+      "position": " relative",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".uc-qt",
+    "url": "https://mypers.ru/img/theme003/uc-qt.webp",
+    "local": "static/mypers/img/theme003/uc-qt.webp",
+    "asset_width": 260,
+    "asset_height": 3,
+    "properties": {
+      "background-image": " url(../img/theme003/uc-qt.webp)",
+      "position": " relative",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qp-qt",
+    "url": "https://mypers.ru/img/theme003/xe.webp",
+    "local": "static/mypers/img/theme003/xe.webp",
+    "asset_width": 260,
+    "asset_height": 307,
+    "properties": {
+      "background-image": " url(../img/theme003/xe.webp)",
+      "background-position": " bottom center",
+      "background-repeat": " no-repeat",
+      "height": " 217px",
+      "position": " relative",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".xe-dj-ap:hover",
+    "url": "https://mypers.ru/img/theme003/xe-dj-ap.webp",
+    "local": "static/mypers/img/theme003/xe-dj-ap.webp",
+    "asset_width": 14,
+    "asset_height": 15,
+    "properties": {
+      "background-image": " url(../img/theme003/xe-dj-ap.webp)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".xe-search-po",
+    "url": "https://mypers.ru/img/theme003/input-po.webp",
+    "local": "static/mypers/img/theme003/input-po.webp",
+    "asset_width": 150,
+    "asset_height": 23,
+    "properties": {
+      "background-color": " rgba(0, 0, 0, 0)",
+      "background-image": " url(../img/theme003/input-po.webp)",
+      "border": " medium none",
+      "color": " #fff",
+      "font-size": " 11px",
+      "font-weight": " 600",
+      "height": " 21px",
+      "left": " 12px",
+      "padding": " 1px 8px",
+      "position": " absolute",
+      "top": " 24px",
+      "width": " 134px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".ap-size-3",
+    "url": "https://mypers.ru/img/theme003/pa-ap-5.webp",
+    "local": "static/mypers/img/theme003/pa-ap-5.webp",
+    "asset_width": 69,
+    "asset_height": 48,
+    "properties": {
+      "background-image": " url(../img/theme003/pa-ap-5.webp)",
+      "width": " 46px",
+      "height": " 16px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".ap-size-4",
+    "url": "https://mypers.ru/img/theme003/pa-ap-5.webp",
+    "local": "static/mypers/img/theme003/pa-ap-5.webp",
+    "asset_width": 69,
+    "asset_height": 48,
+    "properties": {
+      "background-image": " url(../img/theme003/pa-ap-5.webp)",
+      "height": " 16px",
+      "padding-top": " 4px",
+      "width": " 58px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".ap-size-5",
+    "url": "https://mypers.ru/img/theme003/pa-ap-5.webp",
+    "local": "static/mypers/img/theme003/pa-ap-5.webp",
+    "asset_width": 69,
+    "asset_height": 48,
+    "properties": {
+      "background-image": " url(../img/theme003/pa-ap-5.webp)",
+      "height": " 19px",
+      "padding-top": " 4px",
+      "width": " 65px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".ap-size-6",
+    "url": "https://mypers.ru/img/theme003/pa-ap-6.webp",
+    "local": "static/mypers/img/theme003/pa-ap-6.webp",
+    "asset_width": 120,
+    "asset_height": 48,
+    "properties": {
+      "background-image": " url(../img/theme003/pa-ap-6.webp)",
+      "height": " 18px",
+      "padding-top": " 6px",
+      "width": " 120px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qp-tt-ap",
+    "url": "https://mypers.ru/img/theme003/tt-ap.webp",
+    "local": "static/mypers/img/theme003/tt-ap.webp",
+    "asset_width": 15,
+    "asset_height": 30,
+    "properties": {
+      "background-image": " url(../img/theme003/tt-ap.webp)",
+      "height": " 15px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qp-qq-ap",
+    "url": "https://mypers.ru/img/theme003/qq-ap.webp",
+    "local": "static/mypers/img/theme003/qq-ap.webp",
+    "asset_width": 15,
+    "asset_height": 30,
+    "properties": {
+      "background-image": " url(../img/theme003/qq-ap.webp)",
+      "height": " 15px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qp-scroll-body",
+    "url": "https://mypers.ru/img/theme003/scroll-body.webp",
+    "local": "static/mypers/img/theme003/scroll-body.webp",
+    "asset_width": 15,
+    "asset_height": 3,
+    "properties": {
+      "background-image": " url(../img/theme003/scroll-body.webp)",
+      "height": " 167px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".qp-scroll-slider",
+    "url": "https://mypers.ru/img/theme003/scroll-slider.webp",
+    "local": "static/mypers/img/theme003/scroll-slider.webp",
+    "asset_width": 11,
+    "asset_height": 28,
+    "properties": {
+      "background-image": " url(../img/theme003/scroll-slider.webp)",
+      "height": " 27px",
+      "margin": " 0 auto",
+      "width": " 11px !important"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".chakras-fn:hover",
+    "url": "https://mypers.ru/img/theme003/chakras-fn.webp",
+    "local": "static/mypers/img/theme003/chakras-fn.webp",
+    "asset_width": 234,
+    "asset_height": 190,
+    "properties": {
+      "background-image": " url(../img/theme003/chakras-fn.webp)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".ys",
+    "url": "https://mypers.ru/img/theme003/item-cells.webp",
+    "local": "static/mypers/img/theme003/item-cells.webp",
+    "asset_width": 192,
+    "asset_height": 192,
+    "properties": {
+      "background-image": " url(../img/theme003/item-cells.webp)",
+      "border": " 1px solid #9a916c",
+      "position": " absolute",
+      "cursor": " pointer",
+      "width": " 32px",
+      "height": " 32px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".by-man",
+    "url": "https://mypers.ru/img/theme003/by-face.webp",
+    "local": null,
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "background-image": " url(../img/theme003/by-face.webp)"
+    },
+    "status": "original URL unavailable"
+  },
+  {
+    "selector": ".gh-pa-gh-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa.webp",
+    "local": "static/mypers/img/theme003/gh-pa.webp",
+    "asset_width": 280,
+    "asset_height": 237,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa.webp)",
+      "width": " 100%",
+      "height": " 123px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-expand-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "background-repeat": " repeat-y",
+      "overflow": " hidden",
+      "position": " relative",
+      "width": " 100%",
+      "text-align": " center"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-ob-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "background-repeat": " repeat-y",
+      "position": " relative",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-wu-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "width": " 100%",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-base-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "width": " 100%",
+      "position": " relative",
+      "padding-bottom": " 15px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-vb-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "width": " 100%",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-bottom-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa.webp",
+    "local": "static/mypers/img/theme003/gh-pa.webp",
+    "asset_width": 280,
+    "asset_height": 237,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa.webp)",
+      "width": " 100%",
+      "background-position": " bottom center",
+      "height": " 20px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-select-item-label-container",
+    "url": "https://mypers.ru/img/theme003/under-ax.webp",
+    "local": "static/mypers/img/theme003/under-ax.webp",
+    "asset_width": 270,
+    "asset_height": 9,
+    "properties": {
+      "background-image": " url(../img/theme003/under-ax.webp)",
+      "background-position": " center bottom",
+      "background-repeat": " no-repeat",
+      "background-size": " contain",
+      "left": " 125px",
+      "overflow": " hidden",
+      "padding-bottom": " 5px",
+      "position": " absolute",
+      "text-align": " center",
+      "top": " 45px",
+      "width": " 130px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-dj-ap:hover",
+    "url": "https://mypers.ru/img/theme003/xe-dj-ap.webp",
+    "local": "static/mypers/img/theme003/xe-dj-ap.webp",
+    "asset_width": 14,
+    "asset_height": 15,
+    "properties": {
+      "background-image": " url(../img/theme003/xe-dj-ap.webp)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".expand-ap",
+    "url": "https://mypers.ru/img/theme003/expand-ap.webp",
+    "local": "static/mypers/img/theme003/expand-ap.webp",
+    "asset_width": 70,
+    "asset_height": 54,
+    "properties": {
+      "background-image": " url(../img/theme003/expand-ap.webp)",
+      "cursor": " pointer",
+      "display": " inline-block",
+      "height": " 18px",
+      "margin": " 0 3px",
+      "padding-top": " 8px",
+      "position": " relative",
+      "vertical-align": " top",
+      "width": " 68px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-under-ax, .yt-under-ax",
+    "url": "https://mypers.ru/img/theme003/under-ax.webp",
+    "local": "static/mypers/img/theme003/under-ax.webp",
+    "asset_width": 270,
+    "asset_height": 9,
+    "properties": {
+      "background-image": " url(../img/theme003/under-ax.webp)",
+      "background-position": " center bottom",
+      "height": " 5px",
+      "margin": " 0 auto",
+      "position": " relative",
+      "top": " 29px",
+      "width": " 90%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-crystal-del, .gh-pa-ob-del, .gh-pa-wdf-del",
+    "url": "https://mypers.ru/img/theme003/remove-ap-2.webp",
+    "local": "static/mypers/img/theme003/remove-ap-2.webp",
+    "asset_width": 17,
+    "asset_height": 17,
+    "properties": {
+      "background-image": " url(../img/theme003/remove-ap-2.webp)",
+      "position": " absolute",
+      "width": " 17px",
+      "height": " 17px",
+      "cursor": " pointer",
+      "top": " 14px",
+      "left": " 93px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-ob-duplicate",
+    "url": "https://mypers.ru/img/theme003/duplicate-ap.webp",
+    "local": "static/mypers/img/theme003/duplicate-ap.webp",
+    "asset_width": 30,
+    "asset_height": 30,
+    "properties": {
+      "background-image": " url(../img/theme003/duplicate-ap.webp)",
+      "height": " 15px",
+      "left": " 55px",
+      "position": " absolute",
+      "top": " 15px",
+      "width": " 30px",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-pa-ob-row-container",
+    "url": "https://mypers.ru/img/theme003/ob-row.webp",
+    "local": null,
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "background-image": " url(../img/theme003/ob-row.webp)",
+      "width": " 237px",
+      "height": " 34px",
+      "left": " 18px",
+      "position": " absolute"
+    },
+    "status": "original URL unavailable"
+  },
+  {
+    "selector": ".clear-ob-ap",
+    "url": "https://mypers.ru/img/theme003/pa-ap-5.webp",
+    "local": "static/mypers/img/theme003/pa-ap-5.webp",
+    "asset_width": 69,
+    "asset_height": 48,
+    "properties": {
+      "background-image": " url(../img/theme003/pa-ap-5.webp)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".gh-arrows",
+    "url": "https://mypers.ru/img/theme003/gh-arrows.webp",
+    "local": "static/mypers/img/theme003/gh-arrows.webp",
+    "asset_width": 40,
+    "asset_height": 40,
+    "properties": {
+      "cursor": " pointer",
+      "background-image": " url(../img/theme003/gh-arrows.webp)",
+      "width": " 20px",
+      "height": " 20px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".wu-bg-pa",
+    "url": "https://mypers.ru/img/theme003/bg-pa.webp",
+    "local": "static/mypers/img/theme003/bg-pa.webp",
+    "asset_width": 262,
+    "asset_height": 206,
+    "properties": {
+      "background-image": " url(../img/theme003/bg-pa.webp)",
+      "background-size": " cover",
+      "max-height": " 129px",
+      "left": " 15px",
+      "padding": " 5px 0 3px",
+      "position": " relative",
+      "width": " 248px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-vu-qt",
+    "url": "https://mypers.ru/img/theme003/yt-vu-qt.webp",
+    "local": "static/mypers/img/theme003/yt-vu-qt.webp",
+    "asset_width": 280,
+    "asset_height": 280,
+    "properties": {
+      "background-image": " url(../img/theme003/yt-vu-qt.webp)",
+      "background-repeat": " no-repeat",
+      "width": " 280px",
+      "height": " 280px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-bottom-qt",
+    "url": "https://mypers.ru/img/theme003/yt-bottom-qt2.webp",
+    "local": "static/mypers/img/theme003/yt-bottom-qt2.webp",
+    "asset_width": 280,
+    "asset_height": 30,
+    "properties": {
+      "background-image": " url(../img/theme003/yt-bottom-qt2.webp)",
+      "background-repeat": " no-repeat",
+      "width": " 280px",
+      "height": " 30px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-elements-qt",
+    "url": "https://mypers.ru/img/theme003/yt-elements-qt.webp",
+    "local": "static/mypers/img/theme003/yt-elements-qt.webp",
+    "asset_width": 280,
+    "asset_height": 100,
+    "properties": {
+      "background-image": " url(../img/theme003/yt-elements-qt.webp)",
+      "background-repeat": " no-repeat",
+      "width": " 280px",
+      "height": " 100px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-expand-qt",
+    "url": "https://mypers.ru/img/theme003/yt-expand-qt.webp",
+    "local": "static/mypers/img/theme003/yt-expand-qt.webp",
+    "asset_width": 280,
+    "asset_height": 3,
+    "properties": {
+      "background-image": " url(../img/theme003/yt-expand-qt.webp)",
+      "background-repeat": " repeat-y",
+      "overflow": " hidden",
+      "position": " relative",
+      "width": " 100%",
+      "text-align": " center"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-qx-qt",
+    "url": "https://mypers.ru/img/theme003/yt-expand-qt.webp",
+    "local": "static/mypers/img/theme003/yt-expand-qt.webp",
+    "asset_width": 280,
+    "asset_height": 3,
+    "properties": {
+      "background-image": " url(../img/theme003/yt-expand-qt.webp)",
+      "background-repeat": " repeat-y",
+      "width": " 100%",
+      "height": " 50px",
+      "padding-top": " 15px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-yo-qt",
+    "url": "https://mypers.ru/img/theme003/yt-expand-qt.webp",
+    "local": "static/mypers/img/theme003/yt-expand-qt.webp",
+    "asset_width": 280,
+    "asset_height": 3,
+    "properties": {
+      "background-image": " url(../img/theme003/yt-expand-qt.webp)",
+      "background-repeat": " repeat-y",
+      "width": " 100%",
+      "padding-top": " 15px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-dj-ap:hover",
+    "url": "https://mypers.ru/img/theme003/xe-dj-ap.webp",
+    "local": "static/mypers/img/theme003/xe-dj-ap.webp",
+    "asset_width": 14,
+    "asset_height": 15,
+    "properties": {
+      "background-image": " url(../img/theme003/xe-dj-ap.webp)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".pk-face",
+    "url": "https://mypers.ru/img/theme003/pk-icons.webp",
+    "local": "static/mypers/img/theme003/pk-icons.webp",
+    "asset_width": 220,
+    "asset_height": 220,
+    "properties": {
+      "background-image": " url(../img/theme003/pk-icons.webp)",
+      "background-repeat": " no-repeat",
+      "height": " 58px",
+      "left": " 23px",
+      "position": " absolute",
+      "top": " 70px",
+      "width": " 60px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".pk-face-frame",
+    "url": "https://mypers.ru/img/theme003/pk-face-frame.webp",
+    "local": "static/mypers/img/theme003/pk-face-frame.webp",
+    "asset_width": 80,
+    "asset_height": 80,
+    "properties": {
+      "background-image": " url(../img/theme003/pk-face-frame.webp)",
+      "background-size": " cover",
+      "height": " 70px",
+      "left": " 16px",
+      "position": " absolute",
+      "top": " 63px",
+      "width": " 70px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".yt-del-ap",
+    "url": "https://mypers.ru/img/theme003/remove-ap-2.webp",
+    "local": "static/mypers/img/theme003/remove-ap-2.webp",
+    "asset_width": 17,
+    "asset_height": 17,
+    "properties": {
+      "background-image": " url(../img/theme003/remove-ap-2.webp)",
+      "cursor": " pointer",
+      "height": " 17px",
+      "position": " absolute",
+      "width": " 17px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".hj",
+    "url": "https://mypers.ru/img/theme003/hj.webp",
+    "local": "static/mypers/img/theme003/hj.webp",
+    "asset_width": 423,
+    "asset_height": 280,
+    "properties": {
+      "position": " absolute",
+      "background-image": " url(../img/theme003/hj.webp)",
+      "width": " 423px",
+      "height": " 280px",
+      "z-index": " 7"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".hj-dj-ap:hover",
+    "url": "https://mypers.ru/img/theme003/xe-dj-ap.webp",
+    "local": "static/mypers/img/theme003/xe-dj-ap.webp",
+    "asset_width": 14,
+    "asset_height": 15,
+    "properties": {
+      "background-image": " url(../img/theme003/xe-dj-ap.webp)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".meridian-point",
+    "url": "https://mypers.ru/img/theme003/meridian-point.webp",
+    "local": "static/mypers/img/theme003/meridian-point.webp",
+    "asset_width": 24,
+    "asset_height": 48,
+    "properties": {
+      "cursor": " pointer",
+      "background-image": " url(../img/theme003/meridian-point.webp)",
+      "height": " 24px",
+      "position": " absolute",
+      "width": " 24px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".meridian-center-point",
+    "url": "https://mypers.ru/img/theme003/meridian-center-point.webp",
+    "local": "static/mypers/img/theme003/meridian-center-point.webp",
+    "asset_width": 139,
+    "asset_height": 250,
+    "properties": {
+      "background-image": " url(../img/theme003/meridian-center-point.webp)",
+      "cursor": " pointer",
+      "height": " 125px",
+      "left": " 220px",
+      "position": " absolute",
+      "top": " 75px",
+      "width": " 139px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".opponent-expand-ap",
+    "url": "https://mypers.ru/img/theme003/opponent-expand-ap.webp",
+    "local": "static/mypers/img/theme003/opponent-expand-ap.webp",
+    "asset_width": 450,
+    "asset_height": 382,
+    "properties": {
+      "background": " url(../img/theme003/opponent-expand-ap.webp) repeat scroll 0 0/cover rgba(0, 0, 0, 0)",
+      "cursor": " pointer",
+      "height": " 169px",
+      "position": " absolute",
+      "right": " 0",
+      "width": " 200px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".mob-expand-ap",
+    "url": "https://mypers.ru/img/theme003/mob-expand-ap.webp",
+    "local": "static/mypers/img/theme003/mob-expand-ap.webp",
+    "asset_width": 150,
+    "asset_height": 193,
+    "properties": {
+      "background": " rgba(0, 0, 0, 0) url(../img/theme003/mob-expand-ap.webp) repeat scroll 0 0/cover",
+      "cursor": " pointer",
+      "height": " 150px",
+      "position": " absolute",
+      "right": " 220px",
+      "width": " 117px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".info-ys",
+    "url": "https://mypers.ru/img/theme003/race-hii.webp",
+    "local": "static/mypers/img/theme003/race-hii.webp",
+    "asset_width": 512,
+    "asset_height": 64,
+    "properties": {
+      "background": " url(../img/theme003/race-hii.webp)",
+      "height": " 32px",
+      "margin": " 5px 0 0 30px",
+      "width": " 32px",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".eo-uwp",
+    "url": "https://mypers.ru/img/theme003/uwp.webp",
+    "local": "static/mypers/img/theme003/uwp.webp",
+    "asset_width": 20,
+    "asset_height": 25,
+    "properties": {
+      "background": " url(../img/theme003/uwp.webp)",
+      "background-repeat": " no-repeat",
+      "cursor": " help",
+      "width": " 20px",
+      "height": " 30px",
+      "position": " absolute",
+      "top": " 7px",
+      "right": " 10px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".eo-info-qt",
+    "url": "https://mypers.ru/img/theme003/eo.webp",
+    "local": "static/mypers/img/theme003/eo.webp",
+    "asset_width": 320,
+    "asset_height": 646,
+    "properties": {
+      "font-family": "Arial",
+      "background": " url(../img/theme003/eo.webp) repeat scroll center bottom rgba(0, 0, 0, 0)",
+      "height": " 258px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".eo-input-qt",
+    "url": "https://mypers.ru/img/theme003/eo.webp",
+    "local": "static/mypers/img/theme003/eo.webp",
+    "asset_width": 320,
+    "asset_height": 646,
+    "properties": {
+      "background": " url(../img/theme003/eo.webp) repeat scroll center top rgba(0, 0, 0, 0)",
+      "height": " 357px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".info-edit:hover",
+    "url": "https://mypers.ru/img/theme003/edit-pencil.webp",
+    "local": "static/mypers/img/theme003/edit-pencil.webp",
+    "asset_width": 12,
+    "asset_height": 15,
+    "properties": {
+      "background": " url(../img/theme003/edit-pencil.webp)",
+      "background-repeat": " no-repeat",
+      "margin-left": " -15px",
+      "padding-left": " 15px",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".avatar-ys",
+    "url": "https://mypers.ru/img/theme003/item-cells.webp",
+    "local": "static/mypers/img/theme003/item-cells.webp",
+    "asset_width": 192,
+    "asset_height": 192,
+    "properties": {
+      "background-image": " url(../img/theme003/item-cells.webp)",
+      "background-position": " -160px -64px",
+      "border": " 1px solid #9a916c",
+      "border-radius": " 5px",
+      "cursor": " pointer",
+      "height": " 32px",
+      "margin": " 0 auto",
+      "width": " 32px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".avatars-qt",
+    "url": "https://mypers.ru/img/theme003/tz-line.webp",
+    "local": "static/mypers/img/theme003/tz-line.webp",
+    "asset_width": 318,
+    "asset_height": 1,
+    "properties": {
+      "background-image": " url(../img/theme003/tz-line.webp)",
+      "background-position": " -1px center",
+      "height": " 85px",
+      "padding": " 10px 15px 0",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".pk-fu",
+    "url": "https://mypers.ru/img/skills/pk-yo.webp",
+    "local": "static/mypers/img/skills/pk-yo.webp",
+    "asset_width": 192,
+    "asset_height": 512,
+    "properties": {
+      "background-image": " url(../img/skills/pk-yo.webp)",
+      "width": " 32px",
+      "height": " 32px",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".fu",
+    "url": "https://mypers.ru/img/skills/skills.webp",
+    "local": "static/mypers/img/skills/skills.webp",
+    "asset_width": 192,
+    "asset_height": 2144,
+    "properties": {
+      "background-image": " url(../img/skills/skills.webp)",
+      "width": " 32px",
+      "height": " 32px",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".fu-state",
+    "url": "https://mypers.ru/img/skills/fu-states.webp",
+    "local": "static/mypers/img/skills/fu-states.webp",
+    "asset_width": 96,
+    "asset_height": 256,
+    "properties": {
+      "background-image": " url(../img/skills/fu-states.webp)",
+      "width": " 16px",
+      "height": " 16px",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".fu-mi",
+    "url": "https://mypers.ru/img/theme003/under-ax.webp",
+    "local": "static/mypers/img/theme003/under-ax.webp",
+    "asset_width": 270,
+    "asset_height": 9,
+    "properties": {
+      "background-image": " url(../img/theme003/under-ax.webp)",
+      "background-position": " center bottom",
+      "background-repeat": " no-repeat",
+      "background-size": " contain",
+      "left": " 73px",
+      "overflow": " hidden",
+      "padding-bottom": " 5px",
+      "position": " absolute",
+      "text-align": " center",
+      "top": " 47px",
+      "width": " 180px",
+      "font-weight": " 700"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".hf-up-head-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa.webp",
+    "local": "static/mypers/img/theme003/gh-pa.webp",
+    "asset_width": 280,
+    "asset_height": 237,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa.webp)",
+      "width": " 100%",
+      "height": " 115px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".hf-up-option-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "width": " 100%",
+      "background-repeat": " repeat-y"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".hf-up-us-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "width": " 100%",
+      "background-repeat": " repeat-y",
+      "padding": " 20px 12px 0"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".hf-up-bottom-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa.webp",
+    "local": "static/mypers/img/theme003/gh-pa.webp",
+    "asset_width": 280,
+    "asset_height": 237,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa.webp)",
+      "background-position": " center bottom",
+      "height": " 20px",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".fu-lx-qt",
+    "url": "https://mypers.ru/img/theme003/gh-pa-line.webp",
+    "local": "static/mypers/img/theme003/gh-pa-line.webp",
+    "asset_width": 280,
+    "asset_height": 2,
+    "properties": {
+      "background-image": " url(../img/theme003/gh-pa-line.webp)",
+      "background-position": " center bottom",
+      "min-height": " 20px",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".lang-item",
+    "url": "https://mypers.ru/img/theme003/flags.png",
+    "local": null,
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "background-image": " url(../img/theme003/flags.png)",
+      "width": " 30px",
+      "height": " 20px",
+      "border": " 1px solid #b9b9b9",
+      "margin-right": " 5px",
+      "cursor": " pointer"
+    },
+    "status": "original URL unavailable"
+  },
+  {
+    "selector": ".mob-pa .ol",
+    "url": "https://mypers.ru/img/theme003/eo.webp",
+    "local": "static/mypers/img/theme003/eo.webp",
+    "asset_width": 320,
+    "asset_height": 646,
+    "properties": {
+      "background-image": " url(../img/theme003/eo.webp)",
+      "background-position": " center top",
+      "height": " 222px",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".mob-pa .vu",
+    "url": "https://mypers.ru/img/theme003/eo.webp",
+    "local": "static/mypers/img/theme003/eo.webp",
+    "asset_width": 320,
+    "asset_height": 646,
+    "properties": {
+      "background-image": " url(../img/theme003/eo.webp)",
+      "background-position": " center bottom",
+      "height": " 192px",
+      "width": " 100%"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".zta-qpf, .zta-xpn",
+    "url": "https://mypers.ru/img/theme003/slider-arrows.webp",
+    "local": "static/mypers/img/theme003/slider-arrows.webp",
+    "asset_width": 50,
+    "asset_height": 100,
+    "properties": {
+      "background": " url(../img/theme003/slider-arrows.webp)",
+      "width": " 25px",
+      "height": " 50px",
+      "cursor": " pointer",
+      "margin-top": " 50px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".avr-race, .avr-vxj",
+    "url": "https://mypers.ru/img/theme003/race-hii-min.webp",
+    "local": "static/mypers/img/theme003/race-hii-min.webp",
+    "asset_width": 320,
+    "asset_height": 20,
+    "properties": {
+      "background": " url(../img/theme003/race-hii-min.webp)",
+      "height": " 20px",
+      "width": " 20px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".psq",
+    "url": "https://mypers.ru/img/theme003/psq.webp",
+    "local": "static/mypers/img/theme003/psq.webp",
+    "asset_width": 296,
+    "asset_height": 250,
+    "properties": {
+      "background-image": " url(../img/theme003/psq.webp)",
+      "font-family": "Arial",
+      "width": " 296px",
+      "height": " 250px",
+      "position": " absolute",
+      "z-index": " 6",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".psq-dj-ap",
+    "url": "https://mypers.ru/img/theme003/psq-dj-ap.webp",
+    "local": "static/mypers/img/theme003/psq-dj-ap.webp",
+    "asset_width": 17,
+    "asset_height": 34,
+    "properties": {
+      "background-image": " url(../img/theme003/psq-dj-ap.webp)",
+      "height": " 17px",
+      "position": " absolute",
+      "right": " 17px",
+      "top": " 17px",
+      "width": " 17px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".kio",
+    "url": "https://mypers.ru/img/theme003/kio.webp",
+    "local": "static/mypers/img/theme003/kio.webp",
+    "asset_width": 300,
+    "asset_height": 200,
+    "properties": {
+      "background-image": " url(../img/theme003/kio.webp)",
+      "width": " 300px",
+      "height": " 200px",
+      "border-radius": " 12px",
+      "position": " absolute",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".kio-dj-ap",
+    "url": "https://mypers.ru/img/theme003/psq-dj-ap.webp",
+    "local": "static/mypers/img/theme003/psq-dj-ap.webp",
+    "asset_width": 17,
+    "asset_height": 34,
+    "properties": {
+      "background-image": " url(../img/theme003/psq-dj-ap.webp)",
+      "height": " 17px",
+      "position": " absolute",
+      "right": " 17px",
+      "top": " 17px",
+      "width": " 17px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".zb-pa",
+    "url": "https://mypers.ru/img/theme003/zb-tz.webp",
+    "local": "static/mypers/img/theme003/zb-tz.webp",
+    "asset_width": 319,
+    "asset_height": 457,
+    "properties": {
+      "background-image": " url(../img/theme003/zb-tz.webp)",
+      "position": " absolute",
+      "width": " 317px",
+      "height": " 456px",
+      "top": " 0",
+      "left": " 328px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".zb-pa-dj-ap",
+    "url": "https://mypers.ru/img/theme003/xe-dj-ap.webp",
+    "local": "static/mypers/img/theme003/xe-dj-ap.webp",
+    "asset_width": 14,
+    "asset_height": 15,
+    "properties": {
+      "background-image": " url(../img/theme003/xe-dj-ap.webp)",
+      "cursor": " pointer",
+      "height": " 14px",
+      "position": " absolute",
+      "right": " 12px",
+      "top": " 16px",
+      "width": " 14px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".possible-zb-body",
+    "url": "https://mypers.ru/img/theme003/tz-line.webp",
+    "local": "static/mypers/img/theme003/tz-line.webp",
+    "asset_width": 318,
+    "asset_height": 1,
+    "properties": {
+      "background-image": " url(../img/theme003/tz-line.webp)",
+      "background-position": " 0 center",
+      "padding": " 12px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".possible-zb-footer",
+    "url": "https://mypers.ru/img/theme003/tz.webp",
+    "local": "static/mypers/img/theme003/tz.webp",
+    "asset_width": 319,
+    "asset_height": 457,
+    "properties": {
+      "background-image": " url(../img/theme003/tz.webp)",
+      "background-position": " 0 bottom",
+      "height": " 30px",
+      "position": " relative"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".infant-pa",
+    "url": "https://mypers.ru/img/theme003/tz-infant.webp",
+    "local": "static/mypers/img/theme003/tz-infant.webp",
+    "asset_width": 319,
+    "asset_height": 457,
+    "properties": {
+      "background-image": " url(../img/theme003/tz-infant.webp)",
+      "position": " absolute",
+      "width": " 317px",
+      "height": " 456px",
+      "top": " 0",
+      "left": " 328px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".infant-pa-dj-ap",
+    "url": "https://mypers.ru/img/theme003/xe-dj-ap.webp",
+    "local": "static/mypers/img/theme003/xe-dj-ap.webp",
+    "asset_width": 14,
+    "asset_height": 15,
+    "properties": {
+      "background-image": " url(../img/theme003/xe-dj-ap.webp)",
+      "cursor": " pointer",
+      "height": " 14px",
+      "position": " absolute",
+      "right": " 10px",
+      "top": " 10px",
+      "width": " 14px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".infant-type-icon",
+    "url": "https://mypers.ru/img/theme003/infant-types.webp",
+    "local": "static/mypers/img/theme003/infant-types.webp",
+    "asset_width": 288,
+    "asset_height": 48,
+    "properties": {
+      "background-image": " url(../img/theme003/infant-types.webp)",
+      "background-size": " auto 44px",
+      "width": " 44px",
+      "height": " 44px",
+      "cursor": " pointer",
+      "filter": " contrast(.1)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".infant-level-item::before",
+    "url": "https://mypers.ru/img/theme003/infant-addon-border.webp",
+    "local": "static/mypers/img/theme003/infant-addon-border.webp",
+    "asset_width": 248,
+    "asset_height": 60,
+    "properties": {
+      "content": " \"\"",
+      "position": " absolute",
+      "left": " 0",
+      "top": " 0",
+      "width": " 100%",
+      "height": " 100%",
+      "border-radius": " 0 13px 13px 0",
+      "background-image": " url(../img/theme003/infant-addon-border.webp)",
+      "background-size": " auto 36px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".infant-level-item.infant-level-item-fn::before, .infant-level-item:hover::before",
+    "url": "https://mypers.ru/img/theme003/infant-addon-border.webp",
+    "local": "static/mypers/img/theme003/infant-addon-border.webp",
+    "asset_width": 248,
+    "asset_height": 60,
+    "properties": {
+      "background-image": " url(../img/theme003/infant-addon-border.webp), linear-gradient(90deg, transparent, rgb(112 174 208 / 40%) 40%)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".av-ap",
+    "url": "https://mypers.ru/img/theme003/av-action.webp",
+    "local": null,
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "background-image": " url(../img/theme003/av-action.webp)",
+      "cursor": " pointer",
+      "height": " 25px",
+      "margin": " 5px",
+      "width": " 25px"
+    },
+    "status": "original URL unavailable"
+  },
+  {
+    "selector": ".fu-edit-ap",
+    "url": "https://mypers.ru/img/theme003/fu-edit-ap.webp",
+    "local": null,
+    "asset_width": null,
+    "asset_height": null,
+    "properties": {
+      "background-image": " url(../img/theme003/fu-edit-ap.webp)",
+      "cursor": " pointer",
+      "height": " 24px",
+      "width": " 24px"
+    },
+    "status": "original URL unavailable"
+  },
+  {
+    "selector": ".log-fu-icon",
+    "url": "https://mypers.ru/img/skills/yo-min.webp",
+    "local": "static/mypers/img/skills/yo-min.webp",
+    "asset_width": 96,
+    "asset_height": 1021,
+    "properties": {
+      "background-image": " url(../img/skills/yo-min.webp)",
+      "width": " 16px",
+      "height": " 16px",
+      "margin-right": " 5px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".trash-icon",
+    "url": "https://mypers.ru/img/theme003/trash-icon.webp",
+    "local": "static/mypers/img/theme003/trash-icon.webp",
+    "asset_width": 15,
+    "asset_height": 15,
+    "properties": {
+      "background-image": " url(../img/theme003/trash-icon.webp)",
+      "width": " 16px",
+      "height": " 16px",
+      "cursor": " pointer"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".vov-pa",
+    "url": "https://mypers.ru/img/theme003/vov-pa.webp",
+    "local": "static/mypers/img/theme003/vov-pa.webp",
+    "asset_width": 630,
+    "asset_height": 403,
+    "properties": {
+      "width": " 542px",
+      "height": " 347px",
+      "background-image": " url(../img/theme003/vov-pa.webp)",
+      "background-size": " contain",
+      "z-index": " 6",
+      "color": " #efcd9f"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".vov-point-fn, .vov-point:hover",
+    "url": "https://mypers.ru/img/theme003/vov-point.webp",
+    "local": "static/mypers/img/theme003/vov-point.webp",
+    "asset_width": 33,
+    "asset_height": 66,
+    "properties": {
+      "background-image": " url(../img/theme003/vov-point.webp)"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".vov-center-hightlight",
+    "url": "https://mypers.ru/img/theme003/vov-center-hightlight.webp",
+    "local": "static/mypers/img/theme003/vov-center-hightlight.webp",
+    "asset_width": 135,
+    "asset_height": 121,
+    "properties": {
+      "display": " none",
+      "left": " 94px",
+      "top": " 107px",
+      "position": " absolute",
+      "background-image": " url(../img/theme003/vov-center-hightlight.webp)",
+      "width": " 112px",
+      "background-size": " contain",
+      "height": " 100px"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".vov-short-hightlight",
+    "url": "https://mypers.ru/img/theme003/vov-short-hightlight.webp",
+    "local": "static/mypers/img/theme003/vov-short-hightlight.webp",
+    "asset_width": 104,
+    "asset_height": 20,
+    "properties": {
+      "display": " none",
+      "position": " absolute",
+      "background-image": " url(../img/theme003/vov-short-hightlight.webp)",
+      "width": " 46px",
+      "background-size": " 90px 14px",
+      "height": " 15px",
+      "animation": " animatedShortHightlight 10s linear km",
+      "-moz-animation": " animatedShortHightlight 10s linear km",
+      "-webkit-animation": " animatedShortHightlight 10s linear km",
+      "-ms-animation": " animatedShortHightlight 10s linear km",
+      "-o-animation": " animatedShortHightlight 10s linear km"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".vov-wide-hightlight",
+    "url": "https://mypers.ru/img/theme003/vov-wide-hightlight.webp",
+    "local": "static/mypers/img/theme003/vov-wide-hightlight.webp",
+    "asset_width": 10,
+    "asset_height": 95,
+    "properties": {
+      "display": " none",
+      "position": " absolute",
+      "background-image": " url(../img/theme003/vov-wide-hightlight.webp)",
+      "width": " 10px",
+      "background-size": " 10px 68px",
+      "height": " 68px",
+      "animation": " animatedWideHightlight 10s linear km",
+      "-moz-animation": " animatedWideHightlight 10s linear km",
+      "-webkit-animation": " animatedWideHightlight 10s linear km",
+      "-ms-animation": " animatedWideHightlight 10s linear km",
+      "-o-animation": " animatedWideHightlight 10s linear km"
+    },
+    "status": "downloaded"
+  },
+  {
+    "selector": ".vov-triangle-hightlight",
+    "url": "https://mypers.ru/img/theme003/vov-triangle-hightlight.webp",
+    "local": "static/mypers/img/theme003/vov-triangle-hightlight.webp",
+    "asset_width": 80,
+    "asset_height": 114,
+    "properties": {
+      "display": " none",
+      "position": " absolute",
+      "background-image": " url(../img/theme003/vov-triangle-hightlight.webp)",
+      "width": " 62px",
+      "background-size": " contain",
+      "height": " 88px"
+    },
+    "status": "downloaded"
+  }
+]

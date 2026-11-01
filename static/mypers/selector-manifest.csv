@@ -1,0 +1,107 @@
+﻿selector,url,local,asset_width,asset_height,background_position,background_size,width,height,status
+@font-face,https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-regular.woff2,static/mypers/fonts/montserrat-v26-cyrillic_latin-regular.woff2,,,0% 0%,auto,auto,auto,downloaded
+@font-face,https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-italic.woff2,static/mypers/fonts/montserrat-v26-cyrillic_latin-italic.woff2,,,0% 0%,auto,auto,auto,downloaded
+@font-face,https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-600.woff2,static/mypers/fonts/montserrat-v26-cyrillic_latin-600.woff2,,,0% 0%,auto,auto,auto,downloaded
+@font-face,https://mypers.ru/fonts/montserrat-v26-cyrillic_latin-800.woff2,static/mypers/fonts/montserrat-v26-cyrillic_latin-800.woff2,,,0% 0%,auto,auto,auto,downloaded
+.fe-qt,https://mypers.ru/img/theme003/tz.webp,static/mypers/img/theme003/tz.webp,319,457, center top,auto,auto, 250px,downloaded
+.pn-hm,https://mypers.ru/img/theme003/pn-hm.webp,static/mypers/img/theme003/pn-hm.webp,582,212,0% 0%,auto, 292px, 213px,downloaded
+.qdy-qt,https://mypers.ru/img/theme003/tz.webp,static/mypers/img/theme003/tz.webp,319,457, bottom center,auto,auto,auto,downloaded
+.qdy-ol,https://mypers.ru/img/theme003/tz.webp,static/mypers/img/theme003/tz.webp,319,457, center 185px,auto,auto, 10px,downloaded
+.qdy-body,https://mypers.ru/img/theme003/tz-line.webp,static/mypers/img/theme003/tz-line.webp,318,1, -1px center,auto,auto,auto,downloaded
+.qdy-footer,https://mypers.ru/img/theme003/tz.webp,static/mypers/img/theme003/tz.webp,319,457, bottom center,auto,auto, 30px,downloaded
+.qdy-add-ap,https://mypers.ru/img/theme003/addBtn.webp,,,,0% 0%,auto,auto,auto,original URL unavailable
+.qdy-rem-ap,https://mypers.ru/img/theme003/remBtn.webp,static/mypers/img/theme003/remBtn.webp,19,19,0% 0%,auto,auto,auto,downloaded
+.qdy-ys,https://mypers.ru/img/theme003/item-cells.webp,static/mypers/img/theme003/item-cells.webp,192,192, -160px 0,auto, 32px, 32px,downloaded
+.search-qt,https://mypers.ru/img/theme003/xe.webp,static/mypers/img/theme003/xe.webp,260,307,0% 0%,auto, 100%, 50px,downloaded
+.uc-qt,https://mypers.ru/img/theme003/uc-qt.webp,static/mypers/img/theme003/uc-qt.webp,260,3,0% 0%,auto, 100%,auto,downloaded
+.qp-qt,https://mypers.ru/img/theme003/xe.webp,static/mypers/img/theme003/xe.webp,260,307, bottom center,auto, 100%, 217px,downloaded
+.xe-dj-ap:hover,https://mypers.ru/img/theme003/xe-dj-ap.webp,static/mypers/img/theme003/xe-dj-ap.webp,14,15,0% 0%,auto,auto,auto,downloaded
+.xe-search-po,https://mypers.ru/img/theme003/input-po.webp,static/mypers/img/theme003/input-po.webp,150,23,0% 0%,auto, 134px, 21px,downloaded
+.ap-size-3,https://mypers.ru/img/theme003/pa-ap-5.webp,static/mypers/img/theme003/pa-ap-5.webp,69,48,0% 0%,auto, 46px, 16px,downloaded
+.ap-size-4,https://mypers.ru/img/theme003/pa-ap-5.webp,static/mypers/img/theme003/pa-ap-5.webp,69,48,0% 0%,auto, 58px, 16px,downloaded
+.ap-size-5,https://mypers.ru/img/theme003/pa-ap-5.webp,static/mypers/img/theme003/pa-ap-5.webp,69,48,0% 0%,auto, 65px, 19px,downloaded
+.ap-size-6,https://mypers.ru/img/theme003/pa-ap-6.webp,static/mypers/img/theme003/pa-ap-6.webp,120,48,0% 0%,auto, 120px, 18px,downloaded
+.qp-tt-ap,https://mypers.ru/img/theme003/tt-ap.webp,static/mypers/img/theme003/tt-ap.webp,15,30,0% 0%,auto,auto, 15px,downloaded
+.qp-qq-ap,https://mypers.ru/img/theme003/qq-ap.webp,static/mypers/img/theme003/qq-ap.webp,15,30,0% 0%,auto,auto, 15px,downloaded
+.qp-scroll-body,https://mypers.ru/img/theme003/scroll-body.webp,static/mypers/img/theme003/scroll-body.webp,15,3,0% 0%,auto,auto, 167px,downloaded
+.qp-scroll-slider,https://mypers.ru/img/theme003/scroll-slider.webp,static/mypers/img/theme003/scroll-slider.webp,11,28,0% 0%,auto, 11px !important, 27px,downloaded
+.chakras-fn:hover,https://mypers.ru/img/theme003/chakras-fn.webp,static/mypers/img/theme003/chakras-fn.webp,234,190,0% 0%,auto,auto,auto,downloaded
+.ys,https://mypers.ru/img/theme003/item-cells.webp,static/mypers/img/theme003/item-cells.webp,192,192,0% 0%,auto, 32px, 32px,downloaded
+.by-man,https://mypers.ru/img/theme003/by-face.webp,,,,0% 0%,auto,auto,auto,original URL unavailable
+.gh-pa-gh-qt,https://mypers.ru/img/theme003/gh-pa.webp,static/mypers/img/theme003/gh-pa.webp,280,237,0% 0%,auto, 100%, 123px,downloaded
+.gh-pa-expand-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2,0% 0%,auto, 100%,auto,downloaded
+.gh-pa-ob-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2,0% 0%,auto, 100%,auto,downloaded
+.gh-pa-wu-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2,0% 0%,auto, 100%,auto,downloaded
+.gh-pa-base-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2,0% 0%,auto, 100%,auto,downloaded
+.gh-pa-vb-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2,0% 0%,auto, 100%,auto,downloaded
+.gh-pa-bottom-qt,https://mypers.ru/img/theme003/gh-pa.webp,static/mypers/img/theme003/gh-pa.webp,280,237, bottom center,auto, 100%, 20px,downloaded
+.gh-pa-select-item-label-container,https://mypers.ru/img/theme003/under-ax.webp,static/mypers/img/theme003/under-ax.webp,270,9, center bottom, contain, 130px,auto,downloaded
+.gh-pa-dj-ap:hover,https://mypers.ru/img/theme003/xe-dj-ap.webp,static/mypers/img/theme003/xe-dj-ap.webp,14,15,0% 0%,auto,auto,auto,downloaded
+.expand-ap,https://mypers.ru/img/theme003/expand-ap.webp,static/mypers/img/theme003/expand-ap.webp,70,54,0% 0%,auto, 68px, 18px,downloaded
+".gh-pa-under-ax, .yt-under-ax",https://mypers.ru/img/theme003/under-ax.webp,static/mypers/img/theme003/under-ax.webp,270,9, center bottom,auto, 90%, 5px,downloaded
+".gh-pa-crystal-del, .gh-pa-ob-del, .gh-pa-wdf-del",https://mypers.ru/img/theme003/remove-ap-2.webp,static/mypers/img/theme003/remove-ap-2.webp,17,17,0% 0%,auto, 17px, 17px,downloaded
+.gh-pa-ob-duplicate,https://mypers.ru/img/theme003/duplicate-ap.webp,static/mypers/img/theme003/duplicate-ap.webp,30,30,0% 0%,auto, 30px, 15px,downloaded
+.gh-pa-ob-row-container,https://mypers.ru/img/theme003/ob-row.webp,,,,0% 0%,auto, 237px, 34px,original URL unavailable
+.clear-ob-ap,https://mypers.ru/img/theme003/pa-ap-5.webp,static/mypers/img/theme003/pa-ap-5.webp,69,48,0% 0%,auto,auto,auto,downloaded
+.gh-arrows,https://mypers.ru/img/theme003/gh-arrows.webp,static/mypers/img/theme003/gh-arrows.webp,40,40,0% 0%,auto, 20px, 20px,downloaded
+.wu-bg-pa,https://mypers.ru/img/theme003/bg-pa.webp,static/mypers/img/theme003/bg-pa.webp,262,206,0% 0%, cover, 248px,auto,downloaded
+.yt-vu-qt,https://mypers.ru/img/theme003/yt-vu-qt.webp,static/mypers/img/theme003/yt-vu-qt.webp,280,280,0% 0%,auto, 280px, 280px,downloaded
+.yt-bottom-qt,https://mypers.ru/img/theme003/yt-bottom-qt2.webp,static/mypers/img/theme003/yt-bottom-qt2.webp,280,30,0% 0%,auto, 280px, 30px,downloaded
+.yt-elements-qt,https://mypers.ru/img/theme003/yt-elements-qt.webp,static/mypers/img/theme003/yt-elements-qt.webp,280,100,0% 0%,auto, 280px, 100px,downloaded
+.yt-expand-qt,https://mypers.ru/img/theme003/yt-expand-qt.webp,static/mypers/img/theme003/yt-expand-qt.webp,280,3,0% 0%,auto, 100%,auto,downloaded
+.yt-qx-qt,https://mypers.ru/img/theme003/yt-expand-qt.webp,static/mypers/img/theme003/yt-expand-qt.webp,280,3,0% 0%,auto, 100%, 50px,downloaded
+.yt-yo-qt,https://mypers.ru/img/theme003/yt-expand-qt.webp,static/mypers/img/theme003/yt-expand-qt.webp,280,3,0% 0%,auto, 100%,auto,downloaded
+.yt-dj-ap:hover,https://mypers.ru/img/theme003/xe-dj-ap.webp,static/mypers/img/theme003/xe-dj-ap.webp,14,15,0% 0%,auto,auto,auto,downloaded
+.pk-face,https://mypers.ru/img/theme003/pk-icons.webp,static/mypers/img/theme003/pk-icons.webp,220,220,0% 0%,auto, 60px, 58px,downloaded
+.pk-face-frame,https://mypers.ru/img/theme003/pk-face-frame.webp,static/mypers/img/theme003/pk-face-frame.webp,80,80,0% 0%, cover, 70px, 70px,downloaded
+.yt-del-ap,https://mypers.ru/img/theme003/remove-ap-2.webp,static/mypers/img/theme003/remove-ap-2.webp,17,17,0% 0%,auto, 17px, 17px,downloaded
+.hj,https://mypers.ru/img/theme003/hj.webp,static/mypers/img/theme003/hj.webp,423,280,0% 0%,auto, 423px, 280px,downloaded
+.hj-dj-ap:hover,https://mypers.ru/img/theme003/xe-dj-ap.webp,static/mypers/img/theme003/xe-dj-ap.webp,14,15,0% 0%,auto,auto,auto,downloaded
+.meridian-point,https://mypers.ru/img/theme003/meridian-point.webp,static/mypers/img/theme003/meridian-point.webp,24,48,0% 0%,auto, 24px, 24px,downloaded
+.meridian-center-point,https://mypers.ru/img/theme003/meridian-center-point.webp,static/mypers/img/theme003/meridian-center-point.webp,139,250,0% 0%,auto, 139px, 125px,downloaded
+.opponent-expand-ap,https://mypers.ru/img/theme003/opponent-expand-ap.webp,static/mypers/img/theme003/opponent-expand-ap.webp,450,382,0% 0%,auto, 200px, 169px,downloaded
+.mob-expand-ap,https://mypers.ru/img/theme003/mob-expand-ap.webp,static/mypers/img/theme003/mob-expand-ap.webp,150,193,0% 0%,auto, 117px, 150px,downloaded
+.info-ys,https://mypers.ru/img/theme003/race-hii.webp,static/mypers/img/theme003/race-hii.webp,512,64,0% 0%,auto, 32px, 32px,downloaded
+.eo-uwp,https://mypers.ru/img/theme003/uwp.webp,static/mypers/img/theme003/uwp.webp,20,25,0% 0%,auto, 20px, 30px,downloaded
+.eo-info-qt,https://mypers.ru/img/theme003/eo.webp,static/mypers/img/theme003/eo.webp,320,646,0% 0%,auto,auto, 258px,downloaded
+.eo-input-qt,https://mypers.ru/img/theme003/eo.webp,static/mypers/img/theme003/eo.webp,320,646,0% 0%,auto,auto, 357px,downloaded
+.info-edit:hover,https://mypers.ru/img/theme003/edit-pencil.webp,static/mypers/img/theme003/edit-pencil.webp,12,15,0% 0%,auto,auto,auto,downloaded
+.avatar-ys,https://mypers.ru/img/theme003/item-cells.webp,static/mypers/img/theme003/item-cells.webp,192,192, -160px -64px,auto, 32px, 32px,downloaded
+.avatars-qt,https://mypers.ru/img/theme003/tz-line.webp,static/mypers/img/theme003/tz-line.webp,318,1, -1px center,auto,auto, 85px,downloaded
+.pk-fu,https://mypers.ru/img/skills/pk-yo.webp,static/mypers/img/skills/pk-yo.webp,192,512,0% 0%,auto, 32px, 32px,downloaded
+.fu,https://mypers.ru/img/skills/skills.webp,static/mypers/img/skills/skills.webp,192,2144,0% 0%,auto, 32px, 32px,downloaded
+.fu-state,https://mypers.ru/img/skills/fu-states.webp,static/mypers/img/skills/fu-states.webp,96,256,0% 0%,auto, 16px, 16px,downloaded
+.fu-mi,https://mypers.ru/img/theme003/under-ax.webp,static/mypers/img/theme003/under-ax.webp,270,9, center bottom, contain, 180px,auto,downloaded
+.hf-up-head-qt,https://mypers.ru/img/theme003/gh-pa.webp,static/mypers/img/theme003/gh-pa.webp,280,237,0% 0%,auto, 100%, 115px,downloaded
+.hf-up-option-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2,0% 0%,auto, 100%,auto,downloaded
+.hf-up-us-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2,0% 0%,auto, 100%,auto,downloaded
+.hf-up-bottom-qt,https://mypers.ru/img/theme003/gh-pa.webp,static/mypers/img/theme003/gh-pa.webp,280,237, center bottom,auto, 100%, 20px,downloaded
+.fu-lx-qt,https://mypers.ru/img/theme003/gh-pa-line.webp,static/mypers/img/theme003/gh-pa-line.webp,280,2, center bottom,auto, 100%,auto,downloaded
+.lang-item,https://mypers.ru/img/theme003/flags.png,,,,0% 0%,auto, 30px, 20px,original URL unavailable
+.mob-pa .ol,https://mypers.ru/img/theme003/eo.webp,static/mypers/img/theme003/eo.webp,320,646, center top,auto, 100%, 222px,downloaded
+.mob-pa .vu,https://mypers.ru/img/theme003/eo.webp,static/mypers/img/theme003/eo.webp,320,646, center bottom,auto, 100%, 192px,downloaded
+".zta-qpf, .zta-xpn",https://mypers.ru/img/theme003/slider-arrows.webp,static/mypers/img/theme003/slider-arrows.webp,50,100,0% 0%,auto, 25px, 50px,downloaded
+".avr-race, .avr-vxj",https://mypers.ru/img/theme003/race-hii-min.webp,static/mypers/img/theme003/race-hii-min.webp,320,20,0% 0%,auto, 20px, 20px,downloaded
+.psq,https://mypers.ru/img/theme003/psq.webp,static/mypers/img/theme003/psq.webp,296,250,0% 0%,auto, 296px, 250px,downloaded
+.psq-dj-ap,https://mypers.ru/img/theme003/psq-dj-ap.webp,static/mypers/img/theme003/psq-dj-ap.webp,17,34,0% 0%,auto, 17px, 17px,downloaded
+.kio,https://mypers.ru/img/theme003/kio.webp,static/mypers/img/theme003/kio.webp,300,200,0% 0%,auto, 300px, 200px,downloaded
+.kio-dj-ap,https://mypers.ru/img/theme003/psq-dj-ap.webp,static/mypers/img/theme003/psq-dj-ap.webp,17,34,0% 0%,auto, 17px, 17px,downloaded
+.zb-pa,https://mypers.ru/img/theme003/zb-tz.webp,static/mypers/img/theme003/zb-tz.webp,319,457,0% 0%,auto, 317px, 456px,downloaded
+.zb-pa-dj-ap,https://mypers.ru/img/theme003/xe-dj-ap.webp,static/mypers/img/theme003/xe-dj-ap.webp,14,15,0% 0%,auto, 14px, 14px,downloaded
+.possible-zb-body,https://mypers.ru/img/theme003/tz-line.webp,static/mypers/img/theme003/tz-line.webp,318,1, 0 center,auto,auto,auto,downloaded
+.possible-zb-footer,https://mypers.ru/img/theme003/tz.webp,static/mypers/img/theme003/tz.webp,319,457, 0 bottom,auto,auto, 30px,downloaded
+.infant-pa,https://mypers.ru/img/theme003/tz-infant.webp,static/mypers/img/theme003/tz-infant.webp,319,457,0% 0%,auto, 317px, 456px,downloaded
+.infant-pa-dj-ap,https://mypers.ru/img/theme003/xe-dj-ap.webp,static/mypers/img/theme003/xe-dj-ap.webp,14,15,0% 0%,auto, 14px, 14px,downloaded
+.infant-type-icon,https://mypers.ru/img/theme003/infant-types.webp,static/mypers/img/theme003/infant-types.webp,288,48,0% 0%, auto 44px, 44px, 44px,downloaded
+.infant-level-item::before,https://mypers.ru/img/theme003/infant-addon-border.webp,static/mypers/img/theme003/infant-addon-border.webp,248,60,0% 0%, auto 36px, 100%, 100%,downloaded
+".infant-level-item.infant-level-item-fn::before, .infant-level-item:hover::before",https://mypers.ru/img/theme003/infant-addon-border.webp,static/mypers/img/theme003/infant-addon-border.webp,248,60,0% 0%,auto,auto,auto,downloaded
+.av-ap,https://mypers.ru/img/theme003/av-action.webp,,,,0% 0%,auto, 25px, 25px,original URL unavailable
+.fu-edit-ap,https://mypers.ru/img/theme003/fu-edit-ap.webp,,,,0% 0%,auto, 24px, 24px,original URL unavailable
+.log-fu-icon,https://mypers.ru/img/skills/yo-min.webp,static/mypers/img/skills/yo-min.webp,96,1021,0% 0%,auto, 16px, 16px,downloaded
+.trash-icon,https://mypers.ru/img/theme003/trash-icon.webp,static/mypers/img/theme003/trash-icon.webp,15,15,0% 0%,auto, 16px, 16px,downloaded
+.vov-pa,https://mypers.ru/img/theme003/vov-pa.webp,static/mypers/img/theme003/vov-pa.webp,630,403,0% 0%, contain, 542px, 347px,downloaded
+".vov-point-fn, .vov-point:hover",https://mypers.ru/img/theme003/vov-point.webp,static/mypers/img/theme003/vov-point.webp,33,66,0% 0%,auto,auto,auto,downloaded
+.vov-center-hightlight,https://mypers.ru/img/theme003/vov-center-hightlight.webp,static/mypers/img/theme003/vov-center-hightlight.webp,135,121,0% 0%, contain, 112px, 100px,downloaded
+.vov-short-hightlight,https://mypers.ru/img/theme003/vov-short-hightlight.webp,static/mypers/img/theme003/vov-short-hightlight.webp,104,20,0% 0%, 90px 14px, 46px, 15px,downloaded
+.vov-wide-hightlight,https://mypers.ru/img/theme003/vov-wide-hightlight.webp,static/mypers/img/theme003/vov-wide-hightlight.webp,10,95,0% 0%, 10px 68px, 10px, 68px,downloaded
+.vov-triangle-hightlight,https://mypers.ru/img/theme003/vov-triangle-hightlight.webp,static/mypers/img/theme003/vov-triangle-hightlight.webp,80,114,0% 0%, contain, 62px, 88px,downloaded

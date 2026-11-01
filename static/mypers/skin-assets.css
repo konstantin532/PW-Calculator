@@ -1,0 +1,124 @@
+/* Original public mypers.ru theme003 graphics; local assets, no external requests. */
+@font-face {font-family:Montserrat; font-style:normal; font-weight:400; font-display:swap; src:url('fonts/montserrat-v26-cyrillic_latin-regular.woff2') format('woff2');}
+@font-face {font-family:Montserrat; font-style:normal; font-weight:600; font-display:swap; src:url('fonts/montserrat-v26-cyrillic_latin-600.woff2') format('woff2');}
+@font-face {font-family:Montserrat; font-style:normal; font-weight:800; font-display:swap; src:url('fonts/montserrat-v26-cyrillic_latin-800.woff2') format('woff2');}
+@font-face {font-family:Montserrat; font-style:italic; font-weight:400; font-display:swap; src:url('fonts/montserrat-v26-cyrillic_latin-italic.woff2') format('woff2');}
+.ref-ys {background-image:url('img/theme003/item-cells.webp'); background-repeat:no-repeat; border:1px solid #9a916c; position:absolute; width:32px; height:32px;}
+.ref-ft-ys {top:66px; left:226px; background-position:0 0;}
+.ref-rv-ys {background-position:-32px 0; top:110px; left:226px;}
+.ref-tg-ys {background-position:-64px 0; top:157px; left:226px;}
+.ref-rx-ys {background-position:-96px 0; top:201px; left:226px;}
+.ref-xoa-ys {background-position:0 -160px; top:201px; left:185px;}
+.ref-ta-ys {background-position:-128px 0; top:157px; left:265px;}
+.ref-vx-ys {background-position:0 -32px; top:110px; left:20px;}
+.ref-wy-ys {background-position:-32px -32px; top:110px; left:58px;}
+.ref-mj-ys {background-position:-64px -32px; top:157px; left:20px;}
+.ref-st-ys {background-position:-96px -32px; top:157px; left:58px;}
+.ref-oq-left-ys {background-position:0 -64px; top:201px; left:20px;}
+.ref-oq-right-ys {background-position:-32px -64px; top:201px; left:58px;}
+.ref-it-ys {background-position:-128px -32px; top:201px; left:265px;}
+.ref-gv-ys {background-position:-160px -32px; top:110px; left:265px;}
+.ref-qn-ys {background-position:-64px -64px; top:110px; left:97px; width:30px;}
+.ref-pp-ys {background-position:-96px -64px; top:157px; left:97px;}
+.ref-pk-ys {background-position:-128px -64px; top:201px; left:97px;}
+.ref-ic-ys {background-position:-160px -96px; top:67px; left:97px;}
+.ref-cosmos-ys {background-position:-64px -160px; top:110px; left:185px;}
+.ref-qdy-ys {background-image:url('img/theme003/item-cells.webp'); background-position:-160px 0; border:1px solid #251d13; width:32px; height:32px;}
+.ref-skill, [class*='ref-skill-'] {background-image:url('img/skills/skills.webp'); background-repeat:no-repeat; width:32px; height:32px;}
+.ref-state, [class*='ref-state-'] {background-image:url('img/skills/fu-states.webp'); background-repeat:no-repeat; width:16px; height:16px;}
+.ref-race, [class*='ref-race-'], .ref-gender, [class*='ref-gender-'] {background-image:url('img/theme003/race-hii.webp'); background-repeat:no-repeat; width:32px; height:32px;}
+.ref-race-1 {background-position: 0 -32px}
+.ref-race-1.is-active, .ref-race-1:hover {background-position: 0 0}
+.ref-race-2 {background-position: -32px -32px}
+.ref-race-2.is-active, .ref-race-2:hover {background-position: -32px 0}
+.ref-race-3 {background-position: -128px -32px}
+.ref-race-3.is-active, .ref-race-3:hover {background-position: -128px 0}
+.ref-race-4 {background-position: -160px -32px}
+.ref-race-4.is-active, .ref-race-4:hover {background-position: -160px 0}
+.ref-race-5 {background-position: -64px -32px}
+.ref-race-5.is-active, .ref-race-5:hover {background-position: -64px 0}
+.ref-race-6 {background-position: -96px -32px}
+.ref-race-6.is-active, .ref-race-6:hover {background-position: -96px 0}
+.ref-race-7 {background-position: -192px -32px}
+.ref-race-7.is-active, .ref-race-7:hover {background-position: -192px 0}
+.ref-race-8 {background-position: -224px -32px}
+.ref-race-8.is-active, .ref-race-8:hover {background-position: -224px 0}
+.ref-race-9 {background-position: -256px -32px}
+.ref-race-9.is-active, .ref-race-9:hover {background-position: -256px 0}
+.ref-race-10 {background-position: -288px -32px}
+.ref-race-10.is-active, .ref-race-10:hover {background-position: -288px 0}
+.ref-race-11 {background-position: -384px -32px}
+.ref-race-11.is-active, .ref-race-11:hover {background-position: -384px 0}
+.ref-race-12 {background-position: -416px -32px}
+.ref-race-12.is-active, .ref-race-12:hover {background-position: -416px 0}
+.ref-race-13 {background-position: -448px -32px}
+.ref-race-13.is-active, .ref-race-13:hover {background-position: -448px 0}
+.ref-race-14 {background-position: -480px -32px}
+.ref-race-14.is-active, .ref-race-14:hover {background-position: -480px 0}
+.ref-gender-1 {background-position: -320px -32px}
+.ref-gender-1.is-active, .ref-gender-1:hover {background-position: -320px 0}
+.ref-gender-2 {background-position: -352px -32px}
+.ref-gender-2.is-active, .ref-gender-2:hover {background-position: -352px 0}
+/* Sprite IDs are source_record.an from the current panel API. */
+.ref-skill-1 {background-position: -32px 0;}
+.ref-skill-2 {background-position: -64px 0;}
+.ref-skill-3 {background-position: -96px 0;}
+.ref-skill-4 {background-position: -128px 0;}
+.ref-skill-7 {background-position: -32px -32px;}
+.ref-skill-10 {background-position: -128px -32px;}
+.ref-skill-11 {background-position: -160px -32px;}
+.ref-skill-12 {background-position: 0 -64px;}
+.ref-skill-13 {background-position: -32px -64px;}
+.ref-skill-14 {background-position: -64px -64px;}
+.ref-skill-15 {background-position: -96px -64px;}
+.ref-skill-16 {background-position: -128px -64px;}
+.ref-skill-24 {background-position: 0 -128px;}
+.ref-skill-26 {background-position: -64px -128px;}
+.ref-skill-29 {background-position: -160px -128px;}
+.ref-skill-30 {background-position: 0 -160px;}
+.ref-skill-31 {background-position: -32px -160px;}
+.ref-skill-32 {background-position: -64px -160px;}
+.ref-skill-33 {background-position: -96px -160px;}
+.ref-skill-39 {background-position: -96px -192px;}
+.ref-skill-40 {background-position: -128px -192px;}
+.ref-skill-42 {background-position: 0 -224px;}
+.ref-skill-43 {background-position: -32px -224px;}
+.ref-skill-44 {background-position: -64px -224px;}
+.ref-skill-68 {background-position: -64px -352px;}
+.ref-skill-83 {background-position: -160px -416px;}
+.ref-skill-84 {background-position: 0 -448px;}
+.ref-skill-87 {background-position: -96px -448px;}
+.ref-skill-88 {background-position: -128px -448px;}
+.ref-skill-114 {background-position: 0 -608px;}
+.ref-skill-218 {background-position: -64px -1152px;}
+.ref-skill-219 {background-position: -96px -1152px;}
+.ref-skill-237 {background-position: -96px -1248px;}
+.ref-skill-244 {background-position: -128px -1280px;}
+.ref-skill-271 {background-position: -32px -1440px;}
+.ref-skill-274 {background-position: -128px -1440px;}
+.ref-skill-278 {background-position: -64px -1472px;}
+.ref-skill-291 {background-position: -96px -1536px;}
+.ref-skill-294 {background-position: 0 -1568px;}
+.ref-skill-300 {background-position: 0 -1600px;}
+.ref-skill-305 {background-position: -160px -1600px;}
+.ref-state-1 {background-position: -16px 0;}
+.ref-state-2 {background-position: -32px 0;}
+.ref-state-3 {background-position: -48px 0;}
+.ref-state-4 {background-position: -64px 0;}
+.ref-state-5 {background-position: -80px 0;}
+.ref-state-6 {background-position: 0 -16px;}
+.ref-state-7 {background-position: -16px -16px;}
+.ref-state-8 {background-position: -32px -16px;}
+.ref-state-9 {background-position: -48px -16px;}
+.ref-state-10 {background-position: -64px -16px;}
+.ref-state-11 {background-position: -80px -16px;}
+.ref-state-12 {background-position: 0 -32px;}
+.ref-state-13 {background-position: -16px -32px;}
+.ref-state-14 {background-position: -32px -32px;}
+.ref-state-15 {background-position: -48px -32px;}
+.ref-state-16 {background-position: -64px -32px;}
+.ref-state-17 {background-position: -80px -32px;}
+.ref-state-18 {background-position: 0 -48px;}
+.ref-state-19 {background-position: -16px -48px;}
+.ref-state-20 {background-position: -32px -48px;}
+.ref-state-21 {background-position: -48px -48px;}

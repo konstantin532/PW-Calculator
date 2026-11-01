@@ -1,0 +1,116 @@
+[
+  {
+    "original_class": "ft-ys",
+    "local_class": "ref-ft-ys",
+    "meaning_ru": "Шлем",
+    "properties": "top: 66px;left: 226px"
+  },
+  {
+    "original_class": "rv-ys",
+    "local_class": "ref-rv-ys",
+    "meaning_ru": "Верх",
+    "properties": "background-position: -32px 0;top: 110px;left: 226px"
+  },
+  {
+    "original_class": "tg-ys",
+    "local_class": "ref-tg-ys",
+    "meaning_ru": "Штаны",
+    "properties": "background-position: -64px 0;top: 157px;left: 226px"
+  },
+  {
+    "original_class": "rx-ys",
+    "local_class": "ref-rx-ys",
+    "meaning_ru": "Обувь",
+    "properties": "background-position: -96px 0;top: 201px;left: 226px"
+  },
+  {
+    "original_class": "xoa-ys",
+    "local_class": "ref-xoa-ys",
+    "meaning_ru": "Звёздный диск",
+    "properties": "background-position: 0 -160px;top: 201px;left: 185px"
+  },
+  {
+    "original_class": "ta-ys",
+    "local_class": "ref-ta-ys",
+    "meaning_ru": "Оружие",
+    "properties": "background-position: -128px 0;top: 157px;left: 265px"
+  },
+  {
+    "original_class": "vx-ys",
+    "local_class": "ref-vx-ys",
+    "meaning_ru": "Ожерелье",
+    "properties": "background-position: 0 -32px;top: 110px;left: 20px"
+  },
+  {
+    "original_class": "wy-ys",
+    "local_class": "ref-wy-ys",
+    "meaning_ru": "Накидка",
+    "properties": "background-position: -32px -32px;top: 110px;left: 58px"
+  },
+  {
+    "original_class": "mj-ys",
+    "local_class": "ref-mj-ys",
+    "meaning_ru": "Браслеты",
+    "properties": "background-position: -64px -32px;top: 157px;left: 20px"
+  },
+  {
+    "original_class": "st-ys",
+    "local_class": "ref-st-ys",
+    "meaning_ru": "Пояс",
+    "properties": "background-position: -96px -32px;top: 157px;left: 58px"
+  },
+  {
+    "original_class": "oq-left-ys",
+    "local_class": "ref-oq-left-ys",
+    "meaning_ru": "кольцо",
+    "properties": "background-position: 0 -64px;top: 201px;left: 20px"
+  },
+  {
+    "original_class": "oq-right-ys",
+    "local_class": "ref-oq-right-ys",
+    "meaning_ru": "кольцо",
+    "properties": "background-position: -32px -64px;top: 201px;left: 58px"
+  },
+  {
+    "original_class": "it-ys",
+    "local_class": "ref-it-ys",
+    "meaning_ru": "боеприпасы",
+    "properties": "background-position: -128px -32px;top: 201px;left: 265px"
+  },
+  {
+    "original_class": "gv-ys",
+    "local_class": "ref-gv-ys",
+    "meaning_ru": "соски",
+    "properties": "background-position: -160px -32px;top: 110px;left: 265px"
+  },
+  {
+    "original_class": "qn-ys",
+    "local_class": "ref-qn-ys",
+    "meaning_ru": "книга",
+    "properties": "background-position: -64px -64px;top: 110px;left: 97px;width: 30px"
+  },
+  {
+    "original_class": "pp-ys",
+    "local_class": "ref-pp-ys",
+    "meaning_ru": "Сборник цитат",
+    "properties": "background-position: -96px -64px;top: 157px;left: 97px"
+  },
+  {
+    "original_class": "pk-ys",
+    "local_class": "ref-pk-ys",
+    "meaning_ru": "джинн",
+    "properties": "background-position: -128px -64px;top: 201px;left: 97px"
+  },
+  {
+    "original_class": "ic-ys",
+    "local_class": "ref-ic-ys",
+    "meaning_ru": "полет",
+    "properties": "background-position: -160px -96px;top: 67px;left: 97px"
+  },
+  {
+    "original_class": "cosmos-ys",
+    "local_class": "ref-cosmos-ys",
+    "meaning_ru": "Атлас неба и земли",
+    "properties": "background-position: -64px -160px;top: 110px;left: 185px"
+  }
+]

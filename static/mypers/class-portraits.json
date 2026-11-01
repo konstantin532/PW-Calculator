@@ -1,0 +1,181 @@
+[
+  {
+    "class": "warrior",
+    "original_code": "by",
+    "portrait_id": 1,
+    "portrait_pattern": "img/ns/default/1/{m|f}/face.png",
+    "icon_class": "race-ys-2",
+    "icon_position": "-32px -32px",
+    "icon_selected_position": "-32px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/1/m/face.png",
+      "static/mypers/img/ns/default/1/f/face.png"
+    ]
+  },
+  {
+    "class": "mage",
+    "original_code": "ga",
+    "portrait_id": 2,
+    "portrait_pattern": "img/ns/default/2/{m|f}/face.png",
+    "icon_class": "race-ys-1",
+    "icon_position": "0 -32px",
+    "icon_selected_position": "0 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/2/m/face.png",
+      "static/mypers/img/ns/default/2/f/face.png"
+    ]
+  },
+  {
+    "class": "barbarian",
+    "original_code": "ya",
+    "portrait_id": 3,
+    "portrait_pattern": "img/ns/default/3/{m|f}/face.png",
+    "icon_class": "race-ys-6",
+    "icon_position": "-96px -32px",
+    "icon_selected_position": "-96px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/3/m/face.png"
+    ]
+  },
+  {
+    "class": "venomancer",
+    "original_code": "rl",
+    "portrait_id": 4,
+    "portrait_pattern": "img/ns/default/4/{m|f}/face.png",
+    "icon_class": "race-ys-5",
+    "icon_position": "-64px -32px",
+    "icon_selected_position": "-64px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/4/f/face.png"
+    ]
+  },
+  {
+    "class": "cleric",
+    "original_code": "ij",
+    "portrait_id": 5,
+    "portrait_pattern": "img/ns/default/5/{m|f}/face.png",
+    "icon_class": "race-ys-3",
+    "icon_position": "-128px -32px",
+    "icon_selected_position": "-128px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/5/m/face.png",
+      "static/mypers/img/ns/default/5/f/face.png"
+    ]
+  },
+  {
+    "class": "archer",
+    "original_code": "js",
+    "portrait_id": 6,
+    "portrait_pattern": "img/ns/default/6/{m|f}/face.png",
+    "icon_class": "race-ys-4",
+    "icon_position": "-160px -32px",
+    "icon_selected_position": "-160px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/6/m/face.png",
+      "static/mypers/img/ns/default/6/f/face.png"
+    ]
+  },
+  {
+    "class": "assassin",
+    "original_code": "fx",
+    "portrait_id": 7,
+    "portrait_pattern": "img/ns/default/7/{m|f}/face.png",
+    "icon_class": "race-ys-8",
+    "icon_position": "-224px -32px",
+    "icon_selected_position": "-224px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/7/m/face.png",
+      "static/mypers/img/ns/default/7/f/face.png"
+    ]
+  },
+  {
+    "class": "psychic",
+    "original_code": "sj",
+    "portrait_id": 8,
+    "portrait_pattern": "img/ns/default/8/{m|f}/face.png",
+    "icon_class": "race-ys-7",
+    "icon_position": "-192px -32px",
+    "icon_selected_position": "-192px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/8/m/face.png",
+      "static/mypers/img/ns/default/8/f/face.png"
+    ]
+  },
+  {
+    "class": "seeker",
+    "original_code": "ej",
+    "portrait_id": 9,
+    "portrait_pattern": "img/ns/default/9/{m|f}/face.png",
+    "icon_class": "race-ys-10",
+    "icon_position": "-288px -32px",
+    "icon_selected_position": "-288px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/9/m/face.png",
+      "static/mypers/img/ns/default/9/f/face.png"
+    ]
+  },
+  {
+    "class": "mystic",
+    "original_code": "rg",
+    "portrait_id": 10,
+    "portrait_pattern": "img/ns/default/10/{m|f}/face.png",
+    "icon_class": "race-ys-9",
+    "icon_position": "-256px -32px",
+    "icon_selected_position": "-256px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/10/m/face.png",
+      "static/mypers/img/ns/default/10/f/face.png"
+    ]
+  },
+  {
+    "class": "duskblade",
+    "original_code": "uf",
+    "portrait_id": 11,
+    "portrait_pattern": "img/ns/default/11/{m|f}/face.png",
+    "icon_class": "race-ys-12",
+    "icon_position": "-416px -32px",
+    "icon_selected_position": "-416px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/11/m/face.png",
+      "static/mypers/img/ns/default/11/f/face.png"
+    ]
+  },
+  {
+    "class": "stormbringer",
+    "original_code": "he",
+    "portrait_id": 12,
+    "portrait_pattern": "img/ns/default/12/{m|f}/face.png",
+    "icon_class": "race-ys-11",
+    "icon_position": "-384px -32px",
+    "icon_selected_position": "-384px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/12/m/face.png",
+      "static/mypers/img/ns/default/12/f/face.png"
+    ]
+  },
+  {
+    "class": "paladin",
+    "original_code": "paladin",
+    "portrait_id": 13,
+    "portrait_pattern": "img/ns/default/13/{m|f}/face.png",
+    "icon_class": "race-ys-13",
+    "icon_position": "-448px -32px",
+    "icon_selected_position": "-448px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/13/m/face.png",
+      "static/mypers/img/ns/default/13/f/face.png"
+    ]
+  },
+  {
+    "class": "gunner",
+    "original_code": "gunner",
+    "portrait_id": 14,
+    "portrait_pattern": "img/ns/default/14/{m|f}/face.png",
+    "icon_class": "race-ys-14",
+    "icon_position": "-480px -32px",
+    "icon_selected_position": "-480px 0",
+    "available_local_portraits": [
+      "static/mypers/img/ns/default/14/f/face.png"
+    ]
+  }
+]
