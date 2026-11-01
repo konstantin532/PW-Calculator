@@ -1,5 +1,7 @@
 import json
 import os
+import re
+from pathlib import Path
 from unittest.mock import MagicMock
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pwcalc.settings")
@@ -46,6 +48,87 @@ def test_effects_api_lists_named_buffs_and_marks_them_unverified():
     assert {effect["class"] for effect in data["effects"]} <= {
         None, "by", "ga", "ya", "rl", "js", "ij", "rg", "ej", "sj", "fx",
     }
+
+
+def test_effects_api_class_panels_match_observed_original_order():
+    data = Client().get("/api/effects/", HTTP_HOST="127.0.0.1").json()
+    # Actual record IDs in gqSkillsIds[class].rk; the twelve excluded modern
+    # sprite families have been removed. These are not translation/sprite IDs.
+    assert data["panels"] == {
+        "by": [17, 18, 19, 20, 5, 1, 3, 4, 6, 7, 92, 41, 42],
+        "ga": [22, 23, 24, 5, 1, 3, 4, 6, 7, 92],
+        "ya": [11, 12, 8, 5, 1, 3, 4, 6, 7, 92],
+        "rl": [25, 21, 5, 1, 3, 4, 6, 7, 92],
+        "ij": [26, 5, 1, 3, 4, 6, 7, 92],
+        "js": [28, 164, 5, 1, 3, 4, 6, 7, 92],
+        "fx": [29, 5, 1, 3, 4, 6, 7, 92, 54],
+        "sj": [34, 35, 5, 1, 3, 4, 6, 7, 92],
+        "ej": [38, 5, 1, 3, 4, 6, 7, 39, 109, 92],
+        "rg": [161, 5, 1, 3, 4, 6, 7, 40, 92],
+    }
+    effects = {effect["id"]: effect for effect in data["effects"]}
+    assert [effects[skill_id]["sprite_id"] for skill_id in data["panels"]["ga"]] == [
+        5, 6, 7, 31, 42, 43, 44, 39, 40, 68,
+    ]
+    assert all(skill_id in effects for panel in data["panels"].values() for skill_id in panel)
+
+
+def test_effects_api_exposes_original_level_and_cultivation_metadata():
+    data = Client().get("/api/effects/", HTTP_HOST="127.0.0.1").json()
+    effect = next(effect for effect in data["effects"] if effect["id"] == 1)
+    assert effect["names"]["mi rs"] == "Светлый железный покров"
+    assert effect["names"]["mi je"] == "Темный железный покров"
+    assert "{tb}" in effect["descriptions"]["desc"]
+    record = effect["record"]
+    assert set(record) == {"an", "mi", "ue", "hi", "lm", "qc", "states", "addition_hf"}
+    assert record["hi"] == []
+    assert next(effect for effect in data["effects"] if effect["id"] == 41)["record"]["hi"] == [1]
+    assert record["an"] == 42
+    assert record["ue"] == 10
+    assert record["lm"]["tb"] == 15
+    assert record["qc"]["tb"] == {"0": 5, "11": {"rs": -5, "je": -5}}
+    assert record["addition_hf"] == {"11": {"rs": [], "je": []}}
+    assert record["states"]["0"] == [{"type": "tb", "an": 1}]
+    assert record["states"]["11"][0]["rs"]["val"] == 100
+
+
+def test_effects_api_labels_only_parameters_present_in_available_records():
+    data = Client().get("/api/effects/", HTTP_HOST="127.0.0.1").json()
+    labels = data["parameter_labels"]
+    assert {key: labels[key] for key in ("oj_for_fu", "ve", "mp", "tb")} == {
+        "oj_for_fu": "требуемый уровень", "ve": "дальность",
+        "mp": "маг. энергия", "tb": "повышает физ. защиту",
+    }
+    used = {key for effect in data["effects"] for field in ("lm", "qc") for key in effect["record"][field]}
+    assert set(labels) <= used
+    assert all(isinstance(label, str) for label in labels.values())
+
+
+def test_effect_sprites_and_cultivation_variants_have_local_css_positions():
+    data = Client().get("/api/effects/", HTTP_HOST="127.0.0.1").json()
+    stylesheet = (Path(__file__).resolve().parents[1] / "static/mypers/skin-assets.css").read_text(encoding="utf-8")
+    available = {int(sprite_id) for sprite_id in re.findall(r"\.ref-skill-(\d+)\s*\{", stylesheet)}
+    needed = {effect["sprite_id"] for effect in data["effects"]}
+    for effect in data["effects"]:
+        for variants in effect["record"].get("addition_hf", {}).values():
+            needed.update(
+                variant["an"] for variant in variants.values() if isinstance(variant, dict) and "an" in variant
+            )
+    assert needed <= available
+    state_icons = {int(sprite_id) for sprite_id in re.findall(r"\.ref-state-(\d+)\s*\{", stylesheet)}
+
+    def check_states(value):
+        if isinstance(value, dict):
+            if value.get("an"):
+                assert value["an"] in state_icons
+            for child in value.values():
+                check_states(child)
+        elif isinstance(value, list):
+            for child in value:
+                check_states(child)
+
+    for effect in data["effects"]:
+        check_states(effect["record"]["states"])
 
 
 def test_effects_filter_unavailable_classes_in_default_and_expanded_panels(tmp_path, monkeypatch):

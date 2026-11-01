@@ -47,6 +47,19 @@ body { font:12px/1 Montserrat,Arial,sans-serif; background:#0b0b10; }
 .identity__meta div { grid-template-columns:77px 1fr; margin:0; }
 .identity-icons { position:absolute; top:102px; left:158px; display:flex; gap:32px; }
 .identity-icons button { width:32px; height:32px; padding:0; border:0; background-color:transparent; }
+.character-pane { position:absolute; z-index:4; color:#ffcb4a; font:12px/1.3 Montserrat,Arial,sans-serif; }
+.character-class-panel { top:53px; left:143px; width:146px; }
+.character-class-panel #char-class { display:grid; grid-template-columns:repeat(4,32px); gap:8px 6px; width:146px; height:auto; padding:0; border:0; background:none; }
+.character-pane button { position:relative; flex:none; width:32px; height:32px; padding:0; border:0; background-color:transparent; }
+.character-gender-panel { top:100px; left:180px; width:104px; }
+#char-gender { display:flex; justify-content:center; gap:20px; }
+.character-title-panel { top:53px; left:140px; width:160px; }
+.character-title-panel h3 { margin:0 0 4px; font:600 11px/14px Montserrat,Arial,sans-serif; }
+#title-fields label { display:grid; grid-template-columns:115px 40px; align-items:center; height:15px; font:11px/14px Montserrat,Arial,sans-serif; }
+#title-fields input { width:40px; height:14px; padding:0; border:0; border-bottom:1px solid white; border-radius:0; background:none; color:#fff; font:12px/12px Arial,sans-serif; appearance:textfield; }
+#title-fields input::-webkit-inner-spin-button { appearance:none; }
+.character [data-tooltip] { position:relative; }
+.character [data-tooltip]:hover:after,.character [data-tooltip]:focus-visible:after { content:attr(data-tooltip); position:absolute; top:33px; left:0; z-index:20; width:max-content; max-width:180px; padding:4px 7px; border:1px solid #c9c2aa; border-radius:3px; background:#050508; color:white; font:12px/15px Arial,sans-serif; pointer-events:none; }
 .identity__fields { display:block; margin:0; }
 .identity__fields .class-field { position:absolute; top:118px; left:12px; display:block; }
 #char-class { padding:0; width:101px; height:21px; min-height:0; background:#fff; color:#000; border:1px solid #bfbfbf; font:12px Arial,sans-serif; }
