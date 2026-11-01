@@ -11,13 +11,26 @@ from tools import serve
 django.setup()
 
 
-def test_home_page_explains_preview_status():
+def test_home_page_has_calculator_layout():
     response = Client().get("/", HTTP_HOST="127.0.0.1")
     assert response.status_code == 200
     text = response.content.decode()
     assert 'lang="ru"' in text
-    assert "не готовый калькулятор" in text
-    assert "Запустить сайт.bat" in text
+    for element_id in ("buff-list", "btn-new", "char-class", "stats-body", "paperdoll", "bag"):
+        assert f'id="{element_id}"' in text
+    assert "/static/js/app.js" in text
+
+
+def test_effects_api_lists_named_buffs_and_marks_them_unverified():
+    response = Client().get("/api/effects/", HTTP_HOST="127.0.0.1")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["verification"] == "unverified_for_comeback"
+    assert data["effects"][0]["name"] == "Железный покров"
+    assert "{" not in data["effects"][0]["description"]
+    assert {effect["kind"] for effect in data["effects"]} == {"buff", "debuff"}
+    ids = [effect["id"] for effect in data["effects"]]
+    assert len(ids) == len(set(ids))
 
 
 def test_local_server_rejects_other_hosts():

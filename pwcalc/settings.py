@@ -7,7 +7,9 @@ SECRET_KEY = "local-preview-only-not-for-production"
 DEBUG = False
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "[::1]"]
 ROOT_URLCONF = "pwcalc.urls"
-INSTALLED_APPS = []
+INSTALLED_APPS = ["django.contrib.staticfiles"]
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",

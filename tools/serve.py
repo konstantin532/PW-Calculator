@@ -5,6 +5,7 @@ import os
 import webbrowser
 from wsgiref.simple_server import make_server
 
+from django.contrib.staticfiles.handlers import StaticFilesHandler
 from django.core.wsgi import get_wsgi_application
 
 
@@ -14,7 +15,8 @@ def main() -> int:
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pwcalc.settings")
-    application = get_wsgi_application()
+    # Локальный запуск без DEBUG: статику отдаёт обработчик staticfiles, без отдельного веб-сервера.
+    application = StaticFilesHandler(get_wsgi_application())
     try:
         server = make_server("127.0.0.1", args.port, application)
     except OSError as exc:

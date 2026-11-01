@@ -1,78 +1,78 @@
-<!doctype html>
+{% load static %}<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
-  <title>Калькулятор персонажа · Comeback PW</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --background: #161714;
-      --panel: #20211c;
-      --text: #eee8d9;
-      --muted: #bdb8a7;
-      --gold: #d7b674;
-      --border: #71664b;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--background);
-      color: var(--text);
-      font: 1.0625rem/1.6 Georgia, "Times New Roman", serif;
-    }
-    main { max-width: 64rem; margin: 0 auto; padding: 2rem 1.25rem; }
-    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
-    .edition { color: var(--gold); margin: 0; letter-spacing: .08em; }
-    h1 { font-size: clamp(1.75rem, 5vw, 2.75rem); line-height: 1.15; margin: .75rem 0; }
-    h2 { color: var(--gold); font-size: 1.375rem; margin: 0 0 .75rem; }
-    p { max-width: 64ch; margin: .75rem 0; }
-    .notice { border-left: 3px solid var(--gold); padding-left: 1rem; color: var(--muted); }
-    .workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
-    section { background: var(--panel); border: 1px solid var(--border); padding: 1.25rem; }
-    ul { padding-left: 1.25rem; margin: 0; }
-    li + li { margin-top: .5rem; }
-    footer { color: var(--muted); border-top: 1px solid var(--border); padding-top: .75rem; }
-    code { overflow-wrap: anywhere; }
-    @media (max-width: 38rem) {
-      .workspace { grid-template-columns: 1fr; }
-      main { padding-top: 1.25rem; }
-    }
-  </style>
+  <title>Калькулятор персонажа · Comeback PW 1.4.6</title>
+  <link rel="stylesheet" href="{% static 'css/calc.css' %}">
+  <script type="module" src="{% static 'js/app.js' %}"></script>
 </head>
 <body>
-  <main>
-    <header>
-      <p class="edition">COMEBACK PW · 1.4.6</p>
-      <h1>Калькулятор персонажа</h1>
-      <p>Локальный сайт запущен.</p>
-    </header>
-    <p class="notice">Это стартовая страница, не готовый калькулятор.
-      Расчёт характеристик, подбор экипировки и сохранение персонажа ещё не подключены.</p>
-    <div class="workspace">
-      <section aria-labelledby="character-title">
-        <h2 id="character-title">Персонаж</h2>
-        <ul>
-          <li>Следующий этап: выбор класса и уровня.</li>
-          <li>Распределение силы, ловкости, интеллекта и выносливости.</li>
-          <li>Расчёт показателей с проверкой по игровым скриншотам.</li>
-        </ul>
-      </section>
-      <section aria-labelledby="equipment-title">
-        <h2 id="equipment-title">Экипировка и эффекты</h2>
-        <ul>
-          <li>Предметы и камни: база Comeback PW 1.4.6.</li>
-          <li>Каталог умений подготовлен; соответствие серверу ещё проверяется.</li>
-          <li>Здесь появятся слоты экипировки и сумка, сверху панель баффов.</li>
-        </ul>
-      </section>
+<div class="calc">
+  <section class="effects" aria-labelledby="buffs-title">
+    <div class="effects__head">
+      <h2 id="buffs-title">Баффы</h2>
+      <label class="check"><input type="checkbox" id="buffs-all"> все</label>
     </div>
-    <footer>
-      <p>Для повторного запуска откройте <code>Запустить сайт.bat</code> в папке проекта.
-        Пока пользуетесь сайтом, оставляйте окно запуска открытым.
-        Для остановки закройте его или нажмите <code>Ctrl+C</code>.</p>
-    </footer>
-  </main>
+    <ul class="effects__grid" id="buff-list" aria-live="polite"><li class="muted">Загрузка…</li></ul>
+    <div class="effects__head">
+      <h2 id="debuffs-title">Дебаффы</h2>
+      <label class="check"><input type="checkbox" id="debuffs-all"> все</label>
+    </div>
+    <ul class="effects__grid" id="debuff-list"></ul>
+    <p class="note">Отмеченные баффы пока не меняют характеристики: их эффекты подключаются следующим этапом.</p>
+  </section>
+
+  <nav class="toolbar" aria-label="Персонаж">
+    <button type="button" id="btn-new">Создать нового персонажа</button>
+    <button type="button" disabled title="Появится вместе с сохранением по ссылке">Загрузить</button>
+    <button type="button" class="accent" disabled title="Появится вместе с сохранением по ссылке">Сохранить</button>
+  </nav>
+
+  <div class="board">
+    <section class="window character" aria-labelledby="char-name-label">
+      <header class="window__title">
+        <label id="char-name-label" class="visually-hidden" for="char-name">Имя персонажа</label>
+        <input id="char-name" value="Без имени" maxlength="24" autocomplete="off">
+      </header>
+      <div class="identity">
+        <div class="emblem" id="emblem" aria-hidden="true">В</div>
+        <div class="identity__fields">
+          <label>Класс
+            <select id="char-class"></select>
+          </label>
+          <label>Уровень
+            <input id="char-level" type="number" min="1" max="105" value="105" inputmode="numeric">
+          </label>
+        </div>
+      </div>
+      <p class="pools"><span>ЖС: <b id="out-hp">0</b></span><span>МЭ: <b id="out-mp">0</b></span></p>
+
+      <fieldset class="attrs">
+        <legend>Характеристики · свободно <b id="out-free">0</b></legend>
+        <div class="attrs__grid" id="attr-list"></div>
+        <button type="button" id="btn-reset" class="small">Сбросить очки</button>
+      </fieldset>
+      <p class="note" id="char-message" role="status"></p>
+
+      <table class="stats" aria-label="Боевые показатели">
+        <tbody id="stats-body"></tbody>
+      </table>
+    </section>
+
+    <section class="window doll" aria-labelledby="doll-title">
+      <header class="window__title"><h2 id="doll-title">Экипировка</h2></header>
+      <div class="paperdoll" id="paperdoll">
+        <div class="figure" aria-hidden="true">
+          <svg viewBox="0 0 100 200" role="presentation"><path d="M50 8a15 15 0 1 1 0 30a15 15 0 1 1 0-30zM30 44h40l14 52-9 3-11-36v52l6 76H58l-8-62-8 62H30l6-76V63L25 99l-9-3z"/></svg>
+        </div>
+      </div>
+      <p class="note" id="doll-message" role="status">База предметов Comeback ещё собирается; после неё слоты станут кликабельными с выбором вещей.</p>
+      <h3 class="bag-title">Сумка</h3>
+      <div class="bag" id="bag" aria-label="Сумка, 32 ячейки"></div>
+    </section>
+  </div>
+</div>
 </body>
 </html>
