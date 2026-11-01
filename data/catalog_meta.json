@@ -1,0 +1,128 @@
+{
+  "version": "Comeback PW 1.4.6",
+  "verification": "unverified_for_comeback",
+  "snapshot_at": "2026-11-01T14:46:43.095813+00:00",
+  "source": {
+    "database": "https://comeback.pw/db/146",
+    "method": "offline_cache_union_with_bounded_supplement",
+    "live_database_requests": 32
+  },
+  "coverage": {
+    "items": 1888,
+    "stones": 6,
+    "cached_pages": 2044,
+    "cached_item_pages": 1894,
+    "cached_listing_pages": 150,
+    "listed_item_ids": 2222,
+    "listed_items_with_cached_pages": 1894,
+    "prior_records": 1560,
+    "by_section": {
+      "decoration": 18,
+      "armor": 1855,
+      "weapon": 15,
+      "stones": 6
+    },
+    "by_slot": {
+      "necklace": 6,
+      "belt": 6,
+      "ring": 6,
+      "chest": 512,
+      "legs": 493,
+      "boots": 461,
+      "helmet": 223,
+      "wrists": 155,
+      "cape": 11,
+      "weapon": 15
+    },
+    "icons_available": 1772,
+    "icons_missing": 122,
+    "complete": false
+  },
+  "skipped_pages": {},
+  "icon_downloads": {
+    "downloaded": 97,
+    "failed": 17,
+    "budget_exhausted": 26
+  },
+  "limitations": {
+    "catalog": "Snapshot of locally cached pages and prior catalogs; not the complete server database.",
+    "engine_support": "not_assessed_by_importer",
+    "unrecognized_spec_labels": {
+      "Требуемая репутация": 486
+    },
+    "raw_addon_entries": 21630,
+    "stones_with_unparsed_effects": [],
+    "ambiguous_attack_speed_items": [
+      42047,
+      29719
+    ]
+  },
+  "supplement": {
+    "at": "2026-11-01T14:46:43.095305+00:00",
+    "budget_seconds": 90.0,
+    "max_items_per_slot": 15,
+    "list_urls": [
+      "https://comeback.pw/db/146/weapon/1/0",
+      "https://comeback.pw/db/146/armor/369/0",
+      "https://comeback.pw/db/146/armor/346/0"
+    ],
+    "listed_by_slot": {
+      "weapon": 15,
+      "cape": 15,
+      "wrists": 15
+    },
+    "requested_item_ids": [
+      36,
+      47,
+      371,
+      372,
+      374,
+      376,
+      2097,
+      4508,
+      4696,
+      4712,
+      4984,
+      4985,
+      4986,
+      4987,
+      5106,
+      5107,
+      5108,
+      8464,
+      8535,
+      8536,
+      8537,
+      11215,
+      12531,
+      27146,
+      28793,
+      28794,
+      28843,
+      29719,
+      31713,
+      35360,
+      35361,
+      36116,
+      40013,
+      40014,
+      40015,
+      40016,
+      40017,
+      40018,
+      40019,
+      40020,
+      40021,
+      40022,
+      40033,
+      40034,
+      42047
+    ],
+    "counts": {
+      "live_requests": 32,
+      "pages_downloaded": 28,
+      "cached_pages_used": 16,
+      "network_failures": 4
+    }
+  }
+}
