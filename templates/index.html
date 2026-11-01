@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Калькулятор персонажа · Comeback PW</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #161714;
+      --panel: #20211c;
+      --text: #eee8d9;
+      --muted: #bdb8a7;
+      --gold: #d7b674;
+      --border: #71664b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font: 1.0625rem/1.6 Georgia, "Times New Roman", serif;
+    }
+    main { max-width: 64rem; margin: 0 auto; padding: 2rem 1.25rem; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+    .edition { color: var(--gold); margin: 0; letter-spacing: .08em; }
+    h1 { font-size: clamp(1.75rem, 5vw, 2.75rem); line-height: 1.15; margin: .75rem 0; }
+    h2 { color: var(--gold); font-size: 1.375rem; margin: 0 0 .75rem; }
+    p { max-width: 64ch; margin: .75rem 0; }
+    .notice { border-left: 3px solid var(--gold); padding-left: 1rem; color: var(--muted); }
+    .workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+    section { background: var(--panel); border: 1px solid var(--border); padding: 1.25rem; }
+    ul { padding-left: 1.25rem; margin: 0; }
+    li + li { margin-top: .5rem; }
+    footer { color: var(--muted); border-top: 1px solid var(--border); padding-top: .75rem; }
+    code { overflow-wrap: anywhere; }
+    @media (max-width: 38rem) {
+      .workspace { grid-template-columns: 1fr; }
+      main { padding-top: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="edition">COMEBACK PW · 1.4.6</p>
+      <h1>Калькулятор персонажа</h1>
+      <p>Локальный сайт запущен.</p>
+    </header>
+    <p class="notice">Это стартовая страница, не готовый калькулятор.
+      Расчёт характеристик, подбор экипировки и сохранение персонажа ещё не подключены.</p>
+    <div class="workspace">
+      <section aria-labelledby="character-title">
+        <h2 id="character-title">Персонаж</h2>
+        <ul>
+          <li>Следующий этап: выбор класса и уровня.</li>
+          <li>Распределение силы, ловкости, интеллекта и выносливости.</li>
+          <li>Расчёт показателей с проверкой по игровым скриншотам.</li>
+        </ul>
+      </section>
+      <section aria-labelledby="equipment-title">
+        <h2 id="equipment-title">Экипировка и эффекты</h2>
+        <ul>
+          <li>Предметы и камни: база Comeback PW 1.4.6.</li>
+          <li>Каталог умений подготовлен; соответствие серверу ещё проверяется.</li>
+          <li>Здесь появятся слоты экипировки и сумка, сверху панель баффов.</li>
+        </ul>
+      </section>
+    </div>
+    <footer>
+      <p>Для повторного запуска откройте <code>Запустить сайт.bat</code> в папке проекта.
+        Пока пользуетесь сайтом, оставляйте окно запуска открытым.
+        Для остановки закройте его или нажмите <code>Ctrl+C</code>.</p>
+    </footer>
+  </main>
+</body>
+</html>
