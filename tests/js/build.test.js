@@ -131,3 +131,32 @@ test("общие UI-лимиты не обещают неизвестные бо
   assert.equal(maxSockets({ slot: "chest" }, "chest"), 0);
   assert.equal(maxSockets({ slot: "chest", sockets: { craft: { 0: 100, 2: 5, 4: 0, 9: 100 }, drop: { 3: 0 } } }, "chest"), 2);
 });
+
+test("числовая репутация сохраняется в сборке v1 и восстанавливается", () => {
+  const json = serializeBuild({ ...state, reputation: 300000 });
+  const compact = JSON.parse(json);
+  assert.equal(compact.version, 1);
+  assert.equal(compact.reputation, 300000);
+  assert.equal(parseBuild(json, [ring], [stone]).reputation, 300000);
+});
+
+test("старая сборка без репутации получает 0 и сохраняет выбранную недоступную вещь", () => {
+  const requiredRing = { ...ring, req: { str: 50 }, specs_extra: { "Требуемая репутация": "200 000" } };
+  const compact = JSON.parse(serializeBuild(state));
+  delete compact.reputation;
+  const loaded = parseBuild(JSON.stringify(compact), [requiredRing], [stone]);
+  assert.equal(loaded.reputation, 0);
+  assert.equal(loaded.equipment.ring1.item, requiredRing);
+  assert.equal(JSON.parse(serializeBuild(loaded)).reputation, 0);
+});
+
+test("импорт и сохранение отклоняют буквы, числовые строки и неверные числа репутации", () => {
+  const compact = JSON.parse(serializeBuild(state));
+  for (const reputation of ["300000", "abc", "1e6", "１２３", null, true, -1, 0.5, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.throws(() => parseBuild(JSON.stringify({ ...compact, reputation }), [ring], [stone]), /репутац/i);
+    assert.throws(() => serializeBuild({ ...state, reputation }), /репутац/i);
+  }
+  for (const reputation of [NaN, Infinity, -Infinity]) {
+    assert.throws(() => serializeBuild({ ...state, reputation }), /репутац/i);
+  }
+});

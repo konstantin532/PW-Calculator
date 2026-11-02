@@ -1,4 +1,6 @@
 // Каталог хранит исходные значения Comeback. Неизвестные подписи не угадываем.
+import { getRequiredReputation } from "./reputation.js";
+
 export const SLOTS = [
   { id: "helmet", name: "Шлем", side: "left" },
   { id: "necklace", name: "Ожерелье", side: "left" },
@@ -238,7 +240,10 @@ export function getItemBonuses(entry, slotId) {
     const effect = stone.effects[target];
     addLabeled(effect.stat, effect.value, effect.percent === true, effect.raw ?? effect.stat);
   }
-  for (const label of Object.keys(item.specs_extra ?? {})) warn(`не учтена характеристика «${label}»`);
+  for (const label of Object.keys(item.specs_extra ?? {})) {
+    if (label === "Требуемая репутация" && getRequiredReputation(item) !== null) continue;
+    warn(`не учтена характеристика «${label}»`);
+  }
   if (Array.isArray(item.set) && item.set.length) warn("бонус комплекта не рассчитан");
   return { flat, ranges, atkSpeed, warnings };
 }

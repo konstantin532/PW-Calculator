@@ -84,7 +84,7 @@ test("неподдержанные эффекты и требования объ
   assert.equal(s.atkSpeed, 1.25);
   assert.ok(s.gearWarnings.some((w) => /уровень/i.test(w)));
   assert.ok(s.gearWarnings.some((w) => /класс/i.test(w)));
-  assert.ok(s.gearWarnings.some((w) => /str/.test(w)));
+  assert.ok(s.gearWarnings.some((w) => /Сила/.test(w)));
   assert.ok(s.gearWarnings.some((w) => /unknown_power/.test(w)));
   assert.ok(s.gearWarnings.some((w) => /Удача/.test(w)));
   assert.ok(s.gearWarnings.some((w) => /эффект/i.test(w)));

@@ -67,7 +67,7 @@ function defaultGroup(cls) {
 }
 
 /** Floating equipment windows own presentation; the current build stays in app.js. */
-export function createEquipmentUI({ getState, getCatalog, isReady, onEquip, onUnequip, onMessage = () => {}, renderIcon }) {
+export function createEquipmentUI({ getState, getCatalog, isReady, getEligibility, onEquip, onUnequip, onMessage = () => {}, renderIcon }) {
   let opened = null, popup = null, gemPopup = null, tooltip = null, hoverTarget = null;
   let position = null, gemPosition = null, gemIndex = null, activeTab = null, anchor = null;
   let query = "", selectedTypes = new Set(), currentPage = 0, gemQuery = "", gemPage = 0;
@@ -80,8 +80,35 @@ export function createEquipmentUI({ getState, getCatalog, isReady, onEquip, onUn
     errorMessage = error instanceof Error ? error.message : String(error);
     onMessage(errorMessage, true);
     const output = popup?.querySelector(".equipment-feedback");
-    if (output) { output.textContent = errorMessage; output.hidden = false; }
+    if (output) { output.textContent = errorMessage; output.hidden = false; clampWindow(popup, position); }
   };
+
+  function eligibility(choice, slot) {
+    try {
+      const result = getEligibility?.(slot, choice);
+      if (result && typeof result.usable === "boolean") return result;
+      return { usable: false, reasons: ["Не удалось проверить требования предмета."], requirements: [] };
+    } catch (error) {
+      return { usable: false, reasons: [error instanceof Error ? error.message : "Не удалось проверить требования предмета."], requirements: [] };
+    }
+  }
+
+  function requirementValue(value, key) {
+    if (key === "class") {
+      const names = (Array.isArray(value) ? value : String(value ?? "").split(/[,/]/u))
+        .map((name) => CLASS_BY_ID[name] ?? String(name).trim()).filter((name) => CLASS_NAMES.has(name));
+      return names.join(", ") || "Не подтверждён";
+    }
+    return typeof value === "number" && Number.isFinite(value) ? fmt(value) : text(value ?? "Не подтверждено");
+  }
+
+  function requirementFields(status) {
+    return (status.requirements ?? []).map((requirement) => {
+      const current = requirement.met ? "" : ` (есть ${requirementValue(requirement.current, requirement.key)})`;
+      return field(text(requirement.label), `${requirementValue(requirement.required, requirement.key)}${current}`,
+        requirement.met ? "equipment-tooltip__requirement" : "equipment-tooltip__requirement equipment-tooltip__requirement--unmet");
+    });
+  }
 
   function hideTooltip() {
     tooltip?.remove(); tooltip = null; hoverTarget = null;
@@ -251,11 +278,12 @@ export function createEquipmentUI({ getState, getCatalog, isReady, onEquip, onUn
     ]);
   }
 
-  function itemTooltip(choice, slot) {
+  function itemTooltip(choice, slot, status) {
     const item = choice.item;
     const title = node("strong", { className: "equipment-tooltip__title", textContent: `${displayName(item)}${choice.stones?.length ? ` (ячеек: ${choice.stones.length})` : ""}${choice.refine ? ` +${choice.refine}` : ""}` });
     if (titleColor(item)) title.style.color = titleColor(item);
     const content = node("div", {}, [title]);
+    if (!status.usable) content.append(node("p", { className: "equipment-tooltip__unusable", textContent: "Нельзя надеть: требования не выполнены" }));
     const descriptions = (Array.isArray(item.description) ? item.description : []).map(text).filter(Boolean);
     const flags = descriptions.filter((line) => /привяз|невозможно|не исчезает|нельзя|уничтож|не теряется/i.test(line));
     if (flags.length) content.append(node("p", { className: "equipment-tooltip__binding", textContent: flags[0] }));
@@ -281,13 +309,13 @@ export function createEquipmentUI({ getState, getCatalog, isReady, onEquip, onUn
       content.append(field(STAT_NAMES[key] ?? key, `${fmt(value)}${PERCENT_STATS.has(key) ? "%" : ""}`));
     }
     if (Number.isFinite(item.max_durability)) content.append(field("Максимальная прочность", fmt(item.max_durability)));
-    if (Number.isFinite(item.level)) content.append(field("Требуемый уровень", fmt(item.level)));
-    for (const [key, value] of Object.entries(item.req ?? {})) {
-      if (typeof value === "number") content.append(field(`Требуется: ${STAT_NAMES[key] ?? key}`, fmt(value)));
+    content.append(...requirementFields(status));
+    if (!status.usable && !(status.requirements ?? []).some((requirement) => !requirement.met)) {
+      content.append(node("p", { className: "equipment-tooltip__unusable", textContent: (status.reasons ?? []).join("\n") }));
     }
-    const classes = Array.isArray(item.classes) ? item.classes.filter((name) => CLASS_NAMES.has(name)) : [];
-    if (classes.length && classes.length < CLASS_NAMES.size) content.append(node("p", { textContent: `Классы: ${classes.join(", ")}` }));
-    for (const [label, value] of Object.entries(item.specs_extra ?? {})) content.append(field(text(label), text(value)));
+    for (const [label, value] of Object.entries(item.specs_extra ?? {})) {
+      if (label !== "Требуемая репутация") content.append(field(text(label), text(value)));
+    }
     const permanent = guaranteed(item);
     for (const addon of [...new Set([...permanent, ...(choice.addons ?? [])])]) content.append(node("p", { className: "equipment-tooltip__addon", textContent: text(addon) }));
     if (!chosenAddons(choice).length && offeredAddons(item).length) {
@@ -330,20 +358,31 @@ export function createEquipmentUI({ getState, getCatalog, isReady, onEquip, onUn
 
   function showTooltip(choice, slot, source, event, stone = false) {
     hideTooltip(); hoverTarget = source;
-    tooltip = node("aside", { className: "equipment-tooltip", role: "tooltip" }, [stone ? stoneTooltip(choice, slot) : itemTooltip(choice, slot)]);
+    const status = stone ? null : eligibility(choice, slot);
+    tooltip = node("aside", { className: `equipment-tooltip${status && !status.usable ? " equipment-tooltip--unusable" : ""}`, role: "tooltip" }, [stone ? stoneTooltip(choice, slot) : itemTooltip(choice, slot, status)]);
     document.body.append(tooltip);
     const rect = source.getBoundingClientRect();
     placeTooltip(event?.clientX ?? rect.right, event?.clientY ?? rect.top);
   }
 
   function resultRow(item, choose, stone = false) {
+    const choice = { item, refine: 0, stones: [], addons: [] };
+    const status = stone ? null : eligibility(choice, opened.slot);
     const name = node("span", { className: "equipment-result__name", textContent: item.name });
     if (titleColor(item)) name.style.color = titleColor(item);
-    const row = button("", choose, { className: "equipment-result", ariaLabel: `Выбрать ${item.name}` });
+    const row = button("", () => {
+      // A change event can update the build just before this existing row is clicked.
+      const currentStatus = stone ? null : eligibility(choice, opened.slot);
+      if (currentStatus && !currentStatus.usable) { message((currentStatus.reasons ?? []).join("\n") || "Требования предмета не выполнены."); return; }
+      choose();
+    }, { className: `equipment-result${status && !status.usable ? " equipment-result--unusable" : ""}`, ariaLabel: `${status && !status.usable ? "Нельзя надеть" : "Выбрать"} ${item.name}` });
+    if (status) row.setAttribute("aria-disabled", String(!status.usable));
+    if (status && !status.usable) row.setAttribute("aria-description", (status.reasons ?? []).join(". "));
     row.append(icon(item), node("span", { className: "equipment-result__copy" }, [name,
       node("small", { textContent: `${stone ? "Ранг" : "Ур."} ${stone ? item.grade ?? "—" : item.level ?? "—"} · ${subtype(item)} · ID ${item.id}` }),
     ]));
-    attachPreview(row, stone ? item : { item, refine: 0, stones: [], addons: [] }, opened.slot, stone);
+    if (status && !status.usable) row.append(node("span", { className: "equipment-requirement-mark", textContent: "!", ariaHidden: "true" }));
+    attachPreview(row, stone ? item : choice, opened.slot, stone);
     return row;
   }
 
@@ -617,9 +656,12 @@ export function createEquipmentUI({ getState, getCatalog, isReady, onEquip, onUn
   function renderEditor() {
     const current = entry();
     if (!current?.item) { opened.mode = "picker"; resetFilters(); renderPicker(); return; }
+    const status = eligibility(current, opened.slot);
     popup.classList.add("equipment-window--editor");
+    popup.classList.toggle("equipment-window--unusable", !status.usable);
     popup.append(header(popup, SLOT_NAMES.get(opened.slot), () => close(true)));
-    const preview = button("", () => {}, { className: "equipment-editor-icon", ariaLabel: `Характеристики: ${displayName(current.item)}` });
+    const preview = button("", () => {}, { className: `equipment-editor-icon${status.usable ? "" : " equipment-editor-icon--unusable"}`, ariaLabel: `Характеристики: ${displayName(current.item)}${status.usable ? "" : ". Требования не выполнены"}` });
+    if (!status.usable) preview.setAttribute("aria-description", (status.reasons ?? []).join(". "));
     preview.dataset.control = "item-preview";
     preview.append(icon(current.item)); attachPreview(preview, current, opened.slot);
     const name = node("strong", { className: "equipment-editor-name", textContent: displayName(current.item) });
@@ -631,6 +673,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, onEquip, onUn
     }, { className: "equipment-text-action" });
     remove.dataset.control = "remove-item";
     popup.append(node("div", { className: "equipment-editor-item" }, [preview, node("div", { className: "equipment-editor-copy" }, [name, node("div", { className: "equipment-editor-actions" }, [replace, remove])])]));
+    if (!status.usable) popup.append(node("p", { className: "equipment-editor-status", role: "status", textContent: `Бонусы вещи отключены. ${(status.reasons ?? []).join(" ")}` }));
     const refinement = refineControl(current);
     if (refinement) popup.append(refinement);
     const tabs = node("div", { className: "equipment-tabs" });

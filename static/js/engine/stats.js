@@ -2,6 +2,7 @@
 // сверены с его выводом; соответствие игре Comeback 1.4.6 ещё не подтверждено.
 import { getItemBonuses, itemFitsSlot, SLOTS } from "./equipment.js";
 import { collectEffects, sourceRound, validateEffectSettings } from "./effects.js";
+import { resolveEquipment } from "./eligibility.js";
 
 export const MAX_LEVEL = 105;
 export const BASE_ATTR = 5;
@@ -75,7 +76,7 @@ function magicAttack(cls, level, attrs, weaponMagic, percent = 0) {
   return Math.round(a * weaponMagic) + Math.round(Math.round(level * e) * a + Math.round(attrs.int / 1720));
 }
 
-export function computeStats({ cls: code, level, attrs, equipment = {}, effects = [], effectSettings = {}, effectCatalog, titles = {} }) {
+export function computeStats({ cls: code, level, attrs, reputation = 0, equipment = {}, effects = [], effectSettings = {}, effectCatalog, titles = {} }) {
   if (!Object.hasOwn(CLASSES, code)) throw new Error(`Неизвестный класс: ${code}`);
   const cls = CLASSES[code];
   const lvl = clampLevel(level);
@@ -89,22 +90,22 @@ export function computeStats({ cls: code, level, attrs, equipment = {}, effects 
   if (!Array.isArray(effects) || effects.length > 1000 || effects.some((id) => !Number.isSafeInteger(id) || id < 1)) throw new Error("Неверный список эффектов");
   const safeEffectSettings = validateEffectSettings(effectSettings);
   const titleBonuses = validateTitles(titles);
-  const gearWarnings = [];
+  const eligibility = resolveEquipment({ cls: code, className: cls.name, level: lvl, reputation, attrs, equipment });
+  const gearWarnings = [...eligibility.warnings];
   const flat = {};
   const weapon = { phys_atk: [0, 0], mag_atk: [0, 0] };
   let atkSpeed = 1.25;
   const knownSlots = new Set(SLOTS.map((s) => s.id));
-  const entries = [];
   for (const [slot, entry] of Object.entries(equipment)) {
     if (entry == null) continue;
     if (!knownSlots.has(slot)) throw new Error(`Неизвестная ячейка экипировки: ${slot}`);
     if (!entry.item || !itemFitsSlot(entry.item, slot)) throw new Error(`Предмет не подходит в ячейку ${slot}`);
     const bonus = getItemBonuses(entry, slot);
     gearWarnings.push(...bonus.warnings);
+    if (!eligibility.status[slot].usable) continue;
     for (const [key, value] of Object.entries(bonus.flat)) flat[key] = (flat[key] ?? 0) + value;
     for (const key of ["phys_atk", "mag_atk"]) for (let i = 0; i < 2; i++) weapon[key][i] += bonus.ranges[key][i];
     if (bonus.atkSpeed !== undefined) atkSpeed = bonus.atkSpeed;
-    entries.push(entry);
   }
   // sd.vq складывает ручные титулы с характеристиками снаряжения до формул.
   for (const [key, value] of Object.entries(titleBonuses)) {
@@ -113,20 +114,11 @@ export function computeStats({ cls: code, level, attrs, equipment = {}, effects 
   }
   const effectiveAttrs = Object.fromEntries(ATTRS.map((key) => [key, attrs[key] + (flat[key] ?? 0)]));
   if (Object.values(effectiveAttrs).some((n) => n < 0)) throw new Error("Итоговая характеристика не может быть отрицательной");
-  for (const { item } of entries) {
-    const prefix = item.name || `Предмет ${item.id ?? ""}`;
-    if (item.level > lvl) gearWarnings.push(`${prefix}: требуется уровень ${item.level}`);
-    if (Array.isArray(item.classes) && item.classes.length && !item.classes.some((c) => c === code || String(c).toLowerCase() === cls.name.toLowerCase())) gearWarnings.push(`${prefix}: не подходит выбранный класс`);
-    for (const [key, value] of Object.entries(item.req ?? {})) {
-      if (!ATTRS.includes(key) || typeof value !== "number" || !Number.isFinite(value)) gearWarnings.push(`${prefix}: не распознано требование ${key}`);
-      else if (effectiveAttrs[key] < value) gearWarnings.push(`${prefix}: требуется ${key} ${value}`);
-    }
-  }
   let ib = {};
   const hasActiveEffects = effects.length > 0 || Object.values(safeEffectSettings).some((saved) => saved.activeStates.length > 0);
   if (hasActiveEffects && !Array.isArray(effectCatalog)) gearWarnings.push(`Выбранные эффекты пока не учтены: каталог эффектов не загружен.`);
   else if (hasActiveEffects) {
-    const result = collectEffects(effects, safeEffectSettings, effectCatalog, { hasWeapon: Boolean(equipment.weapon?.item), cls: code });
+    const result = collectEffects(effects, safeEffectSettings, effectCatalog, { hasWeapon: Boolean(eligibility.activeEquipment.weapon?.item), cls: code });
     ib = result.modifiers;
     gearWarnings.push(...result.warnings);
   }
@@ -157,6 +149,8 @@ export function computeStats({ cls: code, level, attrs, equipment = {}, effects 
     free,
     effectiveAttrs,
     gearWarnings,
+    equipmentStatus: eligibility.status,
+    activeEquipment: eligibility.activeEquipment,
     hp: sourceRound(baseHp * (1 + (mod("fw") - mod("eh")) / 100)),
     mp: sourceRound(baseMp * (1 + (mod("vd") - mod("ef")) / 100)),
     physAtk: physicalAttack(cls, lvl, attr, weapon.phys_atk[0] + mod("gs_oi_av"), weapon.phys_atk[1] + mod("gs_oi_av"), mod("yh") - mod("xp")),

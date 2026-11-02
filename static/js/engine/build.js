@@ -1,6 +1,7 @@
 import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, spentPoints, totalPoints, validateTitles } from "./stats.js";
 import { itemFitsSlot, SLOTS, validateEquipmentChoice } from "./equipment.js";
 import { validateEffectSettings } from "./effects.js";
+import { validateReputation } from "./reputation.js";
 
 const MAX_BYTES = 1024 * 1024;
 const SLOT_IDS = new Set(SLOTS.map((slot) => slot.id));
@@ -23,8 +24,9 @@ function validateCharacter(data) {
   for (const ids of [addedEffects, hiddenEffects]) if (!Array.isArray(ids) || ids.length > 1000 || ids.some((id) => !validId(id))) throw new Error("Неверные IDs добавленных или скрытых эффектов");
   const effectSettings = validateEffectSettings(data.effectSettings ?? {});
   const titles = validateTitles(data.titles ?? {});
+  const reputation = validateReputation(data.reputation);
   if (!isRecord(data.equipment ?? {})) throw new Error("Неверный список экипировки");
-  return { version: 1, name: data.name ?? "", cls: data.cls, level: data.level,
+  return { version: 1, name: data.name ?? "", cls: data.cls, level: data.level, reputation,
     attrs: Object.fromEntries(ATTRS.map((k) => [k, data.attrs[k]])), equipment: {}, effects: [...new Set(effects)],
     effectSettings, titles, addedEffects: [...new Set(addedEffects)], hiddenEffects: [...new Set(hiddenEffects)], gender: data.gender ?? "male" };
 }
