@@ -148,12 +148,19 @@
 .jade-skin .identity-icons { top:113px; left:155px; gap:28px; }
 .jade-skin .identity__fields .level-field { top:146px; left:21px; color:#acc0b8; font-size:11px; }
 .jade-skin #char-level { color:#effbf3; border-bottom-color:#5b8e7c; }
-.jade-skin .bonus-level { top:180px; left:21px; color:#9bb3aa; font-size:11px; }
+.jade-skin .character { height:587px; }
+.jade-skin .reputation-field { min-width:0; }
+.jade-skin #char-reputation {
+  box-sizing:border-box; width:100%; min-width:0; height:16px; margin:0; padding:0 2px;
+  border:0; border-bottom:1px solid #5b8e7c; border-radius:0; background:transparent;
+  color:#effbf3; font:12px/15px Arial,sans-serif; font-variant-numeric:tabular-nums;
+}
+.jade-skin #char-reputation:focus-visible { outline:1px solid var(--focus); outline-offset:2px; }
 .jade-skin .character-pane { color:#c2d9d0; }
 .jade-skin .character-class-panel { top:59px; left:143px; }
 .jade-skin .character-title-panel { top:55px; }
 .jade-skin .character-gender-panel { top:103px; }
-.jade-skin .character-actions { left:16px; top:210px; width:290px; gap:4px; }
+.jade-skin .character-actions { left:16px; top:182px; width:290px; gap:4px; }
 .jade-skin .character-actions button {
   width:68px;
   height:24px;
@@ -172,7 +179,7 @@
   background:linear-gradient(#34594f,#1e3934);
 }
 .jade-skin .pools {
-  top:272px;
+  top:244px;
   left:17px;
   width:286px;
   padding:7px 4px;
@@ -181,16 +188,16 @@
   font-size:11px;
 }
 .jade-skin .pools b { color:#e2f5e9; }
-.jade-skin .attrs { top:307px; left:21px; width:278px; height:57px; }
+.jade-skin .attrs { top:279px; left:21px; width:278px; height:57px; }
 .jade-skin .attrs legend { color:#a6c3b6; font-size:12px; }
 .jade-skin .attrs legend b { color:#e7f6eb; }
 .jade-skin .attrs__grid { grid-template-columns:139px 139px; }
 .jade-skin .attr { color:#a4b9b6; font-size:12px; height:19px; }
 .jade-skin .attr input { border-bottom-color:#58816f; color:#e9f6ec; }
 .jade-skin .attr button { border-color:#5c8378; background:#243f3a; color:#dcfbe9; }
-.jade-skin .inline-status#char-message { top:368px; font-size:10px; line-height:12px; }
+.jade-skin .inline-status#char-message { top:340px; font-size:10px; line-height:12px; }
 .jade-skin .stats-frame {
-  top:383px;
+  top:355px;
   left:16px;
   width:288px;
   height:214px;

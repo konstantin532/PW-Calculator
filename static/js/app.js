@@ -1,5 +1,7 @@
 import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js";
 import { SLOTS } from "./engine/equipment.js";
+import { resolveEquipment } from "./engine/eligibility.js";
+import { MAX_REPUTATION, validateReputation } from "./engine/reputation.js";
 import { parseBuild, serializeBuild } from "./engine/build.js";
 import { changeClass, changeGender, normalizeGender } from "./engine/character.js";
 import { createEffectsUI } from "./effects-ui.js";
@@ -31,7 +33,7 @@ const STAT_ROWS = [
   ["", () => "", "Сила духа", (s) => fmt(s.spirit)],
   ["Скрытность", (s) => fmt(s.stealth), "Обнаружение", (s) => fmt(s.detection)],
 ];
-const freshState = () => ({ version: 1, name: "Без имени", cls: "by", gender: "male", level: MAX_LEVEL, attrs: Object.fromEntries(ATTRS.map((k) => [k, BASE_ATTR])), equipment: {}, effects: [], effectSettings: {}, addedEffects: [], hiddenEffects: [], titles: {} });
+const freshState = () => ({ version: 1, name: "Без имени", cls: "by", gender: "male", level: MAX_LEVEL, reputation: 0, attrs: Object.fromEntries(ATTRS.map((k) => [k, BASE_ATTR])), equipment: {}, effects: [], effectSettings: {}, addedEffects: [], hiddenEffects: [], titles: {} });
 let state = freshState();
 let catalog = { items: [], stones: [] };
 let catalogReady = false;
@@ -81,6 +83,43 @@ function setAttr(key, value) {
   state.attrs[key] = Math.min(max, Math.max(BASE_ATTR, next));
   $("char-message").textContent = next > max ? `Свободных очков не хватает: максимум ${max}.` : "";
   dirty(); render();
+}
+
+function setupReputation() {
+  const input = $("char-reputation");
+  const reject = () => status("Репутация: введите только цифры от 0 до " + String(MAX_REPUTATION) + ".", true);
+  const validText = (value) => value.length <= String(MAX_REPUTATION).length && /^[0-9]*$/u.test(value)
+    && (value === "" || (Number.isSafeInteger(Number(value)) && Number(value) <= MAX_REPUTATION));
+  const insertedText = (value) => input.value.slice(0, input.selectionStart ?? input.value.length)
+    + value + input.value.slice(input.selectionEnd ?? input.value.length);
+  input.addEventListener("beforeinput", (event) => {
+    if (event.inputType.startsWith("insert") && event.data && !validText(insertedText(event.data))) {
+      event.preventDefault(); reject();
+    }
+  });
+  input.addEventListener("paste", (event) => {
+    const value = event.clipboardData?.getData("text");
+    if (value !== undefined && !validText(insertedText(value))) { event.preventDefault(); reject(); }
+  });
+  input.addEventListener("drop", (event) => {
+    const value = event.dataTransfer?.getData("text");
+    if (value !== undefined && !validText(insertedText(value))) { event.preventDefault(); reject(); }
+  });
+  input.addEventListener("input", () => {
+    try {
+      if (!validText(input.value)) throw new Error("Только цифры");
+      const value = validateReputation(input.value === "" ? 0 : Number(input.value));
+      state.reputation = value; dirty(); render();
+    } catch {
+      input.value = String(state.reputation); reject();
+    }
+  });
+  input.addEventListener("blur", () => { input.value = String(state.reputation); });
+}
+
+function equipmentEligibility(slot, choice) {
+  return resolveEquipment({ ...state, className: CLASSES[state.cls].name,
+    equipment: { ...state.equipment, [slot]: choice } }).status[slot];
 }
 
 function setupCharacter() {
@@ -153,6 +192,7 @@ function renderCharacterPane() {
 function render() {
   const stats = calculate();
   $("char-level").value = stats.level;
+  if (document.activeElement !== $("char-reputation")) $("char-reputation").value = String(state.reputation);
   $("emblem").textContent = CLASSES[state.cls].name;
   $("portrait").dataset.gender = state.gender;
   const gender = state.cls === "ya" ? "m" : state.cls === "rl" ? "f" : state.gender === "female" ? "f" : "m";
@@ -176,7 +216,7 @@ function render() {
   $("warning-count").textContent = warnings.length ? `(${warnings.length})` : "";
   renderCharacterPane();
   effectsUI?.render();
-  renderGear();
+  renderGear(stats.equipmentStatus);
   equipmentUI?.render();
 }
 
@@ -192,13 +232,16 @@ function setupDoll() {
   }
   for (const skin of ["pp", "pk", "gv", "xoa", "cosmos"]) $("paperdoll").append(el("span", { className: `reference-only-slot ref-ys ref-${skin}-ys`, title: "Ячейка оригинального оформления: в текущем расчёте не используется", ariaHidden: "true" }));
 }
-function renderGear() {
+function renderGear(statuses = {}) {
   for (const slot of SLOTS) {
     const choice = state.equipment[slot.id];
     const button = $(`slot-${slot.id}`);
     button.classList.toggle("slot--filled", Boolean(choice));
+    const unavailable = Boolean(choice && statuses[slot.id] && !statuses[slot.id].usable);
+    button.classList.toggle("slot--unusable", unavailable);
+    button.dataset.usable = String(!unavailable);
     const name = `${slot.name}${slot.id === "ring1" ? " 1" : slot.id === "ring2" ? " 2" : ""}`;
-    button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}`);
+    button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}${unavailable ? ". Не действует: " + statuses[slot.id].reasons.join("; ") : ""}`);
     if (choice) button.removeAttribute("title");
     else button.title = name;
     button.replaceChildren(...(choice ? [itemImage(choice.item, slot.id)] : []));
@@ -206,7 +249,10 @@ function renderGear() {
   }
   const equipped = Object.entries(state.equipment).filter(([, choice]) => choice);
   $("gear-count").textContent = `${equipped.length} / ${SLOTS.length}`;
-  $("equipped-summary").textContent = equipped.length ? `Надето предметов: ${equipped.length}` : "Нет экипировки";
+  const activeCount = equipped.filter(([slot]) => statuses[slot]?.usable).length;
+  $("gear-count").title = `Выбрано: ${equipped.length}; действуют: ${activeCount}`;
+  $("equipped-summary").textContent = !equipped.length ? "Нет экипировки"
+    : activeCount === equipped.length ? `Надето предметов: ${equipped.length}` : `Действуют: ${activeCount} из ${equipped.length}`;
   $("btn-clear-gear").disabled = !equipped.length;
   $("bag").replaceChildren(...Array.from({ length: 32 }, (_, index) => {
     const entry = equipped[index];
@@ -214,6 +260,10 @@ function renderGear() {
     const [slot, choice] = entry;
     const cell = el("button", { type: "button", className: "bag-cell", ariaLabel: `Изменить: ${choice.item.name}` }, [itemImage(choice.item, slot)]);
     cell.dataset.slot = slot;
+    if (statuses[slot] && !statuses[slot].usable) {
+      cell.classList.add("bag-cell--unusable"); cell.dataset.usable = "false";
+      cell.setAttribute("aria-label", `Изменить: ${choice.item.name}. Не действует: ${statuses[slot].reasons.join("; ")}`);
+    }
     cell.addEventListener("click", () => equipmentUI.open(slot, cell));
     return cell;
   }));
@@ -350,11 +400,14 @@ function setupSaves() {
 effectsUI = createEffectsUI({ getState: () => state, onChange: () => { dirty(); render(); } });
 equipmentUI = createEquipmentUI({
   getState: () => state, getCatalog: () => catalog, isReady: () => catalogReady,
-  renderIcon: itemImage, onMessage: status,
+  renderIcon: itemImage, onMessage: status, getEligibility: equipmentEligibility,
   onEquip: (slot, choice) => {
     const next = { ...state, equipment: { ...state.equipment, [slot]: choice } };
-    calculate(next); state = next; dirty(); render();
-    status(`Надето: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}.`);
+    const eligibility = calculate(next).equipmentStatus[slot];
+    const editingSelected = state.equipment[slot]?.item.id === choice.item.id;
+    if (!eligibility.usable && !editingSelected) throw new Error(eligibility.reasons.join("; "));
+    state = next; dirty(); render();
+    status(`${eligibility.usable ? "Надето" : "Изменена недоступная вещь"}: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}.`);
   },
   onUnequip: (slot) => {
     const equipment = { ...state.equipment };
@@ -362,6 +415,6 @@ equipmentUI = createEquipmentUI({
     state = { ...state, equipment }; dirty(); render(); status("Предмет снят.");
   },
 });
-setupCharacter(); setupDoll(); setupDialogs(); setupSaves(); render();
+setupReputation(); setupCharacter(); setupDoll(); setupDialogs(); setupSaves(); render();
 await Promise.allSettled([loadCatalog(), setupEffects()]);
 if (catalogReady) loadHashBuild();
