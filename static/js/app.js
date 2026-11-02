@@ -160,7 +160,7 @@ function setupCharacter() {
   $("btn-reset").addEventListener("click", () => { resetAttrs(); $("char-message").textContent = ""; dirty(); render(); });
   $("btn-new").addEventListener("click", () => {
     state = freshState(); activeSavedId = null; characterPane = null; effectsUI?.close(); equipmentUI?.close(); clearShareHash();
-    $("char-name").value = state.name; $("build-status").textContent = "Новая"; $("char-message").textContent = "";
+    $("char-name").value = state.name; $("char-reputation").value = String(state.reputation); $("build-status").textContent = "Новая"; $("char-message").textContent = "";
     render(); status("Создан новый персонаж. Сохранённые сборки доступны ниже.");
   });
   $("btn-clear-gear").addEventListener("click", () => { state.equipment = {}; equipmentUI?.close(); dirty(); render(); status("Экипировка снята."); });
@@ -317,7 +317,7 @@ function applyBuild(json, id = null, preserveShareHash = false) {
   const next = parseBuild(json, catalog.items, catalog.stones);
   next.gender = normalizeGender(next.cls, next.gender);
   calculate(next); state = next; activeSavedId = id; characterPane = null; effectsUI?.close(); equipmentUI?.close();
-  $("char-name").value = state.name; $("char-message").textContent = ""; $("build-status").textContent = id ? "Сохранена" : "Загружена";
+  $("char-name").value = state.name; $("char-reputation").value = String(state.reputation); $("char-message").textContent = ""; $("build-status").textContent = id ? "Сохранена" : "Загружена";
   if (!preserveShareHash) clearShareHash();
   render(); status(`Загружен персонаж: ${state.name || "Без имени"}.`);
   if ($("load-dialog").open) $("load-dialog").close();
