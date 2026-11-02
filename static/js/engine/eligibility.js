@@ -46,7 +46,7 @@ function requirementsFor(item, context, attrs) {
   return { usable: reasons.length === 0, reasons, requirements };
 }
 
-/** Resolve a build from eligible seeds, without self-support or circular grants. */
+/** Calculate the selected plan; usable reports requirements, not bonus activation. */
 export function resolveEquipment({ cls, level, reputation = 0, attrs, equipment = {} }) {
   if (!Object.hasOwn(CLASS_LABELS, cls)) throw new Error(`Неизвестный класс персонажа: ${cls}`);
   const context = { cls, className: CLASS_LABELS[cls], level, reputation: validateReputation(reputation) };
@@ -57,48 +57,26 @@ export function resolveEquipment({ cls, level, reputation = 0, attrs, equipment 
     if (!SLOT_IDS.has(slot)) throw new Error(`Неизвестная ячейка экипировки: ${slot}`);
     if (entry != null && (!entry.item || !itemFitsSlot(entry.item, slot))) throw new Error(`Предмет не подходит в ячейку ${slot}`);
   }
-  // SLOTS makes resolution independent of the input object's insertion order.
+  // SLOTS makes requirement context independent of the input object's insertion order.
   const selected = SLOTS.filter(({ id }) => equipment[id] != null).map(({ id }) => [id, equipment[id]]);
   const bonuses = new Map(selected.map(([slot, entry]) => [slot, getItemBonuses(entry, slot)]));
-  const active = new Set();
-  const attributes = (slots, excluded) => {
+  const attributesWithout = (excluded) => {
     const result = Object.fromEntries(ATTRS.map((key) => [key, attrs[key]]));
-    for (const slot of slots) {
+    // Every other selected item supports the plan, even when its own requirements
+    // are unmet. The checked item never supplies its own required attributes.
+    for (const [slot] of selected) {
       if (slot === excluded) continue;
       for (const key of ATTRS) result[key] += bonuses.get(slot).flat[key] ?? 0;
     }
     return result;
   };
-  const conflict = (slot) => {
-    const proposed = new Set([...active, slot]);
-    if (Object.values(attributes(proposed)).some((value) => value < 0)) return "Бонусы предмета делают основную характеристику отрицательной.";
-    for (const other of active) {
-      if (!requirementsFor(equipment[other].item, context, attributes(proposed, other)).usable) {
-        return "Бонусы предмета нарушают требования другой активной вещи.";
-      }
-    }
-    return null;
-  };
-  // Each pass only adds eligible entries. Even negative bonuses cannot invalidate
-  // a previously admitted item; at most SLOTS.length admissions are possible.
-  let changed;
-  do {
-    changed = false;
-    for (const [slot, entry] of selected) {
-      if (active.has(slot)) continue;
-      if (requirementsFor(entry.item, context, attributes(active)).usable && !conflict(slot)) {
-        active.add(slot);
-        changed = true;
-      }
-    }
-  } while (changed);
 
+  // activeEquipment is the calculated selection, not a list filtered by usable.
   const status = {}, activeEquipment = {}, warnings = [];
   for (const [slot, entry] of selected) {
-    const resolved = requirementsFor(entry.item, context, attributes(active, slot));
-    if (active.has(slot)) activeEquipment[slot] = entry;
-    else if (resolved.usable) resolved.reasons.push(conflict(slot) ?? "Требования цепочки экипировки не выполнены.");
-    status[slot] = { ...resolved, usable: active.has(slot) };
+    const resolved = requirementsFor(entry.item, context, attributesWithout(slot));
+    activeEquipment[slot] = entry;
+    status[slot] = resolved;
     for (const reason of resolved.reasons) warnings.push(`${entry.item.name || `Предмет ${entry.item.id ?? ""}`}: ${reason}`);
   }
   return { activeEquipment, status, warnings };

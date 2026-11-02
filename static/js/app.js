@@ -241,7 +241,7 @@ function renderGear(statuses = {}) {
     button.classList.toggle("slot--unusable", unavailable);
     button.dataset.usable = String(!unavailable);
     const name = `${slot.name}${slot.id === "ring1" ? " 1" : slot.id === "ring2" ? " 2" : ""}`;
-    button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}${unavailable ? ". Не действует: " + statuses[slot.id].reasons.join("; ") : ""}`);
+    button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}${unavailable ? ". Требования не выполнены: " + statuses[slot.id].reasons.join("; ") : ""}`);
     if (choice) button.removeAttribute("title");
     else button.title = name;
     button.replaceChildren(...(choice ? [itemImage(choice.item, slot.id)] : []));
@@ -249,10 +249,10 @@ function renderGear(statuses = {}) {
   }
   const equipped = Object.entries(state.equipment).filter(([, choice]) => choice);
   $("gear-count").textContent = `${equipped.length} / ${SLOTS.length}`;
-  const activeCount = equipped.filter(([slot]) => statuses[slot]?.usable).length;
-  $("gear-count").title = `Выбрано: ${equipped.length}; действуют: ${activeCount}`;
+  const unmetCount = equipped.filter(([slot]) => statuses[slot] && !statuses[slot].usable).length;
+  $("gear-count").title = `Выбрано для расчёта: ${equipped.length}; с предупреждением: ${unmetCount}`;
   $("equipped-summary").textContent = !equipped.length ? "Нет экипировки"
-    : activeCount === equipped.length ? `Надето предметов: ${equipped.length}` : `Действуют: ${activeCount} из ${equipped.length}`;
+    : `В расчёте: ${equipped.length}${unmetCount ? ` · с предупреждением: ${unmetCount}` : ""}`;
   $("btn-clear-gear").disabled = !equipped.length;
   $("bag").replaceChildren(...Array.from({ length: 32 }, (_, index) => {
     const entry = equipped[index];
@@ -262,7 +262,7 @@ function renderGear(statuses = {}) {
     cell.dataset.slot = slot;
     if (statuses[slot] && !statuses[slot].usable) {
       cell.classList.add("bag-cell--unusable"); cell.dataset.usable = "false";
-      cell.setAttribute("aria-label", `Изменить: ${choice.item.name}. Не действует: ${statuses[slot].reasons.join("; ")}`);
+      cell.setAttribute("aria-label", `Изменить: ${choice.item.name}. Требования не выполнены: ${statuses[slot].reasons.join("; ")}`);
     }
     cell.addEventListener("click", () => equipmentUI.open(slot, cell));
     return cell;
@@ -404,10 +404,8 @@ equipmentUI = createEquipmentUI({
   onEquip: (slot, choice) => {
     const next = { ...state, equipment: { ...state.equipment, [slot]: choice } };
     const eligibility = calculate(next).equipmentStatus[slot];
-    const editingSelected = state.equipment[slot]?.item.id === choice.item.id;
-    if (!eligibility.usable && !editingSelected) throw new Error(eligibility.reasons.join("; "));
     state = next; dirty(); render();
-    status(`${eligibility.usable ? "Надето" : "Изменена недоступная вещь"}: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}.`);
+    status(`Выбрано для расчёта: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}.${eligibility.usable ? "" : " Требования пока не выполнены."}`);
   },
   onUnequip: (slot) => {
     const equipment = { ...state.equipment };

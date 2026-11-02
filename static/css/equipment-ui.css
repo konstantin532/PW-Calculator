@@ -60,7 +60,7 @@
 }
 .equipment-window .equipment-result:hover,.equipment-window .equipment-result:focus-visible { background:#5a907a25; }
 .equipment-window .equipment-result.equipment-result--unusable {
-  position:relative; overflow:hidden; background:#3a1b1e66; cursor:not-allowed;
+  position:relative; overflow:hidden; background:#3a1b1e66; cursor:pointer;
 }
 .equipment-window .equipment-result.equipment-result--unusable:hover,
 .equipment-window .equipment-result.equipment-result--unusable:focus-visible { background:#59212780; }

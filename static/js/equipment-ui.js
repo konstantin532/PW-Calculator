@@ -283,7 +283,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     const title = node("strong", { className: "equipment-tooltip__title", textContent: `${displayName(item)}${choice.stones?.length ? ` (ячеек: ${choice.stones.length})` : ""}${choice.refine ? ` +${choice.refine}` : ""}` });
     if (titleColor(item)) title.style.color = titleColor(item);
     const content = node("div", {}, [title]);
-    if (!status.usable) content.append(node("p", { className: "equipment-tooltip__unusable", textContent: "Нельзя надеть: требования не выполнены" }));
+    if (!status.usable) content.append(node("p", { className: "equipment-tooltip__unusable", textContent: "Требования не выполнены" }));
     const descriptions = (Array.isArray(item.description) ? item.description : []).map(text).filter(Boolean);
     const flags = descriptions.filter((line) => /привяз|невозможно|не исчезает|нельзя|уничтож|не теряется/i.test(line));
     if (flags.length) content.append(node("p", { className: "equipment-tooltip__binding", textContent: flags[0] }));
@@ -370,13 +370,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     const status = stone ? null : eligibility(choice, opened.slot);
     const name = node("span", { className: "equipment-result__name", textContent: item.name });
     if (titleColor(item)) name.style.color = titleColor(item);
-    const row = button("", () => {
-      // A change event can update the build just before this existing row is clicked.
-      const currentStatus = stone ? null : eligibility(choice, opened.slot);
-      if (currentStatus && !currentStatus.usable) { message((currentStatus.reasons ?? []).join("\n") || "Требования предмета не выполнены."); return; }
-      choose();
-    }, { className: `equipment-result${status && !status.usable ? " equipment-result--unusable" : ""}`, ariaLabel: `${status && !status.usable ? "Нельзя надеть" : "Выбрать"} ${item.name}` });
-    if (status) row.setAttribute("aria-disabled", String(!status.usable));
+    const row = button("", choose, { className: `equipment-result${status && !status.usable ? " equipment-result--unusable" : ""}`, ariaLabel: `Выбрать ${item.name}` });
     if (status && !status.usable) row.setAttribute("aria-description", (status.reasons ?? []).join(". "));
     row.append(icon(item), node("span", { className: "equipment-result__copy" }, [name,
       node("small", { textContent: `${stone ? "Ранг" : "Ур."} ${stone ? item.grade ?? "—" : item.level ?? "—"} · ${subtype(item)} · ID ${item.id}` }),
@@ -673,7 +667,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     }, { className: "equipment-text-action" });
     remove.dataset.control = "remove-item";
     popup.append(node("div", { className: "equipment-editor-item" }, [preview, node("div", { className: "equipment-editor-copy" }, [name, node("div", { className: "equipment-editor-actions" }, [replace, remove])])]));
-    if (!status.usable) popup.append(node("p", { className: "equipment-editor-status", role: "status", textContent: `Бонусы вещи отключены. ${(status.reasons ?? []).join(" ")}` }));
+    if (!status.usable) popup.append(node("p", { className: "equipment-editor-status", role: "status", textContent: `Требования не выполнены. Вещь учитывается в расчёте. ${(status.reasons ?? []).join(" ")}` }));
     const refinement = refineControl(current);
     if (refinement) popup.append(refinement);
     const tabs = node("div", { className: "equipment-tabs" });

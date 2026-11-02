@@ -102,7 +102,6 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
     if (!entry.item || !itemFitsSlot(entry.item, slot)) throw new Error(`Предмет не подходит в ячейку ${slot}`);
     const bonus = getItemBonuses(entry, slot);
     gearWarnings.push(...bonus.warnings);
-    if (!eligibility.status[slot].usable) continue;
     for (const [key, value] of Object.entries(bonus.flat)) flat[key] = (flat[key] ?? 0) + value;
     for (const key of ["phys_atk", "mag_atk"]) for (let i = 0; i < 2; i++) weapon[key][i] += bonus.ranges[key][i];
     if (bonus.atkSpeed !== undefined) atkSpeed = bonus.atkSpeed;
