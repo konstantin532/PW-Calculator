@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, SoupStrainer, Tag
 
 # Подписи характеристик → ключи. Чего нет в карте, остаётся в specs_extra.
 STAT_LABELS: dict[str, str] = {
@@ -18,6 +18,7 @@ STAT_LABELS: dict[str, str] = {
     "Защита от земли": "def_earth",
     "Магическая защита": "mag_def",
     "Физическая атака": "phys_atk",
+    "Физ атака": "phys_atk",
     "Магическая атака": "mag_atk",
     "Скорость атаки": "atk_speed",
     "Дальность": "range",
@@ -83,7 +84,10 @@ def parse_stat_value(label: str, raw: str) -> Any:
 
 
 def parse_item(html: str, item_id: int | None = None) -> dict[str, Any]:
-    soup = BeautifulSoup(html, "lxml")
+    # The database repeats a large navigation tree on every item page.
+    # Parse only the item region; this preserves its original markup while
+    # avoiding the unrelated menu for every record in a full catalog import.
+    soup = BeautifulSoup(html, "lxml", parse_only=SoupStrainer(id="content-block"))
     block = soup.select_one("#content-block")
     if block is None:
         raise ValueError("нет блока содержимого (страница-заглушка?)")
@@ -106,6 +110,16 @@ def parse_item(html: str, item_id: int | None = None) -> dict[str, Any]:
         "sockets": {},
         "description": [],
     }
+    if header is not None:
+        colored_name = header.select_one("font[color], [style*='color']")
+        if colored_name is not None:
+            raw_color = colored_name.get("color", "")
+            if not raw_color:
+                color_match = re.search(r"(?:^|;)\s*color\s*:\s*(#[\da-fA-F]{3,6})(?:\s*;|\s*$)",
+                                        colored_name.get("style", ""))
+                raw_color = color_match.group(1) if color_match else ""
+            if re.fullmatch(r"#(?:[\da-fA-F]{3}|[\da-fA-F]{6})", raw_color):
+                item["name_color"] = raw_color.lower()
     specs = block.select_one(".data_specs ul")
     if specs is not None:
         for li in specs.find_all("li", recursive=False):
@@ -131,6 +145,17 @@ def _parse_spec_line(li: Tag, item: dict[str, Any]) -> None:
         text = _clean(li.get_text(" "))
         if text:
             item["description"].append(text)
+        # Tomes show their fixed properties as separate gold lines rather
+        # than a specs/addons table. Preserve those explicit lines verbatim.
+        fixed = []
+        for font in li.select('font[color="#ffcb4a"]'):
+            # Gold lines are the source's fixed-property block. Keep numeric
+            # statements with units or unsigned wording as well: an unknown
+            # effect must reach the engine's warning path, not disappear here.
+            fixed.extend(line.strip() for line in font.get_text("\n").splitlines()
+                         if NUM_RE.search(line) and re.search(r"[^\W\d_]", line))
+        if fixed:
+            item.setdefault("fixed_properties", []).extend(fixed)
         return
     label = _clean(primary.get_text(" "))
     raw = _clean(secondary.get_text(" "))
@@ -185,8 +210,11 @@ def _parse_refine(pane: Tag) -> dict[str, Any] | None:
     return {"stat": stat_name, "base": _number(head), "levels": [levels.get(i) for i in range(1, 13)]}
 
 
-STONE_TARGETS = {"оружие": "weapon", "доспехи": "armor", "бижутерию": "decoration", "бижутерия": "decoration"}
-STONE_EFFECT_RE = re.compile(r"Влияние на (оружие|доспехи|бижутери[юя]):\s*(.+?)(?=\s*Влияние на |\s*$)", re.S)
+STONE_TARGETS = {"оружие": "weapon", "доспехи": "armor", "броню": "armor",
+                 "бижутерию": "decoration", "бижутерия": "decoration"}
+STONE_PREFIX = r"(?:Влияние на|Действие на|Эффект при инкрустации в)\s+"
+STONE_EFFECT_RE = re.compile(STONE_PREFIX + r"(оружие|доспехи|броню|бижутери[юя]):\s*(.+?)(?=\s*"
+                             + STONE_PREFIX + r"|\s*$)", re.S | re.I)
 STONE_VALUE_RE = re.compile(r"^(.*?)\s*([-+]\s*\d+(?:[.,]\d+)?)\s*(%|ед\.?)?", re.S)
 
 
@@ -195,6 +223,7 @@ def parse_stone_effects(description: list[str]) -> dict[str, dict[str, Any]]:
     effects: dict[str, dict[str, Any]] = {}
     joined = " ".join(description)
     for target, body in STONE_EFFECT_RE.findall(joined):
+        target = target.lower()
         body = _clean(body).rstrip(".")
         m = STONE_VALUE_RE.match(body)
         if not m:
@@ -207,4 +236,10 @@ def parse_stone_effects(description: list[str]) -> dict[str, dict[str, Any]]:
             "percent": m.group(3) == "%",
             "raw": body,
         }
+        if m.group(1).strip().casefold() == "защита":
+            # This source wording does not identify physical defense versus
+            # defense level. Preserve its number without guessing the stat.
+            effects[STONE_TARGETS[target]]["source_value"] = effects[STONE_TARGETS[target]]["value"]
+            effects[STONE_TARGETS[target]]["value"] = None
+            effects[STONE_TARGETS[target]]["ambiguity"] = "physical_defense_or_defense_level"
     return effects

@@ -6,7 +6,7 @@ import math
 import re
 from dataclasses import dataclass
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 from .session import DB_PREFIX
 
@@ -52,7 +52,7 @@ def page_count(total: int) -> int:
 
 
 def parse_list(html: str) -> list[ListRow]:
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, "lxml", parse_only=SoupStrainer(id="content-block"))
     block = soup.select_one("#content-block")
     if block is None:
         return []

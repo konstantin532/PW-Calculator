@@ -1,8 +1,9 @@
 import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js";
-import { SLOTS, availableAddonTexts, itemFitsSlot, maxSockets, maximumAddons } from "./engine/equipment.js";
+import { SLOTS } from "./engine/equipment.js";
 import { parseBuild, serializeBuild } from "./engine/build.js";
 import { changeClass, changeGender, normalizeGender } from "./engine/character.js";
 import { createEffectsUI } from "./effects-ui.js";
+import { createEquipmentUI } from "./equipment-ui.js";
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString("ru-RU", { maximumFractionDigits: 2 });
@@ -15,9 +16,7 @@ const PORTRAITS = { by: 1, ga: 2, ya: 3, rl: 4, ij: 5, js: 6, fx: 7, sj: 8, ej: 
 const CLASS_ICONS = { ga: 1, by: 2, ij: 3, js: 4, rl: 5, ya: 6, sj: 7, fx: 8, rg: 9, ej: 10 };
 const CLASS_GRID_ORDER = ["by", "ga", "rl", "ya", "js", "ij", "sj", "fx", "rg", "ej"];
 const TITLE_FIELDS = { phys_atk: "Физ. атака", mag_atk: "Маг. атака", phys_def: "Физ. защита", mag_def: "Маг. защита", accuracy: "Меткость", evasion: "Уклонение", attack_level: "Атака ПА", defense_level: "Защита ПЗ", hp: "Здоровье" };
-const CLASS_NAMES = new Set(Object.values(CLASSES).map((cls) => cls.name));
 const SLOT_SKINS = { helmet: "ft", chest: "rv", legs: "tg", boots: "rx", weapon: "ta", necklace: "vx", cape: "wy", wrists: "mj", belt: "st", ring1: "oq-left", ring2: "oq-right", tome: "qn", ammo: "it", flight: "ic" };
-const STAT_NAMES = { hp: "ЖС", mp: "МЭ", phys_atk: "Физическая атака", mag_atk: "Магическая атака", phys_def: "Физическая защита", mag_def: "Магическая защита", def_metal: "Защита от металла", def_wood: "Защита от дерева", def_water: "Защита от воды", def_fire: "Защита от огня", def_earth: "Защита от земли", accuracy: "Меткость", evasion: "Уклонение", atk_speed: "Скорость атаки (исходное значение)", crit: "Шанс критического удара", range: "Дальность", speed: "Скорость" };
 const STAT_ROWS = [
   ["Физ. атака", (s) => range(s.physAtk), "Физ. защита", (s) => fmt(s.physDef)],
   ["Маг. атака", (s) => range(s.magAtkRange), "Маг. защита", (s) => fmt(s.magDef)],
@@ -37,9 +36,9 @@ let state = freshState();
 let catalog = { items: [], stones: [] };
 let catalogReady = false;
 let activeSavedId = null;
-let picker = { slot: null, item: null, refine: 0, stones: [], addons: [] };
 let allEffects = [];
 let effectsUI;
+let equipmentUI;
 let characterPane = null;
 const calculate = (candidate = state) => computeStats({ ...candidate, effectCatalog: allEffects });
 
@@ -89,11 +88,11 @@ function setupCharacter() {
     const button = el("button", { type: "button", className: `ref-race-${CLASS_ICONS[code]}`, ariaLabel: CLASSES[code].name, title: CLASSES[code].name });
     button.dataset.class = code;
     button.dataset.tooltip = CLASSES[code].name;
-    button.addEventListener("click", () => { state = changeClass(state, code); characterPane = null; effectsUI?.close(); dirty(); render(); });
+    button.addEventListener("click", () => { state = changeClass(state, code); characterPane = null; effectsUI?.close(); equipmentUI?.close(); dirty(); render(); });
     $("char-class").append(button);
   }
   for (const button of document.querySelectorAll("[data-gender]")) button.addEventListener("click", () => {
-    state = changeGender(state, button.dataset.gender); characterPane = null; effectsUI?.close(); dirty(); render();
+    state = changeGender(state, button.dataset.gender); characterPane = null; effectsUI?.close(); equipmentUI?.close(); dirty(); render();
   });
   for (const [key, label] of Object.entries(TITLE_FIELDS)) {
     const input = el("input", { id: `title-${key}`, type: "number", min: 0, max: 50000, value: 0, inputMode: "numeric", ariaLabel: `Титул: ${label}` });
@@ -121,11 +120,11 @@ function setupCharacter() {
   }
   $("btn-reset").addEventListener("click", () => { resetAttrs(); $("char-message").textContent = ""; dirty(); render(); });
   $("btn-new").addEventListener("click", () => {
-    state = freshState(); activeSavedId = null; characterPane = null; effectsUI?.close(); clearShareHash();
+    state = freshState(); activeSavedId = null; characterPane = null; effectsUI?.close(); equipmentUI?.close(); clearShareHash();
     $("char-name").value = state.name; $("build-status").textContent = "Новая"; $("char-message").textContent = "";
     render(); status("Создан новый персонаж. Сохранённые сборки доступны ниже.");
   });
-  $("btn-clear-gear").addEventListener("click", () => { state.equipment = {}; dirty(); render(); status("Экипировка снята."); });
+  $("btn-clear-gear").addEventListener("click", () => { state.equipment = {}; equipmentUI?.close(); dirty(); render(); status("Экипировка снята."); });
   $("btn-help").addEventListener("click", () => $("info-dialog").showModal());
   document.querySelectorAll("[data-action]").forEach((button) => button.addEventListener("click", () => $(button.dataset.action).click()));
   document.querySelectorAll("[data-character-control]").forEach((button) => button.addEventListener("click", () => {
@@ -178,6 +177,7 @@ function render() {
   renderCharacterPane();
   effectsUI?.render();
   renderGear();
+  equipmentUI?.render();
 }
 
 function setupDoll() {
@@ -186,7 +186,8 @@ function setupDoll() {
     const button = el("button", { id: `slot-${slot.id}`, type: "button", className: `slot ref-ys ref-${SLOT_SKINS[slot.id]}-ys` });
     if (slot.side === "bottom") button.style.gridColumn = String(++rows.bottom);
     else button.style.gridRow = String(++rows[slot.side]);
-    button.addEventListener("click", () => openPicker(slot.id));
+    button.dataset.slot = slot.id;
+    button.addEventListener("click", () => equipmentUI.open(slot.id, button));
     $("paperdoll").append(button);
   }
   for (const skin of ["pp", "pk", "gv", "xoa", "cosmos"]) $("paperdoll").append(el("span", { className: `reference-only-slot ref-ys ref-${skin}-ys`, title: "Ячейка оригинального оформления: в текущем расчёте не используется", ariaHidden: "true" }));
@@ -198,7 +199,8 @@ function renderGear() {
     button.classList.toggle("slot--filled", Boolean(choice));
     const name = `${slot.name}${slot.id === "ring1" ? " 1" : slot.id === "ring2" ? " 2" : ""}`;
     button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}`);
-    button.title = choice ? `${name}: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}` : name;
+    if (choice) button.removeAttribute("title");
+    else button.title = name;
     button.replaceChildren(...(choice ? [itemImage(choice.item, slot.id)] : []));
     if (choice?.refine) button.append(el("span", { className: "slot__rank", textContent: `+${choice.refine}` }));
   }
@@ -210,8 +212,9 @@ function renderGear() {
     const entry = equipped[index];
     if (!entry) return el("span", { className: "bag-cell", ariaHidden: "true" });
     const [slot, choice] = entry;
-    const cell = el("button", { type: "button", className: "bag-cell", title: choice.item.name, ariaLabel: `Изменить: ${choice.item.name}` }, [itemImage(choice.item, slot)]);
-    cell.addEventListener("click", () => openPicker(slot));
+    const cell = el("button", { type: "button", className: "bag-cell", ariaLabel: `Изменить: ${choice.item.name}` }, [itemImage(choice.item, slot)]);
+    cell.dataset.slot = slot;
+    cell.addEventListener("click", () => equipmentUI.open(slot, cell));
     return cell;
   }));
 }
@@ -229,104 +232,14 @@ async function loadCatalog() {
     catalog = result; catalogReady = true;
     $("catalog-items").textContent = fmt(catalog.items.length);
     $("catalog-stones").textContent = fmt(catalog.stones.length);
-    $("catalog-status").textContent = "Локальный снимок базы. Сбор полного каталога продолжается.";
+    $("catalog-status").textContent = "Локальный снимок базы Comeback PW 1.4.6; охват указан в отчёте.";
   } catch (error) {
     $("catalog-status").textContent = `Не удалось загрузить базу. ${error.message}`;
     $("btn-retry-catalog").hidden = false;
     status("База предметов недоступна. Можно распределять характеристики.", true);
   }
 }
-function fitsCharacter(item) { return (!item.level || item.level <= state.level) && (!item.classes?.length || item.classes.includes(CLASSES[state.cls].name)); }
-function openPicker(slot) {
-  if (!catalogReady) { status("Сначала дождитесь загрузки базы или нажмите «Повторить загрузку».", true); return; }
-  const current = state.equipment[slot];
-  picker = { slot, item: current?.item ?? null, refine: current?.refine ?? 0, stones: [...(current?.stones ?? [])], addons: [...(current?.addons ?? [])] };
-  $("item-dialog-title").textContent = SLOTS.find((s) => s.id === slot).name;
-  $("item-search").value = "";
-  $("item-action-message").textContent = "";
-  $("btn-unequip").disabled = !current;
-  renderItemList(); renderItemDetail();
-  $("item-dialog").showModal();
-  $("item-search").focus();
-}
-function renderItemList() {
-  const scrollTop = $("item-list").scrollTop;
-  const term = $("item-search").value.trim().toLocaleLowerCase("ru-RU").replaceAll("ё", "е");
-  const items = catalog.items.filter((item) => itemFitsSlot(item, picker.slot) && (!$("item-available").checked || fitsCharacter(item)) && (!term || `${item.name} ${item.id}`.toLocaleLowerCase("ru-RU").replaceAll("ё", "е").includes(term))).sort((a, b) => (b.level ?? 0) - (a.level ?? 0) || a.id - b.id);
-  $("item-count").textContent = `Найдено: ${fmt(items.length)}${items.length > 180 ? " · уточните поиск для остальных" : ""}`;
-  $("item-list").replaceChildren(...items.slice(0, 180).map((item) => {
-    const row = el("button", { type: "button", className: "item-row" }, [el("span", { className: "item-row__icon" }, [itemImage(item, picker.slot)]), el("span", {}, [el("span", { className: "item-row__name", textContent: item.name }), el("small", { textContent: `Ур. ${item.level ?? "—"} · ${item.subtype || item.type || "Предмет"} · ID ${item.id}` })])]);
-    row.setAttribute("aria-pressed", String(picker.item?.id === item.id));
-    row.addEventListener("click", () => {
-      if (picker.item?.id !== item.id) Object.assign(picker, { item, refine: 0, stones: [], addons: [] });
-      renderItemList(); renderItemDetail();
-    });
-    return row;
-  }));
-  if (!items.length) $("item-list").append(el("p", { className: "empty-picker", textContent: "Предметов не найдено. Измените поиск или снимите фильтр. Для этой ячейки данные могли ещё не попасть в снимок базы." }));
-  $("item-list").scrollTop = scrollTop;
-}
-function stoneTarget(slot) { return slot === "weapon" ? "weapon" : ["necklace", "belt", "ring1", "ring2"].includes(slot) ? "decoration" : "armor"; }
-function renderItemDetail() {
-  const box = $("item-detail"), item = picker.item;
-  $("btn-equip").disabled = !item;
-  if (!item) { box.replaceChildren(el("p", { className: "muted", textContent: "Выберите предмет из списка." })); return; }
-  box.replaceChildren(el("h3", { textContent: item.name }), el("p", { className: "muted", textContent: `${item.type || "Предмет"} · ранг ${item.grade ?? "—"} · ID ${item.id}` }));
-  box.append(el("p", { className: `requirement${fitsCharacter(item) ? "" : " unmet"}`, textContent: `Требуемый уровень: ${item.level ?? 1}` }));
-  if (item.classes?.length && !item.classes.includes(CLASSES[state.cls].name)) box.append(el("p", { className: "requirement unmet", textContent: `Классы: ${item.classes.filter((name) => CLASS_NAMES.has(name)).join(", ") || "Нет подходящего класса Comeback 1.4.6"}` }));
-  const effective = calculate().effectiveAttrs;
-  for (const [key, value] of Object.entries(item.req ?? {})) box.append(el("p", { className: `requirement${effective[key] < value ? " unmet" : ""}`, textContent: `${FULL_ATTR_NAMES[key] ?? key}: ${value}` }));
-  box.append(el("ul", { className: "detail-stats" }, Object.entries(item.stats ?? {}).map(([key, value]) => el("li", { textContent: `${STAT_NAMES[key] ?? key}: ${Array.isArray(value) ? range(value) : fmt(value)}` }))));
-  if (item.refine?.levels?.some((n) => n !== null)) {
-    const select = el("select", { ariaLabel: "Заточка" });
-    select.append(el("option", { value: "0", textContent: "Без заточки" }));
-    item.refine.levels.forEach((value, index) => { if (typeof value === "number") select.append(el("option", { value: String(index + 1), textContent: `+${index + 1} · ${item.refine.stat} +${fmt(value)}` })); });
-    select.value = String(picker.refine);
-    select.addEventListener("change", () => { picker.refine = Number(select.value); });
-    box.append(el("label", { className: "detail-control" }, ["Заточка", select]));
-  }
-  const sockets = maxSockets(item, picker.slot), target = stoneTarget(picker.slot);
-  if (sockets) {
-    box.append(el("h4", { textContent: `Камни · до ${sockets} ячеек` }));
-    for (let index = 0; index < sockets; index++) {
-      const select = el("select", { ariaLabel: `Камень ${index + 1}` }, [el("option", { value: "", textContent: "Пустая ячейка" })]);
-      for (const stone of catalog.stones.filter((s) => s.effects?.[target] && (!item.grade || !s.grade || s.grade <= item.grade))) select.append(el("option", { value: String(stone.id), textContent: stone.name }));
-      select.value = picker.stones[index] ? String(picker.stones[index].id) : "";
-      select.addEventListener("change", () => { picker.stones[index] = catalog.stones.find((s) => s.id === Number(select.value)) ?? null; });
-      box.append(el("label", { className: "detail-control" }, [`Ячейка ${index + 1}`, select]));
-    }
-  }
-  const addons = [...new Set(availableAddonTexts(item))];
-  if (addons.length) {
-    box.append(el("h4", { textContent: "Дополнительные свойства" }), el("p", { className: "muted small-copy", textContent: `Отметьте свойства своей вещи. В источнике: ${item.addons.count ?? "количество не указано"}.` }));
-    for (const text of addons) {
-      const check = el("input", { type: "checkbox", checked: picker.addons.includes(text) });
-      check.addEventListener("change", () => {
-        if (check.checked && picker.addons.length >= maximumAddons(item)) {
-          check.checked = false;
-          $("item-action-message").textContent = `У этой вещи не более ${maximumAddons(item)} дополнительных свойств.`;
-          return;
-        }
-        picker.addons = check.checked ? [...picker.addons, text] : picker.addons.filter((s) => s !== text);
-        $("item-action-message").textContent = "";
-      });
-      box.append(el("label", { className: "addon-option" }, [check, text]));
-    }
-  }
-  if (item.set?.length) box.append(el("p", { className: "muted small-copy", textContent: "Бонус комплекта пока не рассчитывается." }));
-}
-function setupPicker() {
-  $("item-search").addEventListener("input", renderItemList);
-  $("item-available").addEventListener("change", renderItemList);
-  $("btn-equip").addEventListener("click", () => {
-    if (!picker.item) return;
-    try {
-      const next = { ...state, equipment: { ...state.equipment, [picker.slot]: { item: picker.item, refine: picker.refine, stones: picker.stones.filter(Boolean), addons: picker.addons } } };
-      calculate(next); state = next; dirty(); render(); $("item-dialog").close();
-      status(`Надето: ${picker.item.name}${picker.refine ? ` +${picker.refine}` : ""}.`);
-    } catch (error) { $("item-action-message").textContent = error.message; }
-  });
-  $("btn-unequip").addEventListener("click", () => { delete state.equipment[picker.slot]; dirty(); render(); $("item-dialog").close(); status("Предмет снят."); });
+function setupDialogs() {
   document.querySelectorAll("[data-close]").forEach((button) => button.addEventListener("click", () => $(button.dataset.close).close()));
   $("btn-retry-catalog").addEventListener("click", loadCatalog);
 }
@@ -353,7 +266,7 @@ function applyBuild(json, id = null, preserveShareHash = false) {
   if (!catalogReady) throw new Error("База предметов ещё не загружена");
   const next = parseBuild(json, catalog.items, catalog.stones);
   next.gender = normalizeGender(next.cls, next.gender);
-  calculate(next); state = next; activeSavedId = id; characterPane = null; effectsUI?.close();
+  calculate(next); state = next; activeSavedId = id; characterPane = null; effectsUI?.close(); equipmentUI?.close();
   $("char-name").value = state.name; $("char-message").textContent = ""; $("build-status").textContent = id ? "Сохранена" : "Загружена";
   if (!preserveShareHash) clearShareHash();
   render(); status(`Загружен персонаж: ${state.name || "Без имени"}.`);
@@ -435,6 +348,20 @@ function setupSaves() {
 }
 
 effectsUI = createEffectsUI({ getState: () => state, onChange: () => { dirty(); render(); } });
-setupCharacter(); setupDoll(); setupPicker(); setupSaves(); render();
+equipmentUI = createEquipmentUI({
+  getState: () => state, getCatalog: () => catalog, isReady: () => catalogReady,
+  renderIcon: itemImage, onMessage: status,
+  onEquip: (slot, choice) => {
+    const next = { ...state, equipment: { ...state.equipment, [slot]: choice } };
+    calculate(next); state = next; dirty(); render();
+    status(`Надето: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}.`);
+  },
+  onUnequip: (slot) => {
+    const equipment = { ...state.equipment };
+    delete equipment[slot];
+    state = { ...state, equipment }; dirty(); render(); status("Предмет снят.");
+  },
+});
+setupCharacter(); setupDoll(); setupDialogs(); setupSaves(); render();
 await Promise.allSettled([loadCatalog(), setupEffects()]);
 if (catalogReady) loadHashBuild();
