@@ -1,13 +1,14 @@
-import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js?v=20261103-activation";
-import { SLOTS } from "./engine/equipment.js";
-import { resolveEquipment } from "./engine/eligibility.js?v=20261103-activation";
-import { MAX_REPUTATION, validateReputation } from "./engine/reputation.js";
-import { parseBuild, serializeBuild } from "./engine/build.js";
-import { changeClass, changeGender, normalizeGender } from "./engine/character.js";
-import { createEffectsUI } from "./effects-ui.js";
-import { createEquipmentUI } from "./equipment-ui.js?v=20261103-activation";
-import { comparisonUrl, createComparisonSnapshot } from "./engine/comparison.js?v=20261103-comparison";
-import { createComparisonBridge } from "./comparison-bridge.js?v=20261103-comparison";
+import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js?v=20261103-explanations";
+import { SLOTS } from "./engine/equipment.js?v=20261103-explanations";
+import { resolveEquipment } from "./engine/eligibility.js?v=20261103-explanations";
+import { MAX_REPUTATION, validateReputation } from "./engine/reputation.js?v=20261103-explanations";
+import { parseBuild, serializeBuild } from "./engine/build.js?v=20261103-explanations";
+import { changeClass, changeGender, normalizeGender } from "./engine/character.js?v=20261103-explanations";
+import { createEffectsUI } from "./effects-ui.js?v=20261103-explanations";
+import { createEquipmentUI } from "./equipment-ui.js?v=20261103-explanations";
+import { createStatExplanationsUI } from "./stat-explanations-ui.js?v=20261103-explanations";
+import { comparisonUrl, createComparisonSnapshot } from "./engine/comparison.js?v=20261103-explanations";
+import { createComparisonBridge } from "./comparison-bridge.js?v=20261103-explanations";
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString("ru-RU", { maximumFractionDigits: 2 });
@@ -22,13 +23,13 @@ const CLASS_GRID_ORDER = ["by", "ga", "rl", "ya", "js", "ij", "sj", "fx", "rg", 
 const TITLE_FIELDS = { phys_atk: "Физ. атака", mag_atk: "Маг. атака", phys_def: "Физ. защита", mag_def: "Маг. защита", accuracy: "Меткость", evasion: "Уклонение", attack_level: "Атака ПА", defense_level: "Защита ПЗ", hp: "Здоровье" };
 const SLOT_SKINS = { helmet: "ft", chest: "rv", legs: "tg", boots: "rx", weapon: "ta", necklace: "vx", cape: "wy", wrists: "mj", belt: "st", ring1: "oq-left", ring2: "oq-right", tome: "qn", ammo: "it", flight: "ic" };
 const STAT_ROWS = [
-  ["Физ. атака", (s) => range(s.physAtk), "Физ. защита", (s) => fmt(s.physDef)],
-  ["Маг. атака", (s) => range(s.magAtkRange), "Маг. защита", (s) => fmt(s.magDef)],
-  ["Шанс крит.", (s) => pct(s.crit), "Металл", (s) => fmt(s.elements.metal)],
-  ["Атак/сек", (s) => `${fmt(s.atkSpeed)} уд/сек`, "Дерево", (s) => fmt(s.elements.wood)],
-  ["Время пения", (s) => pct(s.castTime), "Вода", (s) => fmt(s.elements.water)],
-  ["Меткость", (s) => fmt(s.accuracy), "Огонь", (s) => fmt(s.elements.fire)],
-  ["Уклонение", (s) => fmt(s.evasion), "Земля", (s) => fmt(s.elements.earth)],
+  ["Физ. атака", (s) => range(s.physAtk), "Физ. защита", (s) => fmt(s.physDef), "physAtk", "physDef"],
+  ["Маг. атака", (s) => range(s.magAtkRange), "Маг. защита", (s) => fmt(s.magDef), "magAtkRange", "magDef"],
+  ["Шанс крит.", (s) => pct(s.crit), "Металл", (s) => fmt(s.elements.metal), null, "metal"],
+  ["Атак/сек", (s) => `${fmt(s.atkSpeed)} уд/сек`, "Дерево", (s) => fmt(s.elements.wood), null, "wood"],
+  ["Время пения", (s) => pct(s.castTime), "Вода", (s) => fmt(s.elements.water), null, "water"],
+  ["Меткость", (s) => fmt(s.accuracy), "Огонь", (s) => fmt(s.elements.fire), null, "fire"],
+  ["Уклонение", (s) => fmt(s.evasion), "Земля", (s) => fmt(s.elements.earth), null, "earth"],
   ["Атака ПА", (s) => fmt(s.attackLevel), "Защита ПЗ", (s) => fmt(s.defenseLevel)],
   ["Умен. физ. урона", (s) => pct(Math.round(s.physDefPct * 10) / 10), "Умен. маг. урона", (s) => pct(Math.round(s.magDefPct * 10) / 10)],
   ["Скорость", (s) => `${fmt(s.speed)} м/сек`, "Крит. урон", (s) => pct(s.critDamage)],
@@ -43,6 +44,7 @@ let activeSavedId = null;
 let allEffects = [];
 let effectsUI;
 let equipmentUI;
+let statExplanationsUI;
 let characterPane = null;
 let comparisonBridge;
 let comparisonInitialized = false;
@@ -52,6 +54,18 @@ function el(tag, props = {}, children = []) {
   const node = Object.assign(document.createElement(tag), props);
   node.append(...children);
   return node;
+}
+
+function statValue(value, key, label) {
+  const cell = el("td", { className: "num" });
+  if (!key) { cell.textContent = value; return cell; }
+  const button = el("button", { type: "button", className: "stat-explain", textContent: value,
+    title: `Показать расчёт: ${label}`, ariaLabel: `${label}: ${value}. Объяснить расчёт` });
+  button.dataset.explain = key;
+  button.setAttribute("aria-haspopup", "dialog");
+  button.setAttribute("aria-controls", "stat-explanations-dialog");
+  cell.append(button);
+  return cell;
 }
 
 function symbol(name) {
@@ -207,6 +221,7 @@ function render() {
   $("gender-icon").className = `ref-gender-${gender === "m" ? 1 : 2} is-active`;
   $("paperdoll").dataset.gender = gender;
   for (const key of ["hp", "mp", "free"]) $(`out-${key}`).textContent = fmt(stats[key]);
+  $("out-hp").closest("button").setAttribute("aria-label", `Здоровье: ${fmt(stats.hp)}. Объяснить расчёт`);
   for (const key of ATTRS) {
     const input = $(`attr-${key}`);
     input.value = state.attrs[key]; input.max = state.attrs[key] + stats.free;
@@ -214,7 +229,11 @@ function render() {
     input.parentElement.children[1].disabled = state.attrs[key] <= BASE_ATTR;
     input.parentElement.children[3].disabled = stats.free <= 0;
   }
-  $("stats-body").replaceChildren(...STAT_ROWS.map(([left, lv, right, rv]) => el("tr", {}, [el("td", { className: "label", textContent: left }), el("td", { className: "num", textContent: lv(stats) }), el("td", { className: "label", textContent: right }), el("td", { className: "num", textContent: rv(stats) })])));
+  $("stats-body").replaceChildren(...STAT_ROWS.map(([left, lv, right, rv, leftKey, rightKey]) => el("tr", {}, [
+    el("td", { className: "label", textContent: left }), statValue(lv(stats), leftKey, left),
+    el("td", { className: "label", textContent: right }), statValue(rv(stats), rightKey, right),
+  ])));
+  statExplanationsUI?.render(stats.explanations);
   const warnings = [...new Set(stats.gearWarnings)];
   $("gear-warnings").replaceChildren(...warnings.map((warning) => el("li", { textContent: warning })));
   $("warning-count").textContent = warnings.length ? `(${warnings.length})` : "";
@@ -408,6 +427,7 @@ function setupSaves() {
   renderSaved();
 }
 
+statExplanationsUI = createStatExplanationsUI();
 effectsUI = createEffectsUI({ getState: () => state, onChange: () => { dirty(); render(); } });
 equipmentUI = createEquipmentUI({
   getState: () => state, getCatalog: () => catalog, isReady: () => catalogReady,

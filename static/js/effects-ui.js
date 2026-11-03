@@ -1,4 +1,4 @@
-import { canUseEffect, canUseEffectState, EFFECT_VALUE_LABELS, getEffectStates, resolveEffect } from "./engine/effects.js";
+import { canUseEffect, canUseEffectState, EFFECT_VALUE_LABELS, getEffectStates, resolveEffect } from "./engine/effects.js?v=20261103-explanations";
 
 const KINDS = ["buff", "debuff"];
 const KIND_NAMES = { buff: "баф", debuff: "дебаф" };
