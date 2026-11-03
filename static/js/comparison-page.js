@@ -1,4 +1,4 @@
-import { APPLY_MESSAGE, STATE_MESSAGE, compareSnapshots, encodeBuildHash, isComparisonBuild, isComparisonSnapshot } from "./engine/comparison.js?v=20261103-comparison";
+import { APPLY_MESSAGE, STATE_MESSAGE, compareSnapshots, encodeBuildHash, isComparisonBuild, isComparisonSnapshot } from "./engine/comparison.js?v=20261103-explanations";
 
 const sides = ["left", "right"];
 const frames = Object.fromEntries(sides.map((side) => [side, document.getElementById(`frame-${side}`)]));

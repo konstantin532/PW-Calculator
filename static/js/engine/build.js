@@ -1,7 +1,7 @@
-import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, spentPoints, totalPoints, validateTitles } from "./stats.js";
-import { itemFitsSlot, SLOTS, validateEquipmentChoice } from "./equipment.js";
-import { validateEffectSettings } from "./effects.js";
-import { validateReputation } from "./reputation.js";
+import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, spentPoints, totalPoints, validateTitles } from "./stats.js?v=20261103-explanations";
+import { itemFitsSlot, SLOTS, validateEquipmentChoice } from "./equipment.js?v=20261103-explanations";
+import { validateEffectSettings } from "./effects.js?v=20261103-explanations";
+import { validateReputation } from "./reputation.js?v=20261103-explanations";
 
 const MAX_BYTES = 1024 * 1024;
 const SLOT_IDS = new Set(SLOTS.map((slot) => slot.id));

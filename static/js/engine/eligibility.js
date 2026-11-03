@@ -1,5 +1,5 @@
-import { getItemBonuses, itemFitsSlot, SLOTS } from "./equipment.js";
-import { getRequiredReputation, validateReputation } from "./reputation.js";
+import { getItemBonuses, itemFitsSlot, SLOTS } from "./equipment.js?v=20261103-explanations";
+import { getRequiredReputation, validateReputation } from "./reputation.js?v=20261103-explanations";
 
 const ATTR_LABELS = { vit: "Выносливость", int: "Интеллект", str: "Сила", dex: "Ловкость" };
 const ATTRS = Object.keys(ATTR_LABELS);

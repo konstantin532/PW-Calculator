@@ -1,7 +1,7 @@
 import {
   SLOTS, availableAddonTexts, formatAddonValue, getItemBonuses, itemFitsSlot,
   maxSockets, maximumAddons, parseAddonOption,
-} from "./engine/equipment.js";
+} from "./engine/equipment.js?v=20261103-explanations";
 
 const PAGE_SIZE = 80;
 const SLOT_NAMES = new Map(SLOTS.map(({ id, name }) => [id, name]));

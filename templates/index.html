@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="{% static 'css/effects-ui.css' %}?v=20261102">
   <link rel="stylesheet" href="{% static 'css/equipment-ui.css' %}?v=20261103-activation">
   <link rel="stylesheet" href="{% static 'css/jade-skin.css' %}?v=20261103-navigation">
+  <link rel="stylesheet" href="{% static 'css/stat-explanations.css' %}?v=20261103-explanations">
   {% if embedded %}<link rel="stylesheet" href="{% static 'css/comparison-embedded.css' %}?v=20261103-comparison">{% endif %}
-  <script type="module" src="{% static 'js/app.js' %}?v=20261103-comparison"></script>
+  <script type="module" src="{% static 'js/app.js' %}?v=20261103-explanations"></script>
 </head>
 <body class="jade-skin{% if embedded %} comparison-embedded{% endif %}">
 <main class="calc">
@@ -39,7 +40,7 @@
           <div id="title-panel" class="character-pane character-title-panel" hidden><h3>Суммарные дополнения</h3><div id="title-fields"></div></div>
           <div class="identity__fields"><label class="level-field">Текущий ур. <input id="char-level" type="number" min="1" max="105" value="105" inputmode="numeric"></label></div>
           <div class="character-actions"><button type="button" data-character-control="class">Класс</button><button type="button" data-character-control="gender">Пол</button><button type="button" data-character-control="title">Титул</button><button type="button" data-action="btn-load">Сборки</button><button type="button" data-action="btn-reset">Сбросить</button><button type="button" data-action="btn-export">Скачать</button><button type="button" data-action="btn-share">Ссылка</button></div>
-          <div class="pools"><span>ЖС: <b id="out-hp">0</b></span><span>МЭ: <b id="out-mp">0</b></span></div>
+          <div class="pools"><span>ЖС: <button type="button" class="stat-explain" data-explain="hp" aria-label="Здоровье: объяснить расчёт" aria-haspopup="dialog" aria-controls="stat-explanations-dialog" title="Как рассчитано здоровье"><b id="out-hp">0</b></button></span><span>МЭ: <b id="out-mp">0</b></span></div>
           <fieldset class="attrs"><legend><span>Доступно <b id="out-free">520</b></span><span>Характеристики</span></legend><div class="attrs__grid" id="attr-list"></div><button type="button" id="btn-reset" class="text-button">Сбросить очки</button></fieldset>
           <p class="inline-status" id="char-message" role="status"></p>
           <div class="stats-frame"><table class="stats" aria-label="Боевые показатели"><tbody id="stats-body"></tbody></table></div>

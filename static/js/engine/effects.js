@@ -149,20 +149,31 @@ function sourceCorrections(id, resolved, entries) {
 }
 
 export function collectEffects(ids, settings = {}, catalog = [], context = {}) {
-  const modifiers = {}, warnings = [];
+  const modifiers = {}, warnings = [], contributions = [];
   const map = new Map((Array.isArray(catalog) ? catalog : []).map((effect) => [effect.id, effect]));
   const selected = [];
   const baseIds = new Set(ids);
   const extraIds = Object.entries(settings).filter(([, saved]) => saved?.activeStates?.length).map(([id]) => Number(id));
   for (const id of new Set([...ids, ...extraIds])) {
     const effect = map.get(id);
-    if (!effect) { warnings.push(`Эффект ${id}: отсутствует в загруженном каталоге, не учтён.`); continue; }
+    if (!effect) {
+      const reason = `Эффект ${id}: отсутствует в загруженном каталоге, не учтён.`;
+      warnings.push(reason);
+      contributions.push({ label: `Эффект ${id}`, kind: "effect", active: false, reason,
+        entries: [{ label: "Неизвестное влияние", stat: "unknown", value: null, percent: false }] });
+      continue;
+    }
     const resolved = resolveEffect(effect, settings[id]);
     warnings.push(...resolved.warnings);
-    if (!canUseEffect(effect, context.cls)) { warnings.push(`${resolved.name}: недоступно выбранному классу, не учтено.`); continue; }
+    const skipped = (reason) => {
+      warnings.push(reason);
+      contributions.push({ label: resolved.name, kind: "effect", active: false, reason,
+        entries: [{ label: "Не применяется", stat: "unknown", value: null, percent: false }] });
+    };
+    if (!canUseEffect(effect, context.cls)) { skipped(`${resolved.name}: недоступно выбранному классу, не учтено.`); continue; }
     const requiredForm = id === 12 ? 8 : id === 21 ? 27 : null;
-    if (requiredForm && !ids.includes(requiredForm)) { warnings.push(`${resolved.name}: действует только в соответствующем облике.`); continue; }
-    if ([55, 56, 109].includes(id) && context.hasWeapon === false) { warnings.push(`${resolved.name}: действует только с оружием.`); continue; }
+    if (requiredForm && !ids.includes(requiredForm)) { skipped(`${resolved.name}: действует только в соответствующем облике.`); continue; }
+    if ([55, 56, 109].includes(id) && context.hasWeapon === false) { skipped(`${resolved.name}: действует только с оружием.`); continue; }
     const states = getEffectStates(effect, settings[id]);
     const active = new Set(settings[id]?.activeStates ?? []);
     if (!states.length) warnings.push(`${resolved.name}: нет распознанных состояний, влияние не учтено.`);
@@ -174,26 +185,34 @@ export function collectEffects(ids, settings = {}, catalog = [], context = {}) {
     for (const state of states) if (wanted(state) && !canUseEffectState(effect, state, context.cls)) warnings.push(`${resolved.name}: состояние ${state.key} недоступно выбранному классу.`);
     const kind = effect.kind === "debuff" ? "debuff" : "buff";
     for (const state of entries) {
+      const variantLabel = { normal: "обычный", rs: "светлый", je: "тёмный" }[resolved.variant];
+      const source = { label: `${resolved.name} · ур. ${resolved.level} · ${variantLabel}`, kind: "effect", active: true, reason: "",
+        entries: state.types.map((type) => ({ label: EFFECT_VALUE_LABELS[type] ?? type, stat: type,
+          value: SUPPORTED_EFFECT_TYPES.has(type) ? state.values[type] : null, percent: PERCENT_TYPES.has(type) })) };
+      contributions.push(source);
       // Красные состояния с общим id заменяют друг друга в исходном UI.
       if (state.exclusiveId !== null) {
         const duplicate = selected.findIndex((entry) => entry.kind === kind && entry.exclusiveId === state.exclusiveId);
         if (duplicate !== -1) {
           warnings.push(`${resolved.name}: заменяет несовместимое состояние ${selected[duplicate].name}.`);
+          selected[duplicate].source.active = false;
+          selected[duplicate].source.reason = `Несовместимое состояние заменено: ${resolved.name}.`;
           selected.splice(duplicate, 1);
         }
       }
-      selected.push({ ...state, id, kind, name: resolved.name, resolved });
+      selected.push({ ...state, id, kind, name: resolved.name, resolved, source });
     }
     for (const key of active) if (!states.some((state) => state.key === key)) warnings.push(`${resolved.name}: состояние ${key} недоступно для выбранного уровня.`);
   }
   for (const id of new Set(selected.map((state) => state.id))) {
     const states = selected.filter((state) => state.id === id);
     const resolved = states[0].resolved;
-    const entries = states.flatMap((state) => state.types.map((type) => ({ type, value: state.values[type] })));
-    for (const { type, value } of sourceCorrections(id, resolved, entries)) {
+    const entries = states.flatMap((state) => state.types.map((type, index) => ({ type, value: state.values[type], source: state.source, index })));
+    for (const { type, value, source, index } of sourceCorrections(id, resolved, entries)) {
       if (!SUPPORTED_EFFECT_TYPES.has(type)) { warnings.push(`${resolved.name}: состояние ${type} пока не поддержано и не учтено.`); continue; }
       modifiers[type] = (modifiers[type] ?? 0) + value;
+      source.entries[index].value = value;
     }
   }
-  return { modifiers, warnings };
+  return { modifiers, warnings, contributions };
 }

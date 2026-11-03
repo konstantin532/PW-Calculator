@@ -1,5 +1,5 @@
 // Каталог хранит исходные значения Comeback. Неизвестные подписи не угадываем.
-import { getRequiredReputation } from "./reputation.js";
+import { getRequiredReputation } from "./reputation.js?v=20261103-explanations";
 
 export const SLOTS = [
   { id: "helmet", name: "Шлем", side: "left" },
@@ -56,11 +56,25 @@ const LABELS = new Map(Object.entries({
   "защита от металла": "def_metal", "защита от дерева": "def_wood", "защита от воды": "def_water",
   "защита от огня": "def_fire", "защита от земли": "def_earth",
   меткость: "accuracy", "точность попадания": "accuracy", уклонение: "evasion", "шанс крит удара": "crit",
-  "вероятность критического удара": "crit", "шанс критического удара": "crit", "критический урон": "crit_damage",
+  "вероятность критического удара": "crit", "шанс критического удара": "crit", крит: "crit", "критический урон": "crit_damage",
   скорость: "speed", "скорость передвижения": "speed", "время подготовки": "cast_time", "время пения": "cast_time", пение: "cast_time",
   "показатель атаки": "attack_level", "уровень атаки": "attack_level", "показатель защиты": "defense_level", "уровень защиты": "defense_level",
   "сила духа": "spirit", скрытность: "stealth", обнаружение: "detection", дальность: "range",
 }));
+// /db/146/item/12647, /22, /32261, /32263: «макс» относится только
+// к верхней границе атаки. Диапазон ролла выбирается отдельно в addons.
+const MAX_ATTACK_LABELS = new Map(Object.entries({
+  "макс физ атака": "phys_atk", "физическая атака макс": "phys_atk",
+  "макс маг атака": "mag_atk", "магическая атака макс": "mag_atk",
+}));
+const STAT_LABELS = {
+  vit: "Выносливость", int: "Интеллект", str: "Сила", dex: "Ловкость", hp: "Здоровье", mp: "Мана",
+  phys_atk: "Физическая атака", mag_atk: "Магическая атака", phys_def: "Физическая защита", mag_def: "Магическая защита",
+  def_metal: "Защита от металла", def_wood: "Защита от дерева", def_water: "Защита от воды", def_fire: "Защита от огня", def_earth: "Защита от земли",
+  accuracy: "Меткость", evasion: "Уклонение", crit: "Шанс критического удара", crit_damage: "Критический урон",
+  speed: "Скорость передвижения", cast_time: "Время пения", attack_level: "Показатель атаки", defense_level: "Показатель защиты",
+  spirit: "Сила духа", stealth: "Скрытность", detection: "Обнаружение", range: "Дальность", atk_speed: "Скорость атаки",
+};
 const PERCENT_POINTS = new Set(["crit", "crit_damage", "cast_time"]);
 const isRecord = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 
@@ -192,12 +206,17 @@ export function getItemBonuses(entry, slotId) {
   const flat = {};
   const ranges = { phys_atk: [0, 0], mag_atk: [0, 0] };
   const warnings = [];
+  const contributions = [], unresolved = [];
   const prefix = item.name || `Предмет ${item.id ?? ""}`;
   let atkSpeed;
   const warn = (message) => warnings.push(`${prefix}: ${message}`);
-  function add(key, value, percent = false, raw = key) {
+  function reject(meta, reason) {
+    warn(reason);
+    unresolved.push({ source: meta.source, label: meta.label, reason, value: null });
+  }
+  function add(key, value, meta, percent = false) {
     if (!STAT_KEYS.has(key) || (percent && !PERCENT_POINTS.has(key))) {
-      warn(`не учтён эффект «${raw}»`); return;
+      reject(meta, `не учтён эффект «${meta.raw}»`); return;
     }
     const range = Array.isArray(value);
     if (range && (value.length !== 2 || !["phys_atk", "mag_atk"].includes(key) || value[0] > value[1])) throw new Error(`${prefix}: неверный диапазон характеристик ${key}`);
@@ -205,45 +224,50 @@ export function getItemBonuses(entry, slotId) {
     if (numbers.some((n) => typeof n !== "number" || !Number.isFinite(n) || Math.abs(n) > 1e9)) throw new Error(`${prefix}: неверное значение характеристик ${key}`);
     if (key === "atk_speed") {
       if (slotId === "weapon" && value > 0 && value <= 5) atkSpeed = value;
-      else warn(`скорость атаки ${value}: единицы источника не подтверждены`);
+      else { reject(meta, `скорость атаки ${value}: единицы источника не подтверждены`); return; }
     } else if (key === "phys_atk" || key === "mag_atk") {
       ranges[key][0] += range ? value[0] : value;
       ranges[key][1] += range ? value[1] : value;
     } else flat[key] = (flat[key] ?? 0) + value;
+    contributions.push({ ...meta, stat: key, value: ["phys_atk", "mag_atk"].includes(key) ? (range ? [...value] : [value, value]) : value, percent });
   }
-  function addLabeled(label, value, percent = false, raw = label) {
-    const key = LABELS.get(normalize(label));
-    if (!key || value === null || value === undefined) { warn(`не учтён эффект «${raw}»`); return; }
-    add(key, value, percent, raw);
+  function addLabeled(label, value, meta, percent = false) {
+    const normalized = normalize(label);
+    const maximum = MAX_ATTACK_LABELS.get(normalized);
+    const key = maximum ?? LABELS.get(normalized);
+    if (!key || value === null || value === undefined) { reject(meta, `не учтён эффект «${meta.raw}»`); return; }
+    add(key, maximum ? [0, value] : value, meta, percent);
   }
   if (!isRecord(item.stats ?? {})) throw new Error(`${prefix}: неверные данные характеристик`);
-  for (const [key, value] of Object.entries(item.stats ?? {})) add(key, value);
+  for (const [key, value] of Object.entries(item.stats ?? {})) add(key, value, { source: "base", label: STAT_LABELS[key] ?? key, raw: key });
   if (refine > 0) {
     const value = item.refine?.levels?.[refine - 1];
+    const meta = { source: "refine", label: `Заточка +${refine}: ${item.refine?.stat ?? "неизвестная характеристика"}`, raw: item.refine?.stat ?? `Заточка +${refine}` };
     if (typeof value === "number") {
       if (normalize(item.refine.stat) === "физ+маг атака") {
-        add("phys_atk", value); add("mag_atk", value);
-      } else addLabeled(item.refine.stat, value);
+        add("phys_atk", value, meta); add("mag_atk", value, meta);
+      } else addLabeled(item.refine.stat, value, meta);
     }
-    else warn(`нет подтверждённого значения заточки +${refine}`);
+    else reject(meta, `нет подтверждённого значения заточки +${refine}`);
   }
   const guaranteed = new Set(guaranteedAddonTexts(item));
   // Старые сборки сохраняли постоянное свойство в addons. Оно применяется
   // один раз; одинаковые обычные роллы остаются отдельными свойствами.
   for (const text of [...guaranteed, ...addons.filter((addon) => !guaranteed.has(addon))]) {
     const option = parseAddonText(text);
-    if (option && option.min === option.max) addLabeled(option.label, option.min, option.percent, text);
-    else warn(`не учтён выбранный бонус «${text}»`);
+    const meta = { source: guaranteed.has(text) ? "guaranteed" : "addon", label: text, raw: text };
+    if (option && option.min === option.max) addLabeled(option.label, option.min, meta, option.percent);
+    else reject(meta, `не учтён выбранный бонус «${text}»`);
   }
   const target = STONE_TARGETS[slotId];
   for (const stone of stones) {
     const effect = stone.effects[target];
-    addLabeled(effect.stat, effect.value, effect.percent === true, effect.raw ?? effect.stat);
+    addLabeled(effect.stat, effect.value, { source: "stone", label: `${stone.name || `Камень ${stone.id ?? ""}`}: ${effect.stat}`, raw: effect.raw ?? effect.stat }, effect.percent === true);
   }
   for (const label of Object.keys(item.specs_extra ?? {})) {
     if (label === "Требуемая репутация" && getRequiredReputation(item) !== null) continue;
-    warn(`не учтена характеристика «${label}»`);
+    reject({ source: "base", label }, `не учтена характеристика «${label}»`);
   }
-  if (Array.isArray(item.set) && item.set.length) warn("бонус комплекта не рассчитан");
-  return { flat, ranges, atkSpeed, warnings };
+  if (Array.isArray(item.set) && item.set.length) reject({ source: "base", label: "Бонус комплекта" }, "бонус комплекта не рассчитан");
+  return { flat, ranges, atkSpeed, warnings, contributions, unresolved };
 }
