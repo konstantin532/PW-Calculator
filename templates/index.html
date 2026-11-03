@@ -10,9 +10,9 @@
   <link rel="stylesheet" href="{% static 'mypers/skin-assets.css' %}?v=20261102">
   <link rel="stylesheet" href="{% static 'css/replica.css' %}?v=20261102">
   <link rel="stylesheet" href="{% static 'css/effects-ui.css' %}?v=20261102">
-  <link rel="stylesheet" href="{% static 'css/equipment-ui.css' %}?v=20261103-planning">
-  <link rel="stylesheet" href="{% static 'css/jade-skin.css' %}?v=20261103-planning">
-  <script type="module" src="{% static 'js/app.js' %}?v=20261103-planning"></script>
+  <link rel="stylesheet" href="{% static 'css/equipment-ui.css' %}?v=20261103-activation">
+  <link rel="stylesheet" href="{% static 'css/jade-skin.css' %}?v=20261103-activation">
+  <script type="module" src="{% static 'js/app.js' %}?v=20261103-activation"></script>
 </head>
 <body class="jade-skin">
 <main class="calc">
@@ -44,7 +44,7 @@
         </section>
         <section class="window doll" aria-labelledby="doll-title">
           <span class="panel-crest" aria-hidden="true"></span><span class="panel-inlay panel-inlay--left" aria-hidden="true"></span><span class="panel-inlay panel-inlay--right" aria-hidden="true"></span>
-          <header class="window__title"><h2 id="doll-title" class="panel-caption">Экипировка</h2><span id="gear-count" class="title-meta" title="Надето предметов">0 / 14</span></header>
+          <header class="window__title"><h2 id="doll-title" class="panel-caption">Экипировка</h2><span id="gear-count" class="title-meta" title="Выбрано предметов">0 / 14</span></header>
           <div class="paperdoll" id="paperdoll"><div class="figure" aria-hidden="true"></div></div>
           <p class="doll-hint" id="doll-message" role="status">Нажмите на ячейку, чтобы выбрать предмет</p>
           <div class="bag-actions"><button type="button" id="btn-clear-gear" class="text-button">Снять всё</button></div>
@@ -65,6 +65,6 @@
   <footer class="site-footer"><span>Perfect World · Comeback PW</span><span>Калькулятор персонажа · 1.4.6</span></footer>
 </main>
 <dialog id="load-dialog" class="game-dialog load-dialog" aria-labelledby="load-dialog-title"><header class="dialog-title"><h2 id="load-dialog-title">Загрузить персонажа</h2><button type="button" class="dialog-close" data-close="load-dialog" aria-label="Закрыть загрузку">×</button></header><div class="dialog-content"><p id="load-message" class="inline-status" role="alert"></p><div id="load-builds"></div><button type="button" class="quiet-button" id="btn-load-file">Выбрать файл сборки</button></div></dialog>
-<dialog id="info-dialog" class="game-dialog info-dialog" aria-labelledby="info-title"><header class="dialog-title"><h2 id="info-title">О калькуляторе</h2><button type="button" class="dialog-close" data-close="info-dialog" aria-label="Закрыть справку">×</button></header><div class="dialog-content"><p>Соберите персонажа Comeback PW 1.4.6: выберите класс, распределите очки и нажимайте на ячейки экипировки.</p><p>Введите репутацию персонажа. Вещи можно выбирать заранее для расчёта сборки. Красная подсветка показывает невыполненные требования; бонусы выбранных вещей учитываются. Для предмета можно выбрать заточку, камни и дополнительные свойства. Требования и неподдержанные свойства видны рядом с расчётом.</p><p>Нажмите на умение, чтобы выбрать уровень и светлый или тёмный вариант. Флажок или значок под умением включает его эффект. Кнопка «Титул» открывает дополнительные характеристики.</p><p>«Сохранить» сохраняет персонажа в этом браузере. Файл и ссылка позволяют перенести сборку на другой компьютер.</p><p>Каталог — снимок доступных страниц Comeback. Неподдержанные эффекты перечислены под расчётом. Формулы ещё требуют сверки с игрой.</p></div></dialog>
+<dialog id="info-dialog" class="game-dialog info-dialog" aria-labelledby="info-title"><header class="dialog-title"><h2 id="info-title">О калькуляторе</h2><button type="button" class="dialog-close" data-close="info-dialog" aria-label="Закрыть справку">×</button></header><div class="dialog-content"><p>Соберите персонажа Comeback PW 1.4.6: выберите класс, распределите очки и нажимайте на ячейки экипировки.</p><p>Введите репутацию персонажа. Вещи можно выбирать заранее для сборки. Красная подсветка показывает невыполненные требования; до их выполнения бонусы вещи, её заточки, камней и дополнительных свойств не учитываются. Когда требования выполнены, бонусы включаются автоматически. Требования и неподдержанные свойства видны рядом с расчётом.</p><p>Нажмите на умение, чтобы выбрать уровень и светлый или тёмный вариант. Флажок или значок под умением включает его эффект. Кнопка «Титул» открывает дополнительные характеристики.</p><p>«Сохранить» сохраняет персонажа в этом браузере. Файл и ссылка позволяют перенести сборку на другой компьютер.</p><p>Каталог — снимок доступных страниц Comeback. Неподдержанные эффекты перечислены под расчётом. Формулы ещё требуют сверки с игрой.</p></div></dialog>
 </body>
 </html>

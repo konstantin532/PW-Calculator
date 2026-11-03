@@ -46,7 +46,7 @@ function requirementsFor(item, context, attrs) {
   return { usable: reasons.length === 0, reasons, requirements };
 }
 
-/** Calculate the selected plan; usable reports requirements, not bonus activation. */
+/** Activate eligible selected items without self-support or circular grants. */
 export function resolveEquipment({ cls, level, reputation = 0, attrs, equipment = {} }) {
   if (!Object.hasOwn(CLASS_LABELS, cls)) throw new Error(`Неизвестный класс персонажа: ${cls}`);
   const context = { cls, className: CLASS_LABELS[cls], level, reputation: validateReputation(reputation) };
@@ -60,23 +60,45 @@ export function resolveEquipment({ cls, level, reputation = 0, attrs, equipment 
   // SLOTS makes requirement context independent of the input object's insertion order.
   const selected = SLOTS.filter(({ id }) => equipment[id] != null).map(({ id }) => [id, equipment[id]]);
   const bonuses = new Map(selected.map(([slot, entry]) => [slot, getItemBonuses(entry, slot)]));
-  const attributesWithout = (excluded) => {
+  const active = new Set();
+  const attributes = (slots, excluded) => {
     const result = Object.fromEntries(ATTRS.map((key) => [key, attrs[key]]));
-    // Every other selected item supports the plan, even when its own requirements
-    // are unmet. The checked item never supplies its own required attributes.
-    for (const [slot] of selected) {
+    for (const slot of slots) {
       if (slot === excluded) continue;
       for (const key of ATTRS) result[key] += bonuses.get(slot).flat[key] ?? 0;
     }
     return result;
   };
+  const conflict = (slot) => {
+    const proposed = new Set([...active, slot]);
+    if (Object.values(attributes(proposed)).some((value) => value < 0)) return "Бонусы предмета делают основную характеристику отрицательной.";
+    for (const other of active) {
+      if (!requirementsFor(equipment[other].item, context, attributes(proposed, other)).usable) {
+        return "Бонусы предмета нарушают требования другой активной вещи.";
+      }
+    }
+    return null;
+  };
+  // Only active gear can support another item's requirements. Repeated passes
+  // resolve valid chains; mutually dependent items cannot start themselves.
+  let changed;
+  do {
+    changed = false;
+    for (const [slot, entry] of selected) {
+      if (active.has(slot)) continue;
+      if (requirementsFor(entry.item, context, attributes(active)).usable && !conflict(slot)) {
+        active.add(slot);
+        changed = true;
+      }
+    }
+  } while (changed);
 
-  // activeEquipment is the calculated selection, not a list filtered by usable.
   const status = {}, activeEquipment = {}, warnings = [];
   for (const [slot, entry] of selected) {
-    const resolved = requirementsFor(entry.item, context, attributesWithout(slot));
-    activeEquipment[slot] = entry;
-    status[slot] = resolved;
+    const resolved = requirementsFor(entry.item, context, attributes(active, slot));
+    if (active.has(slot)) activeEquipment[slot] = entry;
+    else if (resolved.usable) resolved.reasons.push(conflict(slot) ?? "Требования цепочки экипировки не выполнены.");
+    status[slot] = { ...resolved, usable: active.has(slot) };
     for (const reason of resolved.reasons) warnings.push(`${entry.item.name || `Предмет ${entry.item.id ?? ""}`}: ${reason}`);
   }
   return { activeEquipment, status, warnings };

@@ -1,11 +1,11 @@
-import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js";
+import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js?v=20261103-activation";
 import { SLOTS } from "./engine/equipment.js";
-import { resolveEquipment } from "./engine/eligibility.js";
+import { resolveEquipment } from "./engine/eligibility.js?v=20261103-activation";
 import { MAX_REPUTATION, validateReputation } from "./engine/reputation.js";
 import { parseBuild, serializeBuild } from "./engine/build.js";
 import { changeClass, changeGender, normalizeGender } from "./engine/character.js";
 import { createEffectsUI } from "./effects-ui.js";
-import { createEquipmentUI } from "./equipment-ui.js";
+import { createEquipmentUI } from "./equipment-ui.js?v=20261103-activation";
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString("ru-RU", { maximumFractionDigits: 2 });
@@ -241,7 +241,7 @@ function renderGear(statuses = {}) {
     button.classList.toggle("slot--unusable", unavailable);
     button.dataset.usable = String(!unavailable);
     const name = `${slot.name}${slot.id === "ring1" ? " 1" : slot.id === "ring2" ? " 2" : ""}`;
-    button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}${unavailable ? ". Требования не выполнены: " + statuses[slot.id].reasons.join("; ") : ""}`);
+    button.setAttribute("aria-label", `${name}: ${choice ? choice.item.name : "пусто"}${unavailable ? ". Бонусы не учитываются. Требования не выполнены: " + statuses[slot.id].reasons.join("; ") : ""}`);
     if (choice) button.removeAttribute("title");
     else button.title = name;
     button.replaceChildren(...(choice ? [itemImage(choice.item, slot.id)] : []));
@@ -249,10 +249,10 @@ function renderGear(statuses = {}) {
   }
   const equipped = Object.entries(state.equipment).filter(([, choice]) => choice);
   $("gear-count").textContent = `${equipped.length} / ${SLOTS.length}`;
-  const unmetCount = equipped.filter(([slot]) => statuses[slot] && !statuses[slot].usable).length;
-  $("gear-count").title = `Выбрано для расчёта: ${equipped.length}; с предупреждением: ${unmetCount}`;
+  const activeCount = equipped.filter(([slot]) => statuses[slot]?.usable).length;
+  $("gear-count").title = `Выбрано предметов: ${equipped.length}; бонусы действуют: ${activeCount}`;
   $("equipped-summary").textContent = !equipped.length ? "Нет экипировки"
-    : `В расчёте: ${equipped.length}${unmetCount ? ` · с предупреждением: ${unmetCount}` : ""}`;
+    : `Выбрано: ${equipped.length} · действуют: ${activeCount}`;
   $("btn-clear-gear").disabled = !equipped.length;
   $("bag").replaceChildren(...Array.from({ length: 32 }, (_, index) => {
     const entry = equipped[index];
@@ -262,7 +262,7 @@ function renderGear(statuses = {}) {
     cell.dataset.slot = slot;
     if (statuses[slot] && !statuses[slot].usable) {
       cell.classList.add("bag-cell--unusable"); cell.dataset.usable = "false";
-      cell.setAttribute("aria-label", `Изменить: ${choice.item.name}. Требования не выполнены: ${statuses[slot].reasons.join("; ")}`);
+      cell.setAttribute("aria-label", `Изменить: ${choice.item.name}. Бонусы не учитываются. Требования не выполнены: ${statuses[slot].reasons.join("; ")}`);
     }
     cell.addEventListener("click", () => equipmentUI.open(slot, cell));
     return cell;
@@ -405,7 +405,7 @@ equipmentUI = createEquipmentUI({
     const next = { ...state, equipment: { ...state.equipment, [slot]: choice } };
     const eligibility = calculate(next).equipmentStatus[slot];
     state = next; dirty(); render();
-    status(`Выбрано для расчёта: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}.${eligibility.usable ? "" : " Требования пока не выполнены."}`);
+    status(`Выбрано: ${choice.item.name}${choice.refine ? ` +${choice.refine}` : ""}. ${eligibility.usable ? "Бонусы учитываются." : "Бонусы не учитываются: требования пока не выполнены."}`);
   },
   onUnequip: (slot) => {
     const equipment = { ...state.equipment };
