@@ -20,6 +20,13 @@
   color:var(--text);
 }
 .jade-skin .calc { width:657px; max-width:calc(100% - 32px); margin-top:22px; }
+.jade-skin .comparison-entry { display:flex; justify-content:flex-end; width:657px; max-width:100%; margin-bottom:18px; }
+.jade-skin .comparison-entry button {
+  min-height:38px; padding:10px 16px; border:1px solid #598578; border-radius:3px;
+  background:#1b332e; color:#dcf7e8; font:600 12px/16px Montserrat,Arial,sans-serif;
+}
+.jade-skin .comparison-entry button:hover { border-color:var(--focus); background:#29483e; }
+.jade-skin .comparison-entry button:focus-visible { outline:2px solid var(--focus); outline-offset:3px; }
 .jade-skin .calculator-main { width:657px; }
 .jade-skin .effects { width:657px; min-height:158px; padding-left:0; }
 .jade-skin .effects__head { height:22px; }
@@ -273,6 +280,7 @@
 }
 .jade-skin .effects-level-controls button { background:#20352f; }
 @media(max-width:719px) {
+  .jade-skin .comparison-entry button { width:100%; font-size:11px; }
   .jade-skin .calc { width:320px; max-width:calc(100% - 24px); margin-top:16px; }
   .jade-skin .effects { width:320px; min-height:230px; }
   .jade-skin .effects__grid { width:320px; grid-template-columns:repeat(8,34px); }

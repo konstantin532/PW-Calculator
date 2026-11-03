@@ -39,9 +39,26 @@ def test_single_calculator_keeps_comparison_entry_and_frame_protection():
     response = Client().get("/", HTTP_HOST="127.0.0.1")
     assert response.status_code == 200
     soup = BeautifulSoup(response.content, "html.parser")
-    assert soup.select_one("#btn-compare") is not None
+    entry = soup.select_one("#btn-compare")
+    assert entry is not None
+    assert entry.get_text(strip=True) == "Сравнить с другим персонажем"
+    assert entry.find_parent("nav").get("aria-label") == "Сравнение персонажей"
+    assert entry not in soup.select_one(".toolbar").descendants
     assert "comparison-embedded" not in soup.body.get("class", [])
     assert response.headers["X-Frame-Options"] == "DENY"
+
+
+def test_comparison_mode_switch_keeps_both_calculators_on_the_page():
+    response = Client().get("/compare/", HTTP_HOST="127.0.0.1")
+    soup = BeautifulSoup(response.content, "html.parser")
+    switch = soup.select_one("#single-calculator")
+    assert switch.name == "button"
+    assert switch.get("type") == "button"
+    assert switch.get("aria-expanded") == "true"
+    controlled = [soup.find(id=value) for value in switch.get("aria-controls", "").split()]
+    assert len(controlled) == 3
+    assert all(element is not None for element in controlled)
+    assert any(element.select_one("#frame-right") is not None for element in controlled)
 
 
 def test_comparison_endpoints_keep_local_host_restriction():
