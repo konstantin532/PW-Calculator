@@ -1,0 +1,50 @@
+{% load static %}<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Сравнение двух персонажей Comeback Perfect World 1.4.6: независимые сборки и разница характеристик.">
+  <link rel="icon" href="data:,">
+  <title>Сравнение персонажей · Comeback PW 1.4.6</title>
+  <link rel="stylesheet" href="{% static 'css/calc.css' %}">
+  <link rel="stylesheet" href="{% static 'mypers/skin-assets.css' %}?v=20261102">
+  <link rel="stylesheet" href="{% static 'css/comparison.css' %}?v=20261103-comparison">
+  <script type="module" src="{% static 'js/comparison-page.js' %}?v=20261103-comparison"></script>
+</head>
+<body class="comparison-page">
+<main class="comparison-workspace">
+  <header class="comparison-header">
+    <div><p class="comparison-eyebrow">Comeback PW · 1.4.6</p><h1>Сравнение персонажей</h1><p>Две независимые сборки. Меняйте вещи, характеристики и бафы на каждой стороне.</p></div>
+    <a href="/" id="single-calculator" class="comparison-back">Один персонаж</a>
+  </header>
+  <nav class="comparison-actions" aria-label="Копирование сборок">
+    <button type="button" id="copy-left-to-right" disabled title="Заменить второго персонажа копией первого">1 → 2 <span>Копировать первого</span></button>
+    <button type="button" id="swap-builds" disabled>⇄ <span>Поменять местами</span></button>
+    <button type="button" id="copy-right-to-left" disabled title="Заменить первого персонажа копией второго">2 → 1 <span>Копировать второго</span></button>
+  </nav>
+  <p id="comparison-status" class="comparison-status" role="status" aria-live="polite">Загрузка двух калькуляторов…</p>
+  <div class="comparison-panels">
+    <section class="comparison-calculator" aria-labelledby="left-heading">
+      <header class="comparison-panel-heading"><h2 id="left-heading"><span class="comparison-number">1</span><span id="left-name">Первый персонаж</span></h2><span id="left-class" class="comparison-panel-meta"></span></header>
+      <p id="frame-status-left" class="comparison-frame-status" role="status">Загрузка первого калькулятора…</p>
+      <iframe id="frame-left" src="/calculator/" title="Калькулятор первого персонажа" height="1040" allow="clipboard-write" loading="eager"></iframe>
+      <p class="comparison-frame-fallback"><a href="/calculator/" target="_blank" rel="noopener">Открыть первого отдельно</a></p>
+    </section>
+    <section class="comparison-calculator" aria-labelledby="right-heading">
+      <header class="comparison-panel-heading"><h2 id="right-heading"><span class="comparison-number">2</span><span id="right-name">Второй персонаж</span></h2><span id="right-class" class="comparison-panel-meta"></span></header>
+      <p id="frame-status-right" class="comparison-frame-status" role="status">Загрузка второго калькулятора…</p>
+      <iframe id="frame-right" src="/calculator/" title="Калькулятор второго персонажа" height="1040" allow="clipboard-write" loading="eager"></iframe>
+      <p class="comparison-frame-fallback"><a href="/calculator/" target="_blank" rel="noopener">Открыть второго отдельно</a></p>
+    </section>
+  </div>
+  <section class="comparison-summary" aria-labelledby="comparison-summary-title">
+    <header><h2 id="comparison-summary-title">Разница показателей</h2><p>Второй − первый. Для времени пения меньшее значение лучше.</p></header>
+    <div class="comparison-table-wrap" tabindex="0" role="region" aria-label="Сравнительная таблица характеристик">
+      <table class="comparison-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Первый</th><th scope="col">Второй</th><th scope="col">Разница (2 − 1)</th></tr></thead><tbody id="comparison-rows"><tr><td colspan="4">Показатели появятся после загрузки обоих персонажей.</td></tr></tbody></table>
+    </div>
+    <p class="comparison-legend">Знак показывает разницу. Зелёный — улучшение у второго, красный — снижение, нейтральный — равенство или разнонаправленное изменение диапазона.</p>
+  </section>
+  <footer class="comparison-footer">Каждая сторона использует тот же калькулятор Comeback PW 1.4.6. Невыполненные требования вещей отключают их бонусы.</footer>
+</main>
+</body>
+</html>

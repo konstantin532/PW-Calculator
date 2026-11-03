@@ -12,9 +12,10 @@
   <link rel="stylesheet" href="{% static 'css/effects-ui.css' %}?v=20261102">
   <link rel="stylesheet" href="{% static 'css/equipment-ui.css' %}?v=20261103-activation">
   <link rel="stylesheet" href="{% static 'css/jade-skin.css' %}?v=20261103-activation">
-  <script type="module" src="{% static 'js/app.js' %}?v=20261103-activation"></script>
+  {% if embedded %}<link rel="stylesheet" href="{% static 'css/comparison-embedded.css' %}?v=20261103-comparison">{% endif %}
+  <script type="module" src="{% static 'js/app.js' %}?v=20261103-comparison"></script>
 </head>
-<body class="jade-skin">
+<body class="jade-skin{% if embedded %} comparison-embedded{% endif %}">
 <main class="calc">
   <h1 class="visually-hidden">Калькулятор персонажа Comeback Perfect World 1.4.6</h1>
   <section class="effects" aria-labelledby="buffs-title">
@@ -26,7 +27,7 @@
   </section>
   <div class="workspace">
     <div class="calculator-main">
-      <nav class="toolbar" aria-label="Действия со сборкой"><button type="button" id="btn-new">Создать нового персонажа</button><button type="button" id="btn-load">Загрузить</button><button type="button" id="btn-save" class="accent">Сохранить</button></nav>
+      <nav class="toolbar" aria-label="Действия со сборкой"><button type="button" id="btn-new">Создать нового персонажа</button><button type="button" id="btn-load">Загрузить</button><button type="button" id="btn-save" class="accent">Сохранить</button>{% if not embedded %}<button type="button" id="btn-compare">Сравнить</button>{% endif %}</nav>
       <div class="board">
         <section class="window character" aria-label="Характеристики персонажа">
           <span class="panel-crest" aria-hidden="true"></span><span class="panel-inlay panel-inlay--left" aria-hidden="true"></span><span class="panel-inlay panel-inlay--right" aria-hidden="true"></span>

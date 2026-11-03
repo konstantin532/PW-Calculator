@@ -6,6 +6,8 @@ import { parseBuild, serializeBuild } from "./engine/build.js";
 import { changeClass, changeGender, normalizeGender } from "./engine/character.js";
 import { createEffectsUI } from "./effects-ui.js";
 import { createEquipmentUI } from "./equipment-ui.js?v=20261103-activation";
+import { comparisonUrl, createComparisonSnapshot } from "./engine/comparison.js?v=20261103-comparison";
+import { createComparisonBridge } from "./comparison-bridge.js?v=20261103-comparison";
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString("ru-RU", { maximumFractionDigits: 2 });
@@ -42,6 +44,8 @@ let allEffects = [];
 let effectsUI;
 let equipmentUI;
 let characterPane = null;
+let comparisonBridge;
+let comparisonInitialized = false;
 const calculate = (candidate = state) => computeStats({ ...candidate, effectCatalog: allEffects });
 
 function el(tag, props = {}, children = []) {
@@ -72,7 +76,7 @@ function status(message, error = false) {
   $("page-status").textContent = message;
   $("page-status").dataset.error = String(error);
 }
-function dirty() { $("build-status").textContent = "Изменена"; }
+function dirty() { $("build-status").textContent = "Изменена"; comparisonBridge?.publish(); }
 function clearShareHash() { if (location.hash.startsWith("#build=")) history.replaceState(null, "", location.pathname + location.search); }
 
 function resetAttrs() { state.attrs = Object.fromEntries(ATTRS.map((k) => [k, BASE_ATTR])); }
@@ -218,6 +222,7 @@ function render() {
   effectsUI?.render();
   renderGear(stats.equipmentStatus);
   equipmentUI?.render();
+  comparisonBridge?.publish();
 }
 
 function setupDoll() {
@@ -283,6 +288,8 @@ async function loadCatalog() {
     $("catalog-items").textContent = fmt(catalog.items.length);
     $("catalog-stones").textContent = fmt(catalog.stones.length);
     $("catalog-status").textContent = "Локальный снимок базы Comeback PW 1.4.6; охват указан в отчёте.";
+    loadHashBuild();
+    comparisonBridge?.publish();
   } catch (error) {
     $("catalog-status").textContent = `Не удалось загрузить базу. ${error.message}`;
     $("btn-retry-catalog").hidden = false;
@@ -382,6 +389,10 @@ function loadHashBuild() {
   } catch (error) { status(`Не удалось загрузить ссылку: ${error.message}`, true); }
 }
 function setupSaves() {
+  $("btn-compare")?.addEventListener("click", () => {
+    try { window.location.assign(comparisonUrl(serializeBuild(state))); }
+    catch (error) { status(error.message, true); }
+  });
   $("btn-save").addEventListener("click", saveBuild);
   $("btn-load").addEventListener("click", () => { $("load-message").textContent = ""; renderSaved(); $("load-dialog").showModal(); });
   $("btn-export").addEventListener("click", exportBuild);
@@ -413,6 +424,14 @@ equipmentUI = createEquipmentUI({
     state = { ...state, equipment }; dirty(); render(); status("Предмет снят.");
   },
 });
+comparisonBridge = createComparisonBridge({
+  getPayload: () => ({ build: serializeBuild(state), snapshot: createComparisonSnapshot(state, calculate()), ready: catalogReady && comparisonInitialized }),
+  onApply: (json) => {
+    try { applyBuild(json); }
+    catch (error) { status(`Не удалось применить сборку: ${error.message}`, true); }
+  },
+});
 setupReputation(); setupCharacter(); setupDoll(); setupDialogs(); setupSaves(); render();
 await Promise.allSettled([loadCatalog(), setupEffects()]);
-if (catalogReady) loadHashBuild();
+comparisonInitialized = true;
+comparisonBridge.publish();
