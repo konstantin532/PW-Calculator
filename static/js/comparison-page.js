@@ -8,11 +8,34 @@ const status = document.getElementById("comparison-status");
 const single = document.getElementById("single-calculator");
 const rows = document.getElementById("comparison-rows");
 const numberFormat = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
+let comparisonVisible = true;
 
 function message(text, error = false) {
   status.textContent = text;
   status.dataset.error = String(error);
 }
+
+function modeStatus() {
+  if (!comparisonVisible) message("Открыт один персонаж. Второй сохранён — нажмите «Сравнить с другим персонажем», чтобы вернуться к двум окнам.");
+  else if (sides.every((side) => states[side]?.ready)) message("Оба персонажа готовы. Изменения одной сборки не затрагивают другую.");
+  else message("Загрузка двух калькуляторов…");
+}
+
+single.addEventListener("click", () => {
+  comparisonVisible = !comparisonVisible;
+  document.body.classList.toggle("comparison-single", !comparisonVisible);
+  for (const id of ["comparison-right", "comparison-actions", "comparison-summary"]) {
+    document.getElementById(id).hidden = !comparisonVisible;
+  }
+  single.textContent = comparisonVisible ? "Один персонаж" : "Сравнить с другим персонажем";
+  single.setAttribute("aria-expanded", String(comparisonVisible));
+  document.getElementById("comparison-page-title").textContent = comparisonVisible ? "Сравнение персонажей" : "Один персонаж";
+  document.getElementById("comparison-intro").textContent = comparisonVisible
+    ? "Две независимые сборки. Меняйте вещи, характеристики и бафы на каждой стороне."
+    : "Можно менять первого персонажа. Второй сохраняется при переключении между одним и двумя окнами.";
+  document.title = comparisonVisible ? "Сравнение персонажей · Comeback PW 1.4.6" : "Персонаж · Comeback PW 1.4.6";
+  modeStatus();
+});
 
 function valueText(value, unit, signed = false) {
   const format = (number) => `${signed && number > 0 ? "+" : ""}${numberFormat.format(number)}`;
@@ -30,18 +53,7 @@ function renderComparison() {
     document.getElementById(`${side}-class`).textContent = `${state.snapshot.className} · ур. ${state.snapshot.level}`;
     document.getElementById(`frame-status-${side}`).hidden = state.ready;
     const link = frames[side].parentElement.querySelector(".comparison-frame-fallback a");
-    try { link.href = `/calculator/${encodeBuildHash(state.build)}`; } catch { link.href = "/calculator/"; }
-  }
-  if (states.left) {
-    try {
-      single.href = `/${encodeBuildHash(states.left.build)}`;
-      single.removeAttribute("aria-disabled");
-      single.removeAttribute("title");
-    } catch {
-      single.removeAttribute("href");
-      single.setAttribute("aria-disabled", "true");
-      single.title = "Сборка слишком велика для ссылки. Скачайте её из первого калькулятора перед выходом.";
-    }
+    try { link.href = `/${encodeBuildHash(state.build)}`; } catch { link.href = "/"; }
   }
   if (!ready) {
     const row = document.createElement("tr");
@@ -84,7 +96,7 @@ window.addEventListener("message", (event) => {
   states[side] = { build: event.data.build, snapshot: event.data.snapshot, ready: event.data.ready };
   frames[side].style.height = `${event.data.height}px`;
   renderComparison();
-  if (!wasReady && sides.every((key) => states[key]?.ready)) message("Оба персонажа готовы. Изменения одной сборки не затрагивают другую.");
+  if (!wasReady && sides.every((key) => states[key]?.ready)) modeStatus();
 });
 
 function apply(side, build) {
