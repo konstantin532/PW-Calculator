@@ -283,7 +283,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     const title = node("strong", { className: "equipment-tooltip__title", textContent: `${displayName(item)}${choice.stones?.length ? ` (ячеек: ${choice.stones.length})` : ""}${choice.refine ? ` +${choice.refine}` : ""}` });
     if (titleColor(item)) title.style.color = titleColor(item);
     const content = node("div", {}, [title]);
-    if (!status.usable) content.append(node("p", { className: "equipment-tooltip__unusable", textContent: "Требования не выполнены" }));
+    if (!status.usable) content.append(node("p", { className: "equipment-tooltip__unusable", textContent: "Требования не выполнены. Бонусы не учитываются" }));
     const descriptions = (Array.isArray(item.description) ? item.description : []).map(text).filter(Boolean);
     const flags = descriptions.filter((line) => /привяз|невозможно|не исчезает|нельзя|уничтож|не теряется/i.test(line));
     if (flags.length) content.append(node("p", { className: "equipment-tooltip__binding", textContent: flags[0] }));
@@ -654,7 +654,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     popup.classList.add("equipment-window--editor");
     popup.classList.toggle("equipment-window--unusable", !status.usable);
     popup.append(header(popup, SLOT_NAMES.get(opened.slot), () => close(true)));
-    const preview = button("", () => {}, { className: `equipment-editor-icon${status.usable ? "" : " equipment-editor-icon--unusable"}`, ariaLabel: `Характеристики: ${displayName(current.item)}${status.usable ? "" : ". Требования не выполнены"}` });
+    const preview = button("", () => {}, { className: `equipment-editor-icon${status.usable ? "" : " equipment-editor-icon--unusable"}`, ariaLabel: `Характеристики: ${displayName(current.item)}${status.usable ? "" : ". Требования не выполнены. Бонусы не учитываются"}` });
     if (!status.usable) preview.setAttribute("aria-description", (status.reasons ?? []).join(". "));
     preview.dataset.control = "item-preview";
     preview.append(icon(current.item)); attachPreview(preview, current, opened.slot);
@@ -667,7 +667,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     }, { className: "equipment-text-action" });
     remove.dataset.control = "remove-item";
     popup.append(node("div", { className: "equipment-editor-item" }, [preview, node("div", { className: "equipment-editor-copy" }, [name, node("div", { className: "equipment-editor-actions" }, [replace, remove])])]));
-    if (!status.usable) popup.append(node("p", { className: "equipment-editor-status", role: "status", textContent: `Требования не выполнены. Вещь учитывается в расчёте. ${(status.reasons ?? []).join(" ")}` }));
+    if (!status.usable) popup.append(node("p", { className: "equipment-editor-status", role: "status", textContent: `Бонусы не учитываются, пока не выполнены требования. ${(status.reasons ?? []).join(" ")}` }));
     const refinement = refineControl(current);
     if (refinement) popup.append(refinement);
     const tabs = node("div", { className: "equipment-tabs" });
