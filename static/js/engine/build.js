@@ -1,7 +1,8 @@
-import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, spentPoints, totalPoints, validateTitles } from "./stats.js?v=20261103-explanations";
-import { itemFitsSlot, SLOTS, validateEquipmentChoice } from "./equipment.js?v=20261103-explanations";
-import { validateEffectSettings } from "./effects.js?v=20261103-explanations";
-import { validateReputation } from "./reputation.js?v=20261103-explanations";
+import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, spentPoints, totalPoints, validateTitles } from "./stats.js?v=20261103-bonuses";
+import { fixedAddonSlots, itemFitsSlot, SLOTS, validateEquipmentChoice } from "./equipment.js?v=20261103-bonuses";
+import { validateEffectSettings } from "./effects.js?v=20261103-bonuses";
+import { validateReputation } from "./reputation.js?v=20261103-bonuses";
+import { defaultAddons } from "./defaults.js?v=20261103-bonuses";
 
 const MAX_BYTES = 1024 * 1024;
 const SLOT_IDS = new Set(SLOTS.map((slot) => slot.id));
@@ -41,6 +42,9 @@ export function parseBuild(json, catalogItems = [], catalogStones = []) {
   let data;
   try { data = JSON.parse(json); } catch { throw new Error("Не удалось прочитать JSON сборки"); }
   const state = validateCharacter(data);
+  state.restoredDefaults = [];
+  state.correctedAddons = [];
+  state.completedFixedAddons = [];
   const items = catalogMap(catalogItems, "предметов");
   const stones = catalogMap(catalogStones, "камней");
   for (const [slot, saved] of Object.entries(data.equipment ?? {})) {
@@ -57,7 +61,24 @@ export function parseBuild(json, catalogItems = [], catalogStones = []) {
       if (!stone) throw new Error(`Камень ${id} отсутствует в каталоге Comeback 1.4.6`);
       return stone;
     });
-    state.equipment[slot] = validateEquipmentChoice({ item, refine: saved.refine ?? 0, stones: selectedStones, addons: saved.addons ?? [] }, slot);
+    if (saved.addonsConfigured !== undefined && typeof saved.addonsConfigured !== "boolean") throw new Error("Неверная отметка выбранных свойств");
+    let addons = saved.addons ?? [];
+    if (Array.isArray(addons) && item.addon_corrections) {
+      let corrected = false;
+      addons = addons.map((text) => {
+        if (!Object.hasOwn(item.addon_corrections, text)) return text;
+        corrected = true;
+        return item.addon_corrections[text];
+      });
+      if (corrected) state.correctedAddons.push(slot);
+    }
+    if (Array.isArray(addons) && !addons.length && saved.addonsConfigured !== true && item.default_addons?.length) {
+      addons = defaultAddons(item, slot);
+      state.restoredDefaults.push(slot);
+    }
+    const choice = validateEquipmentChoice({ item, refine: saved.refine ?? 0, stones: selectedStones, addons }, slot);
+    if (fixedAddonSlots(item) !== null && JSON.stringify(choice.addons) !== JSON.stringify(addons)) state.completedFixedAddons.push(slot);
+    state.equipment[slot] = choice;
   }
   return state;
 }
@@ -71,7 +92,7 @@ export function serializeBuild(state) {
     const choice = validateEquipmentChoice(entry, slot);
     if (!validId(choice.item.id) || choice.stones.some((s) => !validId(s.id))) throw new Error("У предмета или камня отсутствует целый ID");
     items.push(choice.item); stones.push(...choice.stones);
-    compact.equipment[slot] = { itemId: choice.item.id, refine: choice.refine, stones: choice.stones.map((s) => s.id), addons: [...choice.addons] };
+    compact.equipment[slot] = { itemId: choice.item.id, refine: choice.refine, stones: choice.stones.map((s) => s.id), addons: [...choice.addons], addonsConfigured: true };
   }
   const json = JSON.stringify(compact);
   parseBuild(json, items, stones);

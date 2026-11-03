@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PWDB и Comeback 1.4.6 — сравнение источников</title>
+<style>
+body{margin:0;background:#f4f1e8;color:#233d32;font:16px/1.6 Georgia,serif}
+main{max-width:1400px;margin:auto;padding:44px 28px}h1{font-size:34px;line-height:1.2}
+h2{margin-top:34px}.summary{padding:20px;background:#143f32;color:#fff;border-radius:8px}
+.tag{display:inline-block;padding:5px 12px;margin-right:10px;background:#ecdba8;color:#43391d;border-radius:4px}
+table{width:100%;border-collapse:collapse;background:#fffdf8;font:14px/1.5 system-ui,sans-serif}
+td,th{text-align:left;padding:14px;border:1px solid #d6ddd2;vertical-align:top}th{background:#dbe7dc}
+code{font:12px ui-monospace,monospace;overflow-wrap:anywhere}a{color:#176b4e}.scroll{overflow:auto}
+.risk{border-left:5px solid #b07824;padding:12px;background:#fff2d7}
+footer{font:13px system-ui,sans-serif;margin-top:24px;color:#52725d}
+</style>
+<main>
+<p>ИССЛЕДОВАНИЕ ИСТОЧНИКОВ · COMEBACK PW 1.4.6</p>
+<h1>Современная PWDB помогает уточнять описания, но тоже теряет свойства.</h1>
+<div class="summary">
+<span class="tag">9 карточек HTTP 200</span>
+<span class="tag">0 импортированных предметов</span>
+<span class="tag">1 камень уточнён клиентом</span>
+<p>Проверены только существующие ID каталога 1.4.6. Рабочие данные и клиент не изменялись.
+API открыт штатной анонимной сессией сайта; cookies и токены не сохранялись.</p>
+</div>
+<h2>Главные ограничения</h2>
+<div class="risk">У плаща 21418 PWDB пропускает те же четыре свойства, что веб-база 146.
+У колец 36218/36221 современный требуемый уровень 40 отличается от 47 в клиенте.
+Значения и требования Comeback сохраняют приоритет.</div>
+<p>У 25154 связь клиентских addon 2309/2310 с типом 60 доказывает: это показатель защиты +2,
+а не физическая защита +2. Для 9345 различаются сырое значение восстановления 20
+и нормализованные 10 в секунду.</p>
+<h2>Сверка карточек</h2>
+<div class="scroll"><table>
+<thead><tr><th>ID/PWDB</th><th>Название 146</th><th>Результат</th>
+<th>Отличия полей</th><th>SHA-256 ответа</th></tr></thead>
+<tbody>{{table}}</tbody></table></div>
+<h2>Воспроизводимость</h2>
+<p>CSV рядом со страницей содержит те же строки, URL, хеши ответов и HTML Comeback.
+Сырые ответы остаются в игнорируемом .cache/pwdatabase-ru.
+Генератор: tools/research/pwdb_compare.py; сетевой доступ только по флагу --fetch.</p>
+<p>Клиентский SHA-256: <code>{{client_hash}}</code>.
+Полный бинарный аудит всех таблиц камней, трактатов и полётов в эту сверку не входит.
+Неизвестные 851/888 и пользовательские 6000–6011 не расшифровываются предположениями.</p>
+<footer>Отчёт работает без интернета. Ссылки на первичные карточки открываются отдельно.
+Дата исследования: 2026-11-03.</footer>
+</main></html>

@@ -1,4 +1,4 @@
-import { CLASSES, MAX_LEVEL } from "./stats.js?v=20261103-explanations";
+import { CLASSES, MAX_LEVEL } from "./stats.js?v=20261103-bonuses";
 
 export const STATE_MESSAGE = "pwcalc:comparison-state";
 export const APPLY_MESSAGE = "pwcalc:comparison-apply";

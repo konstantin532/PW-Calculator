@@ -9,7 +9,7 @@ const attrs = { vit: 5, int: 5, str: 5, dex: 5 };
 const character = { cls: "by", level: 105, attrs };
 const choice = (item, extra = {}) => ({ item, refine: 0, stones: [], addons: [], ...extra });
 const calculatedValues = (stats) => Object.fromEntries(Object.entries(stats)
-  .filter(([key]) => !["gearWarnings", "equipmentStatus", "activeEquipment", "explanations"].includes(key)));
+  .filter(([key]) => !["gearWarnings", "equipmentStatus", "activeEquipment", "explanations", "extraBonuses", "equipmentSets"].includes(key)));
 
 test("при силе 49 вещь остаётся выбранной без бонусов и не закрывает своё требование 50", () => {
   const state = { ...character, attrs: { ...attrs, str: 49 } };

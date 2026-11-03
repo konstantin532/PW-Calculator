@@ -1,7 +1,8 @@
 import {
-  SLOTS, availableAddonTexts, formatAddonValue, getItemBonuses, itemFitsSlot,
-  maxSockets, maximumAddons, parseAddonOption,
-} from "./engine/equipment.js?v=20261103-explanations";
+  SLOTS, availableAddonTexts, fixedAddonSlots, formatAddonValue, getItemBonuses, guaranteedAddonTexts, itemFitsSlot,
+  maxSockets, maximumAddons, parseAddonOption, validateEquipmentChoice,
+} from "./engine/equipment.js?v=20261103-bonuses";
+import { createDefaultChoice, defaultAddons } from "./engine/defaults.js?v=20261103-bonuses";
 
 const PAGE_SIZE = 80;
 const SLOT_NAMES = new Map(SLOTS.map(({ id, name }) => [id, name]));
@@ -24,7 +25,7 @@ const hasName = (item) => typeof item?.name === "string" && item.name.trim().len
 const supportedClasses = (item) => !Array.isArray(item.classes) || !item.classes.length || item.classes.some((name) => CLASS_NAMES.has(name));
 const displayName = (item) => hasName(item) ? item.name : `Предмет ${item.id ?? "без ID"}`;
 const subtype = (item) => item.subtype || item.type || "Без подтипа";
-const guaranteed = (item) => (item.addons?.unique ?? []).filter((entry) => entry.chance === 100 && typeof entry.text === "string").map((entry) => entry.text);
+const guaranteed = guaranteedAddonTexts;
 const offeredAddons = (item) => [...new Set(availableAddonTexts(item))].filter((entry) => !guaranteed(item).includes(entry));
 const chosenAddons = (choice) => (choice.addons ?? []).filter((entry) => !guaranteed(choice.item).includes(entry));
 
@@ -74,6 +75,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
   let availableOnly = true;
   let errorMessage = "", revision = 0, endDrag = null;
   let pointerGesture = null, pendingRender = false, pointerFinishTimer = null, stackedGems = false;
+  let equipmentStatus = {};
 
   const entry = () => opened ? getState().equipment?.[opened.slot] : null;
   const message = (error) => {
@@ -254,6 +256,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     }
     close(); anchor = source ?? document.querySelector(`[data-slot="${slot}"]`);
     opened = { slot, mode: getState().equipment?.[slot]?.item ? "editor" : "picker" };
+    if (opened.mode === "editor" && (fixedAddonSlots(entry().item) !== null || offeredAddons(entry().item).length)) activeTab = "properties";
     resetFilters(); render();
     (popup.querySelector("[data-control='item-search'],[data-control='refine']") ?? popup.querySelector("[data-control='item-preview']"))?.focus({ preventScroll: true });
   }
@@ -278,7 +281,39 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     ]);
   }
 
+  function activeEquipment() {
+    return Object.entries(getState().equipment ?? {}).filter(([slot, choice]) => choice?.item
+      && equipmentStatus[slot]?.usable === true);
+  }
+
+  function setState(descriptor) {
+    const selected = Object.values(getState().equipment ?? {}).filter((choice) => choice?.item
+      && descriptor.members.includes(choice.item.id));
+    const active = activeEquipment().filter(([, choice]) => descriptor.members.includes(choice.item.id));
+    return { selected: selected.length, count: active.length, worn: new Set(active.map(([, choice]) => choice.item.id)) };
+  }
+
+  function setTooltip(item) {
+    const descriptor = item.set_bonus;
+    if (!descriptor?.id || !Array.isArray(descriptor.members) || !Array.isArray(descriptor.bonuses)) return null;
+    const { selected, count } = setState(descriptor);
+    const section = node("section", { className: "equipment-tooltip__set equipment-tooltip__section" }, [
+      node("strong", { textContent: `${descriptor.name} (${count}/${descriptor.members.length})` }),
+    ]);
+    if (selected !== count) section.append(node("p", { className: "equipment-tooltip__flavor",
+      textContent: `Выбрано частей: ${selected}. Бонусы дают только части с выполненными требованиями.` }));
+    for (const bonus of descriptor.bonuses) {
+      const reached = count >= bonus.pieces;
+      section.append(node("p", {
+        className: reached ? "equipment-tooltip__addon" : "equipment-tooltip__flavor",
+        textContent: `(${bonus.pieces}) ${bonus.texts.join("; ")} · ${reached ? "активно" : "неактивно"}`,
+      }));
+    }
+    return section;
+  }
+
   function itemTooltip(choice, slot, status) {
+    if (fixedAddonSlots(choice.item) !== null) choice = validateEquipmentChoice(choice, slot);
     const item = choice.item;
     const title = node("strong", { className: "equipment-tooltip__title", textContent: `${displayName(item)}${choice.stones?.length ? ` (ячеек: ${choice.stones.length})` : ""}${choice.refine ? ` +${choice.refine}` : ""}` });
     if (titleColor(item)) title.style.color = titleColor(item);
@@ -297,7 +332,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     try { base = getItemBonuses({ ...choice, item: baseItem, stones: [], addons: [] }, slot); } catch { base = null; }
     const stats = item.stats ?? {};
     if (Number.isFinite(stats.atk_speed)) {
-      content.append(field(stats.atk_speed > 0 && stats.atk_speed <= 5 ? "Скорость атаки (раз в секунду)" : "Скорость атаки (значение базы)", fmt(stats.atk_speed)));
+      content.append(field(base?.atkSpeed !== undefined ? "Скорость атаки (раз в секунду)" : "Скорость атаки (значение базы, единицы не подтверждены)", fmt(stats.atk_speed)));
     }
     if (Number.isFinite(stats.range)) content.append(field("Дальность", fmt(stats.range)));
     for (const key of ["phys_atk", "mag_atk"]) {
@@ -317,7 +352,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
       if (label !== "Требуемая репутация") content.append(field(text(label), text(value)));
     }
     const permanent = guaranteed(item);
-    for (const addon of [...new Set([...permanent, ...(choice.addons ?? [])])]) content.append(node("p", { className: "equipment-tooltip__addon", textContent: text(addon) }));
+    for (const addon of [...new Set(permanent), ...chosenAddons(choice)]) content.append(node("p", { className: "equipment-tooltip__addon", textContent: text(addon) }));
     if (!chosenAddons(choice).length && offeredAddons(item).length) {
       const options = node("div", { className: "equipment-tooltip__options" }, [node("p", { textContent: `Возможные свойства · до ${maximumAddons(item)}` })]);
       for (const addon of offeredAddons(item)) options.append(node("p", { textContent: text(addon) }));
@@ -327,6 +362,8 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
       const effect = stone.effects?.[STONE_TARGETS[slot]];
       content.append(node("p", { className: "equipment-tooltip__gem", textContent: `${stone.name}${effect ? `: ${effect.raw ?? `${effect.stat} +${fmt(effect.value)}${effect.percent ? "%" : ""}`}` : ""}` }));
     }
+    const set = setTooltip(item);
+    if (set) content.append(set);
     const extraFlags = flags.slice(1);
     if (extraFlags.length) content.append(node("p", { className: "equipment-tooltip__binding equipment-tooltip__section", textContent: extraFlags.join("\n") }));
     const flavor = descriptions.filter((line) => !flags.includes(line));
@@ -366,7 +403,7 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
   }
 
   function resultRow(item, choose, stone = false) {
-    const choice = { item, refine: 0, stones: [], addons: [] };
+    const choice = stone ? null : createDefaultChoice(item, opened.slot);
     const status = stone ? null : eligibility(choice, opened.slot);
     const name = node("span", { className: "equipment-result__name", textContent: item.name });
     if (titleColor(item)) name.style.color = titleColor(item);
@@ -410,7 +447,8 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     const list = node("div", { className: "equipment-results", ariaLabel: "Предметы" });
     for (const item of items.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE)) {
       list.append(resultRow(item, () => {
-        if (commit({ item, refine: 0, stones: [], addons: [] })) close(true);
+        try { if (commit(createDefaultChoice(item, opened.slot))) close(true); }
+        catch (error) { message(error); }
       }));
     }
     if (!items.length) list.append(node("p", { className: "equipment-empty", textContent: "Предметов не найдено. Измените поиск, тип или ограничение уровня и класса." }));
@@ -587,9 +625,65 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     });
   }
 
+  function renderFixedAddons(current, slots) {
+    const panel = node("section", { className: "equipment-tab-panel equipment-properties equipment-fixed-properties" });
+    if (!slots.length) {
+      panel.append(node("p", { className: "equipment-hint", textContent: "Дополнительные свойства не генерируются." }));
+      return panel;
+    }
+    const restore = button("Значения по умолчанию", () => {
+      try { commit(currentChoice({ addons: defaultAddons(current.item, opened.slot) })); }
+      catch (error) { message(error); }
+    });
+    restore.dataset.control = "restore-default-properties";
+    panel.append(node("div", { className: "equipment-property-defaults" }, [restore,
+      node("p", { textContent: "Свойства из клиента Comeback 1.4.6; в диапазонах выбран максимум, уточните по своей вещи." }),
+    ]));
+    const normalized = validateEquipmentChoice(current, opened.slot);
+    for (const [index, slot] of slots.entries()) {
+      const selected = normalized.addons[index] ?? slot.text;
+      const unknown = slot.stat === null || slot.known === false;
+      const range = unknown ? null : parseAddonOption(slot.text);
+      const row = node("div", { className: "equipment-fixed-property" });
+      row.append(node("p", { className: "equipment-property-text", textContent: range && range.min !== range.max ? slot.text : selected }));
+      if (unknown) {
+        row.append(node("p", { className: "equipment-fixed-property-unknown", textContent: `Эффект не распознан, в цифры не включён · ID ${slot.addon_id ?? "неизвестен"}` }));
+      } else if (range && range.min !== range.max) {
+        const saved = parseAddonOption(selected);
+        const value = saved?.min === saved?.max && Number.isFinite(saved?.min) ? saved.min : range.max;
+        const input = node("input", { type: "number", min: String(range.min), max: String(range.max), step: "any",
+          value: String(value), ariaLabel: `Значение фиксированного свойства ${range.label}`,
+          title: `От ${fmt(range.min)} до ${fmt(range.max)}` });
+        input.dataset.control = `property-value-${index}`;
+        input.addEventListener("change", () => {
+          try {
+            const next = [...validateEquipmentChoice(entry(), opened.slot).addons];
+            next[index] = formatAddonValue(slot.text, Number(input.value));
+            if (!commit(currentChoice({ addons: next }))) input.value = String(value);
+          } catch (error) { input.value = String(value); message(error); }
+        });
+        row.append(input);
+      }
+      panel.append(row);
+    }
+    return panel;
+  }
+
   function renderAddons(current) {
+    const fixedSlots = fixedAddonSlots(current.item);
+    if (fixedSlots !== null) return renderFixedAddons(current, fixedSlots);
     const panel = node("section", { className: "equipment-tab-panel equipment-properties" });
     const maximum = maximumAddons(current.item), chosen = chosenAddons(current), options = offeredAddons(current.item);
+    if (Array.isArray(current.item.default_addons)) {
+      const restore = button("Исходные свойства", () => {
+        try { commit(currentChoice({ addons: defaultAddons(current.item, opened.slot) })); }
+        catch (error) { message(error); }
+      });
+      restore.dataset.control = "restore-default-properties";
+      panel.append(node("div", { className: "equipment-property-defaults" }, [restore,
+        node("p", { textContent: "Исходный набор mypers сверён с базой 1.4.6. Его можно изменить под свою вещь." }),
+      ]));
+    }
     const fixed = guaranteed(current.item);
     if (fixed.length) {
       panel.append(node("p", { className: "equipment-hint", textContent: "Постоянные свойства" }));
@@ -638,18 +732,40 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
 
   function renderSet(current) {
     const panel = node("section", { className: "equipment-tab-panel" });
+    const descriptor = current.item.set_bonus;
+    if (descriptor?.id && Array.isArray(descriptor.members) && Array.isArray(descriptor.bonuses)) {
+      const { selected, count, worn } = setState(descriptor);
+      const items = new Map((getCatalog().items ?? []).map((item) => [item.id, item]));
+      panel.append(node("h3", { className: "equipment-set-title", textContent: descriptor.name }),
+        node("p", { className: "equipment-hint", textContent: `Активных частей: ${count}/${descriptor.members.length}` }));
+      if (selected !== count) panel.append(node("p", { className: "equipment-hint",
+        textContent: `Выбрано частей: ${selected}. Требования выполнены у ${count}.` }));
+      for (const id of descriptor.members) panel.append(node("p", {
+        className: worn.has(id) ? "equipment-set-piece is-equipped" : "equipment-set-piece",
+        textContent: `${worn.has(id) ? "✓ " : ""}${items.has(id) ? displayName(items.get(id)) : `Предмет ${id}`}`,
+      }));
+      for (const bonus of descriptor.bonuses) {
+        const reached = count >= bonus.pieces;
+        panel.append(node("div", { className: `equipment-set-threshold${reached ? " is-active" : ""}` }, [
+          node("p", { textContent: `${bonus.pieces} ч. · ${reached ? "порог достигнут" : "нужно больше активных частей"}` }),
+          ...bonus.texts.map((property) => node("p", { textContent: property })),
+        ]));
+      }
+      return panel;
+    }
     const pieces = (current.item.set ?? []).filter((piece) => typeof piece === "string");
     if (!pieces.length) { panel.append(node("p", { className: "equipment-hint", textContent: "В базе не указан комплект для этого предмета." })); return panel; }
-    const worn = new Set(Object.values(getState().equipment ?? {}).filter(Boolean).map((choice) => norm(choice.item.name)));
+    const worn = new Set(activeEquipment().map(([, choice]) => norm(choice.item.name)));
     panel.append(node("p", { className: "equipment-hint", textContent: `Надето: ${pieces.filter((piece) => worn.has(norm(piece))).length}/${pieces.length}` }));
     for (const piece of pieces) panel.append(node("p", { className: worn.has(norm(piece)) ? "equipment-set-piece is-equipped" : "equipment-set-piece", textContent: `${worn.has(norm(piece)) ? "✓ " : ""}${piece}` }));
-    panel.append(node("p", { className: "equipment-hint", textContent: "Бонус комплекта пока не рассчитывается." }));
+    panel.append(node("p", { className: "equipment-hint", textContent: "Числовые бонусы этого комплекта пока не подтверждены. Они не включены в расчёт." }));
     return panel;
   }
 
   function renderEditor() {
-    const current = entry();
-    if (!current?.item) { opened.mode = "picker"; resetFilters(); renderPicker(); return; }
+    const stored = entry();
+    if (!stored?.item) { opened.mode = "picker"; resetFilters(); renderPicker(); return; }
+    const current = fixedAddonSlots(stored.item) !== null ? validateEquipmentChoice(stored, opened.slot) : stored;
     const status = eligibility(current, opened.slot);
     popup.classList.add("equipment-window--editor");
     popup.classList.toggle("equipment-window--unusable", !status.usable);
@@ -670,6 +786,13 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     if (!status.usable) popup.append(node("p", { className: "equipment-editor-status", role: "status", textContent: `Бонусы не учитываются, пока не выполнены требования. ${(status.reasons ?? []).join(" ")}` }));
     const refinement = refineControl(current);
     if (refinement) popup.append(refinement);
+    const selected = [...new Set(guaranteed(current.item)), ...chosenAddons(current)];
+    const summary = node("section", { className: "equipment-selected-properties" }, [node("h3", { textContent: "Свойства предмета" })]);
+    if (selected.length) summary.append(node("ul", {}, selected.map((property) => node("li", { textContent: property }))));
+    if (fixedAddonSlots(current.item)?.length === 0) summary.append(node("p", { textContent: "Дополнительные свойства не генерируются." }));
+    else if (!chosenAddons(current).length && offeredAddons(current.item).length) summary.append(node("p", { textContent: "Дополнительные свойства не выбраны. Выберите их во вкладке «Характеристики»." }));
+    else if (!selected.length) summary.append(node("p", { textContent: "Выбираемые дополнительные свойства не указаны в базе." }));
+    popup.append(summary);
     const tabs = node("div", { className: "equipment-tabs" });
     for (const [id, label] of [["stones", "Камни"], ["properties", "Характеристики"], ["set", "Комплект"]]) {
       const tab = button(label, () => { activeTab = activeTab === id ? null : id; if (activeTab !== "stones") closeGems(); render(); }, { ariaExpanded: String(activeTab === id), ariaControls: `equipment-panel-${id}` });
@@ -688,7 +811,8 @@ export function createEquipmentUI({ getState, getCatalog, isReady, getEligibilit
     return { key: active.dataset.control, isGem: gemPopup?.contains(active), start: ["search", "text"].includes(active.type) ? active.selectionStart : null, end: ["search", "text"].includes(active.type) ? active.selectionEnd : null };
   }
 
-  function render() {
+  function render(nextStatus = null) {
+    if (nextStatus) equipmentStatus = nextStatus;
     // A blur/change may update the build during pointerdown, before its click.
     // Keep that live button in the DOM until click dispatch; only presentation waits.
     if (pointerGesture && pointerGesture.target.isConnected

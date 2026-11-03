@@ -1,14 +1,15 @@
-import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js?v=20261103-explanations";
-import { SLOTS } from "./engine/equipment.js?v=20261103-explanations";
-import { resolveEquipment } from "./engine/eligibility.js?v=20261103-explanations";
-import { MAX_REPUTATION, validateReputation } from "./engine/reputation.js?v=20261103-explanations";
-import { parseBuild, serializeBuild } from "./engine/build.js?v=20261103-explanations";
-import { changeClass, changeGender, normalizeGender } from "./engine/character.js?v=20261103-explanations";
-import { createEffectsUI } from "./effects-ui.js?v=20261103-explanations";
-import { createEquipmentUI } from "./equipment-ui.js?v=20261103-explanations";
-import { createStatExplanationsUI } from "./stat-explanations-ui.js?v=20261103-explanations";
-import { comparisonUrl, createComparisonSnapshot } from "./engine/comparison.js?v=20261103-explanations";
-import { createComparisonBridge } from "./comparison-bridge.js?v=20261103-explanations";
+import { ATTRS, BASE_ATTR, CLASSES, MAX_LEVEL, clampLevel, computeStats, spentPoints, totalPoints } from "./engine/stats.js?v=20261103-bonuses";
+import { SLOTS } from "./engine/equipment.js?v=20261103-bonuses";
+import { resolveEquipment } from "./engine/eligibility.js?v=20261103-bonuses";
+import { MAX_REPUTATION, validateReputation } from "./engine/reputation.js?v=20261103-bonuses";
+import { parseBuild, serializeBuild } from "./engine/build.js?v=20261103-bonuses";
+import { changeClass, changeGender, normalizeGender } from "./engine/character.js?v=20261103-bonuses";
+import { createEffectsUI } from "./effects-ui.js?v=20261103-bonuses";
+import { createEquipmentUI } from "./equipment-ui.js?v=20261103-bonuses";
+import { createStatExplanationsUI } from "./stat-explanations-ui.js?v=20261103-bonuses";
+import { createEquipmentBonusDetails } from "./equipment-bonus-details.js?v=20261103-bonuses";
+import { comparisonUrl, createComparisonSnapshot } from "./engine/comparison.js?v=20261103-bonuses";
+import { createComparisonBridge } from "./comparison-bridge.js?v=20261103-bonuses";
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString("ru-RU", { maximumFractionDigits: 2 });
@@ -31,7 +32,7 @@ const STAT_ROWS = [
   ["Меткость", (s) => fmt(s.accuracy), "Огонь", (s) => fmt(s.elements.fire), null, "fire"],
   ["Уклонение", (s) => fmt(s.evasion), "Земля", (s) => fmt(s.elements.earth), null, "earth"],
   ["Атака ПА", (s) => fmt(s.attackLevel), "Защита ПЗ", (s) => fmt(s.defenseLevel)],
-  ["Умен. физ. урона", (s) => pct(Math.round(s.physDefPct * 10) / 10), "Умен. маг. урона", (s) => pct(Math.round(s.magDefPct * 10) / 10)],
+  ["Умен. физ. урона", (s) => pct(s.damageReductionPhys), "Умен. маг. урона", (s) => pct(s.damageReductionMag)],
   ["Скорость", (s) => `${fmt(s.speed)} м/сек`, "Крит. урон", (s) => pct(s.critDamage)],
   ["", () => "", "Сила духа", (s) => fmt(s.spirit)],
   ["Скрытность", (s) => fmt(s.stealth), "Обнаружение", (s) => fmt(s.detection)],
@@ -45,6 +46,7 @@ let allEffects = [];
 let effectsUI;
 let equipmentUI;
 let statExplanationsUI;
+let equipmentBonusDetails;
 let characterPane = null;
 let comparisonBridge;
 let comparisonInitialized = false;
@@ -173,7 +175,9 @@ function setupCharacter() {
     const plus = el("button", { type: "button", textContent: "+", ariaLabel: `${FULL_ATTR_NAMES[key]} +1` });
     minus.addEventListener("click", () => setAttr(key, state.attrs[key] - 1));
     plus.addEventListener("click", () => setAttr(key, state.attrs[key] + 1));
-    $("attr-list").append(el("div", { className: "attr" }, [el("span", { textContent: ATTR_NAMES[key] }), minus, input, plus]));
+    const equipped = el("span", { id: `attr-${key}-equipped`, className: "attr-equipment" });
+    input.setAttribute("aria-describedby", equipped.id);
+    $("attr-list").append(el("div", { className: "attr" }, [el("span", { textContent: ATTR_NAMES[key] }), minus, input, plus, equipped]));
   }
   $("btn-reset").addEventListener("click", () => { resetAttrs(); $("char-message").textContent = ""; dirty(); render(); });
   $("btn-new").addEventListener("click", () => {
@@ -226,6 +230,11 @@ function render() {
     const input = $(`attr-${key}`);
     input.value = state.attrs[key]; input.max = state.attrs[key] + stats.free;
     input.title = `С экипировкой: ${fmt(stats.effectiveAttrs[key])}`;
+    const bonus = stats.effectiveAttrs[key] - state.attrs[key];
+    const equipped = $(`attr-${key}-equipped`);
+    equipped.textContent = `Бонус ${bonus >= 0 ? "+" : ""}${fmt(bonus)} · итог ${fmt(stats.effectiveAttrs[key])}`;
+    equipped.title = `${FULL_ATTR_NAMES[key]}: собственная ${fmt(state.attrs[key])}, бонусы активной экипировки ${fmt(bonus)}, итог ${fmt(stats.effectiveAttrs[key])}`;
+    equipped.dataset.bonus = String(bonus !== 0);
     input.parentElement.children[1].disabled = state.attrs[key] <= BASE_ATTR;
     input.parentElement.children[3].disabled = stats.free <= 0;
   }
@@ -234,13 +243,14 @@ function render() {
     el("td", { className: "label", textContent: right }), statValue(rv(stats), rightKey, right),
   ])));
   statExplanationsUI?.render(stats.explanations);
+  equipmentBonusDetails?.render(stats);
   const warnings = [...new Set(stats.gearWarnings)];
   $("gear-warnings").replaceChildren(...warnings.map((warning) => el("li", { textContent: warning })));
   $("warning-count").textContent = warnings.length ? `(${warnings.length})` : "";
   renderCharacterPane();
   effectsUI?.render();
   renderGear(stats.equipmentStatus);
-  equipmentUI?.render();
+  equipmentUI?.render(stats.equipmentStatus);
   comparisonBridge?.publish();
 }
 
@@ -345,7 +355,14 @@ function applyBuild(json, id = null, preserveShareHash = false) {
   calculate(next); state = next; activeSavedId = id; characterPane = null; effectsUI?.close(); equipmentUI?.close();
   $("char-name").value = state.name; $("char-reputation").value = String(state.reputation); $("char-message").textContent = ""; $("build-status").textContent = id ? "Сохранена" : "Загружена";
   if (!preserveShareHash) clearShareHash();
-  render(); status(`Загружен персонаж: ${state.name || "Без имени"}.`);
+  const restored = next.restoredDefaults?.length ?? 0;
+  const corrected = next.correctedAddons?.length ?? 0;
+  const completed = next.completedFixedAddons?.length ?? 0;
+  const messages = [`Загружен персонаж: ${state.name || "Без имени"}.`];
+  if (restored) messages.push(`Восстановлены исходные свойства ${restored} ${restored === 1 ? "предмета" : "предметов"}; их можно изменить в редакторе.`);
+  if (corrected) messages.push(`Исправлены повреждённые строки свойств ${corrected} ${corrected === 1 ? "предмета" : "предметов"}.`);
+  if (completed) messages.push(`Восстановлены пропущенные фиксированные свойства ${completed} ${completed === 1 ? "предмета" : "предметов"}.`);
+  render(); status(messages.join(" "));
   if ($("load-dialog").open) $("load-dialog").close();
 }
 function savedRows(rows, canDelete = true) {
@@ -428,6 +445,7 @@ function setupSaves() {
 }
 
 statExplanationsUI = createStatExplanationsUI();
+equipmentBonusDetails = createEquipmentBonusDetails($("equipment-bonus-details-content"));
 effectsUI = createEffectsUI({ getState: () => state, onChange: () => { dirty(); render(); } });
 equipmentUI = createEquipmentUI({
   getState: () => state, getCatalog: () => catalog, isReady: () => catalogReady,

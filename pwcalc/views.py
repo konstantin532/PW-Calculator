@@ -8,6 +8,9 @@ from django.conf import settings
 from django.http import JsonResponse
 
 from pwcalc.classes import CLASS_NAMES
+from pwcalc.client_data import enrich_client_speeds
+from pwcalc.client_properties import enrich_client_properties
+from pwcalc.client_stones import enrich_client_stones
 from pwcalc.effect_panels import (
     CLASS_EFFECT_PANELS,
     DEFAULT_PANEL_IDS,
@@ -16,6 +19,8 @@ from pwcalc.effect_panels import (
     PANEL_IDS,
     PARAMETER_LABELS,
 )
+from pwcalc.item_defaults import enrich_item_defaults
+from tools.scrape.enrich_sets import set_bonus_index
 
 
 def _fill(template: str, values: dict) -> str:
@@ -103,9 +108,34 @@ def catalog_data() -> dict:
             if (record.get("icon") or "").startswith("http"):
                 record["icon"] = None
         catalogs[kind] = records
+    sets_path = data_dir / "catalog_sets.json"
+    if sets_path.exists():
+        sets = json.loads(sets_path.read_text(encoding="utf-8"))
+        set_index = set_bonus_index(sets, catalogs["items"])
+        for record in catalogs["items"]:
+            if record["id"] in set_index:
+                record["set_bonus"] = set_index[record["id"]]
     meta_path = data_dir / "catalog_meta.json"
     meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
     coverage = {**meta.get("coverage", {}), "items": len(catalogs["items"]), "stones": len(catalogs["stones"])}
+    defaults_path = data_dir / "catalog_defaults.json"
+    if defaults_path.exists():
+        coverage.update(enrich_item_defaults(catalogs["items"], json.loads(defaults_path.read_text(encoding="utf-8"))))
+    speeds_path = data_dir / "catalog_client_speeds.json"
+    properties_path = data_dir / "catalog_client_properties.json"
+    speeds = json.loads(speeds_path.read_text(encoding="utf-8")) if speeds_path.exists() else None
+    if speeds is not None:
+        coverage.update(enrich_client_speeds(catalogs["items"], speeds))
+    if properties_path.exists():
+        properties = json.loads(properties_path.read_text(encoding="utf-8"))
+        expected_hash = speeds["source"]["sha256"] if speeds is not None else None
+        coverage.update(enrich_client_properties(catalogs["items"], properties, expected_client_sha256=expected_hash))
+    stones_path = data_dir / "catalog_client_stones.json"
+    if stones_path.exists():
+        stones = json.loads(stones_path.read_text(encoding="utf-8"))
+        if speeds is not None and stones["source"]["sha256"] != speeds["source"]["sha256"]:
+            raise ValueError("Не совпадают версии клиентских данных камней и оружия")
+        coverage.update(enrich_client_stones(catalogs["stones"], stones))
     return {"version": "Comeback PW 1.4.6", "verification": "unverified_for_comeback",
             **catalogs, "coverage": coverage}
 

@@ -1,4 +1,4 @@
-import { APPLY_MESSAGE, STATE_MESSAGE, isComparisonBuild, isComparisonSnapshot } from "./engine/comparison.js?v=20261103-explanations";
+import { APPLY_MESSAGE, STATE_MESSAGE, isComparisonBuild, isComparisonSnapshot } from "./engine/comparison.js?v=20261103-bonuses";
 
 /** Each embedded calculator keeps its state and DOM; only validated snapshots cross the boundary. */
 export function createComparisonBridge({ getPayload, onApply }) {

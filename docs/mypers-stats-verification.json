@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "verified_on": "2026-11-03",
+  "command": "node tools/verify_mypers_stats.mjs",
+  "seed": 146,
+  "cases_per_class": 200,
+  "classes": [
+    "by",
+    "ga",
+    "ya",
+    "rl",
+    "js",
+    "ij",
+    "rg",
+    "ej",
+    "sj",
+    "fx"
+  ],
+  "states": 2000,
+  "comparisons": 32000,
+  "mismatches": 0,
+  "examples": [],
+  "sources": [
+    {
+      "path": ".cache/mypers/pwscripts.min.js",
+      "url": "https://mypers.ru/js/pwscripts.min.js?v26",
+      "sha256": "365299f09ce10267b48f03693023875b5f601386fb4313e822b4b04baff04dea"
+    },
+    {
+      "path": ".cache/mypers/scripts.min.js",
+      "url": "https://mypers.ru/js/scripts.min.js?v3",
+      "sha256": "0c4610258c6a8ed66525680e9906c6bafa1c737ba584fccd279373a910d3d9d5"
+    }
+  ],
+  "extracted_methods": [
+    "ih",
+    "iz",
+    "gy",
+    "ev",
+    "yp",
+    "xkw",
+    "nt",
+    "qv",
+    "dd",
+    "dgt",
+    "uqf",
+    "ts",
+    "tsPerc",
+    "getMaxPhysDefPerc",
+    "getMaxMagDefPerc"
+  ],
+  "sandbox": {
+    "dynamic_strings": false,
+    "wasm": false,
+    "original_full_script_executed": false
+  },
+  "input_files": [
+    {
+      "path": "data/catalog_items.json",
+      "sha256": "82d480a380add917c1c8ff1e7d797ab491ebb8ef277bd27b7e3da59b1154bbc8"
+    },
+    {
+      "path": "data/catalog_sets.json",
+      "sha256": "4bcba4717400cc2742e9d2d4c704f0b31c70d8e0b1194eb50284f8e7c2788507"
+    },
+    {
+      "path": "data/catalog_defaults.json",
+      "sha256": "4d96dba143a764c6d4c3f0a65837bc5a2c6a9a360d3ba2180cfb53fb861d9555"
+    },
+    {
+      "path": "data/skills.json",
+      "sha256": "eb20a55f8bf32cfe6d0aae74b2780993617179b78e539e57f1fdaf13d669ba57"
+    }
+  ],
+  "checked_fields": [
+    "hp",
+    "mp",
+    "speed",
+    "accuracy",
+    "evasion",
+    "castTime",
+    "atkSpeed",
+    "physDef",
+    "magDef",
+    "damageReductionPhys",
+    "damageReductionMag",
+    "metal",
+    "wood",
+    "water",
+    "fire",
+    "earth"
+  ],
+  "limitations": [
+    "This compares the numerical formula stage with the pinned mypers source, not with the Comeback game client.",
+    "Eligibility, effective attributes, equipment aggregation and effect aggregation use the local implementation and are validated separately.",
+    "Only the reviewed pure methods are evaluated; no original application, UI, network, filesystem or process API is injected into the VM.",
+    "The local negative cast-time representation is compared with the negative of the original shortening percentage.",
+    "This oracle does not cover physical/magic attack, damage skills, procs, PvP/PvE formulas or item availability."
+  ]
+}

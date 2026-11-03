@@ -1,5 +1,7 @@
-import { getItemBonuses, itemFitsSlot, SLOTS } from "./equipment.js?v=20261103-explanations";
-import { getRequiredReputation, validateReputation } from "./reputation.js?v=20261103-explanations";
+import { ammoWeaponGradeRange, getItemBonuses, itemFitsSlot, SLOTS } from "./equipment.js?v=20261103-bonuses";
+import { getRequiredReputation, validateReputation } from "./reputation.js?v=20261103-bonuses";
+import { sourceRound } from "./effects.js?v=20261103-bonuses";
+import { resolveSetBonuses } from "./sets.js?v=20261103-bonuses";
 
 const ATTR_LABELS = { vit: "Выносливость", int: "Интеллект", str: "Сила", dex: "Ловкость" };
 const ATTRS = Object.keys(ATTR_LABELS);
@@ -10,7 +12,7 @@ const CLASS_LABELS = { by: "Воин", ga: "Маг", ya: "Оборотень", r
   ij: "Жрец", rg: "Мистик", ej: "Страж", sj: "Шаман", fx: "Убийца" };
 const classLabel = (value) => CLASS_LABELS[value] ?? Object.values(CLASS_LABELS).find((label) => normalize(label) === normalize(value));
 
-function requirementsFor(item, context, attrs) {
+function requirementsFor(item, context, attrs, reduction = 0, activeWeapon = null) {
   const requirements = [], reasons = [];
   const add = (key, label, required, current, met) => {
     requirements.push({ key, label, required, current, met });
@@ -40,8 +42,17 @@ function requirementsFor(item, context, attrs) {
   } else {
     for (const [key, value] of Object.entries(item.req ?? {})) {
       const valid = ATTRS.includes(key) && Number.isSafeInteger(value) && value >= 0;
-      add(key, ATTR_LABELS[key] ?? key, valid ? value : "неизвестно", attrs[key] ?? "неизвестно", valid && attrs[key] >= value);
+      const required = valid ? Math.max(0, value - sourceRound(value / 100 * reduction)) : "неизвестно";
+      add(key, ATTR_LABELS[key] ?? key, required, attrs[key] ?? "неизвестно", valid && attrs[key] >= required);
     }
+  }
+  if (itemFitsSlot(item, "ammo")) {
+    const range = ammoWeaponGradeRange(item);
+    const grade = activeWeapon?.grade;
+    const validGrade = Number.isSafeInteger(grade) && grade >= 0;
+    add("weapon_grade", "Ранг активного оружия", range ? `${range.min}–${range.max}` : "неизвестно",
+      activeWeapon ? validGrade ? grade : "неизвестно" : "нет активного оружия",
+      Boolean(range && activeWeapon && validGrade && grade >= range.min && grade <= range.max));
   }
   return { usable: reasons.length === 0, reasons, requirements };
 }
@@ -60,20 +71,36 @@ export function resolveEquipment({ cls, level, reputation = 0, attrs, equipment 
   // SLOTS makes requirement context independent of the input object's insertion order.
   const selected = SLOTS.filter(({ id }) => equipment[id] != null).map(({ id }) => [id, equipment[id]]);
   const bonuses = new Map(selected.map(([slot, entry]) => [slot, getItemBonuses(entry, slot)]));
+  // sd.jw: only this item's ct modifiers alter its requirements, even before
+  // activation. Each percentage is truncated before the sum; attributes from
+  // the item itself still cannot satisfy those reduced requirements.
+  const reductions = new Map(selected.map(([slot]) => [slot, Math.min(100, Math.max(0,
+    bonuses.get(slot).contributions.filter((entry) => entry.stat === "requirement_reduction")
+      .reduce((sum, entry) => sum + Math.trunc(-entry.value), 0)))]));
+  const checkRequirements = (slot, availableAttrs, activeSlots) => requirementsFor(equipment[slot].item, context, availableAttrs, reductions.get(slot),
+    activeSlots.has("weapon") ? equipment.weapon.item : null);
   const active = new Set();
+  const setAttributes = new Map();
   const attributes = (slots, excluded) => {
     const result = Object.fromEntries(ATTRS.map((key) => [key, attrs[key]]));
+    const included = selected.filter(([slot]) => slots.has(slot) && slot !== excluded);
     for (const slot of slots) {
       if (slot === excluded) continue;
       for (const key of ATTRS) result[key] += bonuses.get(slot).flat[key] ?? 0;
     }
+    // The excluded item's membership cannot complete a set that qualifies
+    // itself. Other already-active parts may qualify the next item.
+    const signature = included.map(([slot]) => slot).join("|");
+    if (!setAttributes.has(signature)) setAttributes.set(signature, resolveSetBonuses(Object.fromEntries(included)).flat);
+    const setFlat = setAttributes.get(signature);
+    for (const key of ATTRS) result[key] += setFlat[key] ?? 0;
     return result;
   };
   const conflict = (slot) => {
     const proposed = new Set([...active, slot]);
     if (Object.values(attributes(proposed)).some((value) => value < 0)) return "Бонусы предмета делают основную характеристику отрицательной.";
     for (const other of active) {
-      if (!requirementsFor(equipment[other].item, context, attributes(proposed, other)).usable) {
+      if (!checkRequirements(other, attributes(proposed, other), proposed).usable) {
         return "Бонусы предмета нарушают требования другой активной вещи.";
       }
     }
@@ -86,7 +113,7 @@ export function resolveEquipment({ cls, level, reputation = 0, attrs, equipment 
     changed = false;
     for (const [slot, entry] of selected) {
       if (active.has(slot)) continue;
-      if (requirementsFor(entry.item, context, attributes(active)).usable && !conflict(slot)) {
+      if (checkRequirements(slot, attributes(active), active).usable && !conflict(slot)) {
         active.add(slot);
         changed = true;
       }
@@ -95,7 +122,7 @@ export function resolveEquipment({ cls, level, reputation = 0, attrs, equipment 
 
   const status = {}, activeEquipment = {}, warnings = [];
   for (const [slot, entry] of selected) {
-    const resolved = requirementsFor(entry.item, context, attributes(active, slot));
+    const resolved = checkRequirements(slot, attributes(active, slot), active);
     if (active.has(slot)) activeEquipment[slot] = entry;
     else if (resolved.usable) resolved.reasons.push(conflict(slot) ?? "Требования цепочки экипировки не выполнены.");
     status[slot] = { ...resolved, usable: active.has(slot) };

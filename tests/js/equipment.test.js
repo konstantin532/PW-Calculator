@@ -81,7 +81,7 @@ test("точный выбранный бонус переживает компа
     equipment: { weapon: { item: meteor, refine: 11, addons: ["Интеллект +19"] } } };
   const json = serializeBuild(state);
   const compact = JSON.parse(json);
-  assert.deepEqual(compact.equipment.weapon, { itemId: 33533, refine: 11, stones: [], addons: ["Интеллект +19"] });
+  assert.deepEqual(compact.equipment.weapon, { itemId: 33533, refine: 11, stones: [], addons: ["Интеллект +19"], addonsConfigured: true });
   const restored = parseBuild(json, [meteor]);
   assert.equal(restored.equipment.weapon.item, meteor);
   assert.deepEqual(equipment.getItemBonuses(restored.equipment.weapon, "weapon").flat, { int: 19 });
@@ -101,9 +101,8 @@ test("один гарантированный unique из общего count4 о
   assert.equal(equipment.maximumAddons(fixedMeteor), 3);
   const addons = ["Здоровье +350", "Сила +19", "Интеллект +19"];
   const result = equipment.getItemBonuses({ item: fixedMeteor, addons }, "weapon");
-  assert.deepEqual(result.flat, { hp: 350, str: 19, int: 19 });
-  assert.equal(result.warnings.length, 1);
-  assert.match(result.warnings[0], /не учтён эффект «Урон монстрам \+60»/);
+  assert.deepEqual(result.flat, { monster_slayer: 60, hp: 350, str: 19, int: 19 });
+  assert.equal(result.warnings.length, 0);
   assert.throws(() => equipment.validateEquipmentChoice({ item: fixedMeteor, addons: [...addons, "Сила +18"] }, "weapon"), /бонус.*3|3.*бонус/i);
 });
 
@@ -129,8 +128,8 @@ test("legacy сборка с тремя роллами и постоянным �
   const restored = parseBuild(serializeBuild(state), [fixedMeteor]);
   assert.equal(restored.equipment.weapon.addons.length, 4);
   const result = equipment.getItemBonuses(restored.equipment.weapon, "weapon");
-  assert.deepEqual(result.flat, { hp: 350, str: 19, int: 19 });
-  assert.equal(result.warnings.length, 1);
+  assert.deepEqual(result.flat, { monster_slayer: 60, hp: 350, str: 19, int: 19 });
+  assert.equal(result.warnings.length, 0);
   for (const text of ["Урон монстрам +61", "Показатель атаки +40", "Сила +20"]) {
     assert.throws(() => equipment.validateEquipmentChoice({ item: fixedMeteor, addons: [text] }, "weapon"), /бонус/i);
   }

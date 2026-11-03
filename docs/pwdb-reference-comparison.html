@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PWDB и Comeback 1.4.6 — сравнение источников</title>
+<style>
+body{margin:0;background:#f4f1e8;color:#233d32;font:16px/1.6 Georgia,serif}
+main{max-width:1400px;margin:auto;padding:44px 28px}h1{font-size:34px;line-height:1.2}
+h2{margin-top:34px}.summary{padding:20px;background:#143f32;color:#fff;border-radius:8px}
+.tag{display:inline-block;padding:5px 12px;margin-right:10px;background:#ecdba8;color:#43391d;border-radius:4px}
+table{width:100%;border-collapse:collapse;background:#fffdf8;font:14px/1.5 system-ui,sans-serif}
+td,th{text-align:left;padding:14px;border:1px solid #d6ddd2;vertical-align:top}th{background:#dbe7dc}
+code{font:12px ui-monospace,monospace;overflow-wrap:anywhere}a{color:#176b4e}.scroll{overflow:auto}
+.risk{border-left:5px solid #b07824;padding:12px;background:#fff2d7}
+footer{font:13px system-ui,sans-serif;margin-top:24px;color:#52725d}
+</style>
+<main>
+<p>ИССЛЕДОВАНИЕ ИСТОЧНИКОВ · COMEBACK PW 1.4.6</p>
+<h1>Современная PWDB помогает уточнять описания, но тоже теряет свойства.</h1>
+<div class="summary">
+<span class="tag">9 карточек HTTP 200</span>
+<span class="tag">0 импортированных предметов</span>
+<span class="tag">1 камень уточнён клиентом</span>
+<p>Проверены только существующие ID каталога 1.4.6. Рабочие данные и клиент не изменялись.
+API открыт штатной анонимной сессией сайта; cookies и токены не сохранялись.</p>
+</div>
+<h2>Главные ограничения</h2>
+<div class="risk">У плаща 21418 PWDB пропускает те же четыре свойства, что веб-база 146.
+У колец 36218/36221 современный требуемый уровень 40 отличается от 47 в клиенте.
+Значения и требования Comeback сохраняют приоритет.</div>
+<p>У 25154 связь клиентских addon 2309/2310 с типом 60 доказывает: это показатель защиты +2,
+а не физическая защита +2. Для 9345 различаются сырое значение восстановления 20
+и нормализованные 10 в секунду.</p>
+<h2>Сверка карточек</h2>
+<div class="scroll"><table>
+<thead><tr><th>ID/PWDB</th><th>Название 146</th><th>Результат</th>
+<th>Отличия полей</th><th>SHA-256 ответа</th></tr></thead>
+<tbody><tr><td><a href="https://pwdatabase.ru/items/21418">21418</a></td><td>★Плащ прочности·Долина бога</td><td>PWDB тоже теряет четыре свойства с нулевой вероятностью строки; его count3 не описывает фиксированный блок из пяти свойств.</td><td><code>{&quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 131071}}</code></td><td><code>ac075e43ea5d3b1b64e976f65aecf8ab12a841efe10468deb6a606319eb1ae22</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/25718">25718</a></td><td>★★Мантия мага небес</td><td>Все пять ID сохранены; названия D_rate02/Mdd_rate04 не расшифрованы. Клиентский тип доказывает физзащиту2% и магзащиту4%.</td><td><code>{&quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 131071}}</code></td><td><code>e2ccb1c076a05daeab006db6875037d80e1249fb020a4161762989588ffd71dc</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/26389">26389</a></td><td>★★Длань управляющая тучами</td><td>Все три свойства совпали. Различается написание названия и маска классов; новые классы не переносить.</td><td><code>{&quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 131071}}</code></td><td><code>adf007c126b138b5ec91a3462172d28a3199aae66c4cdb269866104f80eb1f41</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/14970">14970</a></td><td>★Браслет ветра</td><td>Все три свойства совпали. Время активации и время пения здесь обозначают один channeling-бонус -6%.</td><td><code>{&quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 131071}}</code></td><td><code>15f56b960763c8a6166438cfc58ddfca7999bfd275827cf8944548927dd7bb90</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/9345">9345</a></td><td>★Броня владыки демонов</td><td>PWDB показывает сырой HP-реген20; первичный форматтер переводит clientparam20 в10/с. Нельзя смешивать единицы.</td><td><code>{&quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 131071}}</code></td><td><code>a318188e391513e7800c0959a77c29c97f8b2298f777710f4b16ed99b8a87430</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/33533">33533</a></td><td>★★Метеор</td><td>Случайный набор4 и unique2849 совпали; A_E21/A_P12 остались внутренними именами. Маска доступных классов другая.</td><td><code>{&quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 767}}</code></td><td><code>3a8654eb663a08680a45d1c69623ec477aa4418ef20dac856db8461166fea5dd</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/25154">25154</a></td><td>Камень лагеря</td><td>PWDB уточняет ПЗ+2 для оружия/брони. Тот же клиентский ID связывает2309/2310 с доказанным типом60 defense_level.</td><td><code>{}</code></td><td><code>280de80d310cbd88a6e78e878238e3dd99a2b65730f4bd1b2e34f90622f0c2d4</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/36218">36218</a></td><td>★Кольцо императора</td><td>Современный требуемый уровень40 отличается от client47; rand851 остаётся нерасшифрованным именем камня. Не заменять его addon852.</td><td><code>{&quot;require_level&quot;: {&quot;client&quot;: 47, &quot;pwdb&quot;: 40}, &quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 131071}}</code></td><td><code>cfe11557de656434ec1a813082afd6c346c73181eae414a1c6fa4d6d162a3dd9</code></td></tr><tr><td><a href="https://pwdatabase.ru/items/36221">36221</a></td><td>★Перстень императора</td><td>Современный требуемый уровень40 отличается от client47; rand888 остаётся нерасшифрованным именем камня. Не заменять его addon889.</td><td><code>{&quot;require_level&quot;: {&quot;client&quot;: 47, &quot;pwdb&quot;: 40}, &quot;character_combo_id&quot;: {&quot;client&quot;: 4095, &quot;pwdb&quot;: 131071}}</code></td><td><code>e644a7cc076b188677eac1218b05d48d9d91f66537a2e7478038dae3587325dc</code></td></tr></tbody></table></div>
+<h2>Воспроизводимость</h2>
+<p>CSV рядом со страницей содержит те же строки, URL, хеши ответов и HTML Comeback.
+Сырые ответы остаются в игнорируемом .cache/pwdatabase-ru.
+Генератор: tools/research/pwdb_compare.py; сетевой доступ только по флагу --fetch.</p>
+<p>Клиентский SHA-256: <code>86c649d928c1707ea8100e5849fa4edad75cc372c2daba85e0bca0d6c6f0813a</code>.
+Полный бинарный аудит всех таблиц камней, трактатов и полётов в эту сверку не входит.
+Неизвестные 851/888 и пользовательские 6000–6011 не расшифровываются предположениями.</p>
+<footer>Отчёт работает без интернета. Ссылки на первичные карточки открываются отдельно.
+Дата исследования: 2026-11-03.</footer>
+</main></html>

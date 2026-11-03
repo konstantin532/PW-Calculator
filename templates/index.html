@@ -12,9 +12,10 @@
   <link rel="stylesheet" href="{% static 'css/effects-ui.css' %}?v=20261102">
   <link rel="stylesheet" href="{% static 'css/equipment-ui.css' %}?v=20261103-activation">
   <link rel="stylesheet" href="{% static 'css/jade-skin.css' %}?v=20261103-navigation">
-  <link rel="stylesheet" href="{% static 'css/stat-explanations.css' %}?v=20261103-explanations">
+  <link rel="stylesheet" href="{% static 'css/stat-explanations.css' %}?v=20261103-bonuses">
+  <link rel="stylesheet" href="{% static 'css/equipment-bonus-details.css' %}?v=20261103-bonuses">
   {% if embedded %}<link rel="stylesheet" href="{% static 'css/comparison-embedded.css' %}?v=20261103-comparison">{% endif %}
-  <script type="module" src="{% static 'js/app.js' %}?v=20261103-explanations"></script>
+  <script type="module" src="{% static 'js/app.js' %}?v=20261103-bonuses"></script>
 </head>
 <body class="jade-skin{% if embedded %} comparison-embedded{% endif %}">
 <main class="calc">
@@ -56,6 +57,7 @@
           <div class="doll-footer"><span id="equipped-summary">Нет экипировки</span><span>32 ячейки</span></div>
         </section>
       </div>
+      <details class="equipment-bonus-details" id="equipment-bonus-details"><summary>Дополнительные параметры</summary><div class="equipment-bonus-details__content" id="equipment-bonus-details-content"></div></details>
       <p class="page-status" id="page-status" role="status" aria-live="polite"></p>
       <details class="calculation-notes"><summary>Особенности расчёта <span id="warning-count"></span></summary><p>Базовые формулы сверены с mypers; точное соответствие Comeback 1.4.6 ещё требует проверки. Неподдержанные свойства перечислены ниже.</p><ul id="gear-warnings"></ul></details>
     </div>
