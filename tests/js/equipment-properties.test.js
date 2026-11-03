@@ -26,7 +26,7 @@ test("обе подписи максимальной физической ата
 test("журнал Метеора раздельно объясняет базу, заточку, камни и выбранные свойства", () => {
   const result = getItemBonuses({ item: item(33533), refine: 11, stones: [stone(2004), stone(2004)], addons: ["Здоровье +350", "Сила +19", "Интеллект +19"] }, "weapon");
   assert.deepEqual(result.ranges, { phys_atk: [1210, 1438], mag_atk: [1785, 1970] });
-  assert.deepEqual(result.flat, { range: 3, hp: 350, str: 19, int: 19 });
+  assert.deepEqual(result.flat, { range: 3, monster_slayer: 60, hp: 350, str: 19, int: 19 });
   const entries = result.contributions;
   assert.deepEqual(entries.filter((e) => e.source === "refine").map(({ stat, value }) => ({ stat, value })), [
     { stat: "phys_atk", value: [754, 754] }, { stat: "mag_atk", value: [754, 754] },
@@ -39,9 +39,8 @@ test("журнал Метеора раздельно объясняет базу
   ]);
   assert.deepEqual(entries.find((e) => e.source === "base" && e.stat === "mag_atk").value, [831, 1016]);
   assert.ok(entries.every((e) => typeof e.label === "string" && e.label && typeof e.raw === "string" && typeof e.percent === "boolean"));
-  assert.deepEqual(result.unresolved.map(({ source, label, value }) => ({ source, label, value })), [
-    { source: "guaranteed", label: "Урон монстрам +60", value: null },
-  ]);
+  assert.deepEqual(result.unresolved, []);
+  assert.equal(result.contributions.find((entry) => entry.stat === "monster_slayer").value, 60);
 });
 
 test("журнал сохраняет процент критического удара камня и направление максимальной атаки", () => {
@@ -65,7 +64,7 @@ test("старое сохранение постоянного свойства 
   assert.throws(() => validateEquipmentChoice({ item: item(34760), addons: [...state.equipment.weapon.addons, "Крит +1%"] }, "weapon"), /бонус/u);
 });
 
-test("неизвестный камень, исходная скорость и проценты защиты остаются null, а не нулём", () => {
+test("неизвестный камень и исходная скорость остаются null; процент защиты имеет отдельный ключ", () => {
   const weapon = getItemBonuses({ item: item(12647), stones: [stone(25154)] }, "weapon");
   assert.equal(weapon.flat.phys_def, undefined);
   assert.equal(weapon.atkSpeed, undefined);
@@ -74,8 +73,9 @@ test("неизвестный камень, исходная скорость и 
   assert.deepEqual(new Set(weapon.unresolved.map((e) => e.source)), new Set(["base", "stone"]));
   const armor = getItemBonuses({ item: item(25701), addons: ["Физическая защита +4%"] }, "boots");
   assert.equal(armor.flat.phys_def, item(25701).stats.phys_def);
-  assert.equal(armor.contributions.filter((e) => e.source === "addon").length, 0);
-  assert.equal(armor.unresolved.find((e) => e.source === "addon").value, null);
+  assert.equal(armor.flat.phys_def_percent, 4);
+  assert.equal(armor.contributions.filter((e) => e.source === "addon").length, 1);
+  assert.equal(armor.unresolved.find((e) => e.source === "addon"), undefined);
   const set = getItemBonuses({ item: item(14927) }, "chest");
   assert.ok(set.unresolved.some((e) => e.source === "base" && /комплект/u.test(e.label) && e.value === null));
 });

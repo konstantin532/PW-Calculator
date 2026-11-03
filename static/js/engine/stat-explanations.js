@@ -2,15 +2,15 @@
 const ATTR_LABELS = { vit: "Выносливость", int: "Интеллект", str: "Сила", dex: "Ловкость" };
 const STAT_LABELS = { ...ATTR_LABELS, hp: "Здоровье", phys_atk: "Физическая атака", mag_atk: "Магическая атака", phys_def: "Физическая защита",
   mag_def: "Общая магическая защита", accuracy: "Меткость", evasion: "Уклонение", attack_level: "Показатель атаки", defense_level: "Показатель защиты" };
-const PART_LABELS = { base: "Базовые свойства", refine: "Заточка", stone: "Камни", guaranteed: "Постоянные свойства", addon: "Выбранные свойства" };
+const PART_LABELS = { base: "Базовые свойства", refine: "Заточка", stone: "Камни", guaranteed: "Постоянные свойства", fixed: "Свойства клиента 1.4.6", addon: "Выбранные свойства" };
 const TITLES = { hp: "Здоровье", physAtk: "Физическая атака", magAtkRange: "Магическая атака", physDef: "Физическая защита",
   metal: "Защита от металла", wood: "Защита от дерева", water: "Защита от воды", fire: "Защита от огня", earth: "Защита от земли", magDef: "Средняя магическая защита" };
 const RELEVANT = {
-  hp: ["vit", "hp", "zk", "fw", "eh"], physAtk: ["str", "phys_atk", "gs_oi_av", "yh", "xp"],
-  magAtkRange: ["int", "mag_atk", "gs_xq", "sq", "so"], physDef: ["vit", "str", "phys_def", "tb", "od", "va"],
+  hp: ["vit", "hp", "hp_percent", "zk", "fw", "eh"], physAtk: ["str", "phys_atk", "gs_oi_av", "yh", "xp"],
+  magAtkRange: ["int", "mag_atk", "gs_xq", "sq", "so"], physDef: ["vit", "str", "phys_def", "phys_def_percent", "tb", "od", "va"],
 };
 const ELEMENT_CODES = { metal: "lw", wood: "mo", water: "dn", fire: "vt", earth: "sp" };
-for (const [key, code] of Object.entries(ELEMENT_CODES)) RELEVANT[key] = ["vit", "int", "mag_def", `def_${key}`, "xk", "og", "pt", `gs_${code}_gq_eg`, `vh_${code}_gq_eg`];
+for (const [key, code] of Object.entries(ELEMENT_CODES)) RELEVANT[key] = ["vit", "int", "mag_def", "mag_def_percent", `def_${key}`, "xk", "og", "pt", `gs_${code}_gq_eg`, `vh_${code}_gq_eg`];
 RELEVANT.magDef = [...new Set(Object.keys(ELEMENT_CODES).flatMap((key) => RELEVANT[key]))];
 
 export const statExplanationTitle = (key) => TITLES[key];
@@ -45,8 +45,8 @@ export function explanationSources(attrs, equipmentSources, titles, effects) {
   return [...sources, ...effects];
 }
 
-export function statExplanation(key, result, stages, sources, warnings) {
-  const relevant = new Set(RELEVANT[key]);
+export function statExplanation(key, result, stages, sources, warnings, { physicalAttribute = "str" } = {}) {
+  const relevant = new Set(RELEVANT[key].map((stat) => key === "physAtk" && stat === "str" ? physicalAttribute : stat));
   return { key, title: TITLES[key], result, stages,
     sources: sources.map((source) => ({ ...source, entries: source.entries.filter((entry) => entry.value === null || relevant.has(entry.stat)) }))
       .filter((source) => source.entries.length),

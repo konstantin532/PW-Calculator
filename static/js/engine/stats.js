@@ -1,9 +1,10 @@
 // Расчёт характеристик персонажа. Базовые формулы взяты с mypers.ru и
 // сверены с его выводом; соответствие игре Comeback 1.4.6 ещё не подтверждено.
-import { getItemBonuses, itemFitsSlot, SLOTS } from "./equipment.js?v=20261103-explanations";
-import { collectEffects, sourceRound, validateEffectSettings } from "./effects.js?v=20261103-explanations";
-import { resolveEquipment } from "./eligibility.js?v=20261103-explanations";
-import { explanationSources, itemExplanationSources, recordStage, statExplanation, statExplanationTitle } from "./stat-explanations.js?v=20261103-explanations";
+import { getItemBonuses, itemFitsSlot, SLOTS } from "./equipment.js?v=20261103-bonuses";
+import { collectEffects, sourceRound, validateEffectSettings } from "./effects.js?v=20261103-bonuses";
+import { resolveEquipment } from "./eligibility.js?v=20261103-bonuses";
+import { resolveSetBonuses } from "./sets.js?v=20261103-bonuses";
+import { explanationSources, itemExplanationSources, recordStage, statExplanation, statExplanationTitle } from "./stat-explanations.js?v=20261103-bonuses";
 
 export const MAX_LEVEL = 105;
 export const BASE_ATTR = 5;
@@ -61,11 +62,12 @@ export function defensePercent(value, level) {
   return Math.min(95, Math.max(0, (100 * value) / (40 * level + value - 25)));
 }
 
-function physicalAttack(cls, level, attrs, weaponMin, weaponMax, percent, stages) {
-  const stat = attrs.str;
-  const e = recordStage(stages, "Множитель силы и эффектов", `1 + ${stat} / 100 + ${percent} / 100`, 1 + stat / 100 + percent / 100);
+function physicalAttack(cls, level, attrs, weaponMin, weaponMax, percent, stages, attribute = "str") {
+  const stat = attrs[attribute];
+  const label = attribute === "dex" ? "ловкости" : "силы";
+  const e = recordStage(stages, `Множитель ${label} и эффектов`, `1 + ${stat} / 100 + ${percent} / 100`, 1 + stat / 100 + percent / 100);
   const a = cls.role === "hybrid" ? 0.6 : cls.role === "magic" ? 0.21 : 1;
-  const n = recordStage(stages, "Округлённая поправка силы", `round(${stat} / 3)`, Math.round(stat / 3));
+  const n = recordStage(stages, `Округлённая поправка ${label}`, `round(${stat} / 3)`, Math.round(stat / 3));
   const lvl = recordStage(stages, "Вклад уровня с коэффициентом класса", `round(${level} × ${a})`, Math.round(level * a));
   const one = (w) => w * e + lvl * e - ((w + lvl) / 100) * n;
   const raw = recordStage(stages, "Атака до окончательного округления", `[${weaponMin}; ${weaponMax}] × ${e} + ${lvl} × ${e} − (([${weaponMin}; ${weaponMax}] + ${lvl}) / 100) × ${n}`, [one(weaponMin), one(weaponMax)]);
@@ -108,6 +110,17 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
     if (!knownSlots.has(slot)) throw new Error(`Неизвестная ячейка экипировки: ${slot}`);
     if (!entry.item || !itemFitsSlot(entry.item, slot)) throw new Error(`Предмет не подходит в ячейку ${slot}`);
     const bonus = getItemBonuses(entry, slot);
+    if (slot === "ammo" && eligibility.status[slot].usable
+        && eligibility.activeEquipment.weapon?.item?.type !== "Оружие дальнего боя") {
+      const omitted = bonus.contributions.filter((part) => part.source === "base" && part.stat === "phys_atk");
+      if (omitted.length) {
+        const reason = "Базовая атака боеприпаса действует только с активным дальнобойным оружием.";
+        gearSources.push(...itemExplanationSources(entry, { contributions: omitted }, { usable: false, reasons: [reason] }));
+        for (const part of omitted) for (let i = 0; i < 2; i++) bonus.ranges.phys_atk[i] -= part.value[i];
+        bonus.contributions = bonus.contributions.filter((part) => !omitted.includes(part));
+        bonus.warnings.push(`${entry.item.name || "Боеприпасы"}: ${reason}`);
+      }
+    }
     gearWarnings.push(...bonus.warnings);
     gearSources.push(...itemExplanationSources(entry, bonus, eligibility.status[slot]));
     if (!eligibility.status[slot].usable) continue;
@@ -120,6 +133,11 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
     if (key === "phys_atk" || key === "mag_atk") for (let i = 0; i < 2; i++) weapon[key][i] += value;
     else flat[key] = (flat[key] ?? 0) + value;
   }
+  const setBonuses = resolveSetBonuses(eligibility.activeEquipment);
+  for (const [key, value] of Object.entries(setBonuses.flat)) flat[key] = (flat[key] ?? 0) + value;
+  for (const key of ["phys_atk", "mag_atk"]) for (let i = 0; i < 2; i++) weapon[key][i] += setBonuses.ranges[key][i];
+  gearSources.push(...setBonuses.sources);
+  gearWarnings.push(...setBonuses.warnings);
   const effectiveAttrs = Object.fromEntries(ATTRS.map((key) => [key, attrs[key] + (flat[key] ?? 0)]));
   if (Object.values(effectiveAttrs).some((n) => n < 0)) throw new Error("Итоговая характеристика не может быть отрицательной");
   let ib = {}, effectSources = [];
@@ -149,7 +167,7 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
   if (mod("va") >= 1000) physDef = recordStage(physicalStages, "Физическая защита", `Условие обнуления: уменьшение ${mod("va")} ≥ 1000`, 0);
   else {
     const baseDefense = defense(physicalGear, attr.vit, attr.str, [1, 2, 4, 1, 3, 25, 100], physicalStages);
-    const percent = recordStage(physicalStages, "Процент защиты после отсечения дробей", `trunc(${mod("tb")}) + trunc(${mod("od")}) − trunc(${mod("va")})`, integerMod("tb") + integerMod("od") - integerMod("va"));
+    const percent = recordStage(physicalStages, "Процент вещей и эффектов после отсечения дробей", `trunc(${flat.phys_def_percent ?? 0}) + trunc(${mod("tb")}) + trunc(${mod("od")}) − trunc(${mod("va")})`, Math.trunc(flat.phys_def_percent ?? 0) + integerMod("tb") + integerMod("od") - integerMod("va"));
     const adjustment = recordStage(physicalStages, "Поправка эффектов к защите", `sourceRound(${physicalGear} / 100 × ${percent})`, sourceRound(physicalGear / 100 * percent));
     const beforeClamp = recordStage(physicalStages, "Защита до ограничения", `${baseDefense} + ${adjustment}`, baseDefense + adjustment);
     physDef = recordStage(physicalStages, "Физическая защита", `max(0, ${beforeClamp})`, Math.max(0, beforeClamp));
@@ -162,7 +180,7 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
     recordStage(stages, "Итоговый интеллект", "Собственный интеллект + бонусы активных вещей", attr.int);
     recordStage(stages, "Защита снаряжения и титулов", `${flat.mag_def ?? 0} общей магзащиты + ${flat[`def_${key}`] ?? 0} защиты стихии`, gear);
     const baseDefense = defense(gear, attr.vit, attr.int, [0, 2, 4, 1, 3, 25, 100], stages);
-    const percent = recordStage(stages, "Процент эффектов защиты", `trunc(${mod("xk")}) + trunc(${mod("og")}) − trunc(${mod("pt")}) + ${mod(`gs_${elementCode}_gq_eg`)} − ${mod(`vh_${elementCode}_gq_eg`)}`, integerMod("xk") + integerMod("og") - integerMod("pt") + mod(`gs_${elementCode}_gq_eg`) - mod(`vh_${elementCode}_gq_eg`));
+    const percent = recordStage(stages, "Процент вещей и эффектов защиты", `trunc(${flat.mag_def_percent ?? 0}) + trunc(${mod("xk")}) + trunc(${mod("og")}) − trunc(${mod("pt")}) + ${mod(`gs_${elementCode}_gq_eg`)} − ${mod(`vh_${elementCode}_gq_eg`)}`, Math.trunc(flat.mag_def_percent ?? 0) + integerMod("xk") + integerMod("og") - integerMod("pt") + mod(`gs_${elementCode}_gq_eg`) - mod(`vh_${elementCode}_gq_eg`));
     const adjustment = recordStage(stages, "Поправка эффектов к защите", `sourceRound(${gear} / 100 × ${percent})`, sourceRound(gear / 100 * percent));
     const beforeClamp = recordStage(stages, "Защита до ограничения", `${baseDefense} + ${adjustment}`, baseDefense + adjustment);
     return [key, recordStage(stages, "Защита стихии", `max(0, ${beforeClamp})`, Math.max(0, beforeClamp))];
@@ -179,26 +197,28 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
   const levelHp = recordStage(traces.hp, "Здоровье от уровня", `2 × ${cls.hp} × (${lvl} − 1)`, 2 * cls.hp * (lvl - 1));
   recordStage(traces.hp, "Здоровье снаряжения и титулов", "Сумма здоровья активных вещей, заточки, камней, свойств и титулов", flat.hp ?? 0);
   const baseHp = recordStage(traces.hp, "Здоровье до процентных эффектов", `${vitalityHp} + ${levelHp} + ${flat.hp ?? 0} + ${mod("zk")}`, vitalityHp + levelHp + (flat.hp ?? 0) + mod("zk"));
-  const hpMultiplier = recordStage(traces.hp, "Множитель эффектов здоровья", `1 + (${mod("fw")} − ${mod("eh")}) / 100`, 1 + (mod("fw") - mod("eh")) / 100);
+  const hpMultiplier = recordStage(traces.hp, "Множитель вещей и эффектов здоровья", `1 + (trunc(${flat.hp_percent ?? 0}) + ${mod("fw")} − ${mod("eh")}) / 100`, 1 + (Math.trunc(flat.hp_percent ?? 0) + mod("fw") - mod("eh")) / 100);
   const rawHp = recordStage(traces.hp, "Здоровье до округления", `${baseHp} × ${hpMultiplier}`, baseHp * hpMultiplier);
   const hp = recordStage(traces.hp, "Здоровье", `sourceRound(${rawHp})`, sourceRound(rawHp));
-  recordStage(traces.physAtk, "Итоговая сила", "Собственная сила + бонусы активных вещей", attr.str);
+  const physicalAttribute = ["Оружие дальнего боя", "Кинжалы"].includes(eligibility.activeEquipment.weapon?.item?.type) ? "dex" : "str";
+  recordStage(traces.physAtk, physicalAttribute === "dex" ? "Итоговая ловкость" : "Итоговая сила", "Собственная характеристика + бонусы активных вещей и комплектов", attr[physicalAttribute]);
   recordStage(traces.physAtk, "Снаряжение и титулы", "Сумма физической атаки активных вещей, заточки, камней, свойств и титулов", weapon.phys_atk);
   const physicalWeapon = recordStage(traces.physAtk, "Атака снаряжения с плоскими эффектами", `[${weapon.phys_atk.join("; ")}] + ${mod("gs_oi_av")}`, weapon.phys_atk.map((value) => value + mod("gs_oi_av")));
   const physicalPercent = recordStage(traces.physAtk, "Процент эффектов атаки", `${mod("yh")} − ${mod("xp")}`, mod("yh") - mod("xp"));
-  const physAtk = physicalAttack(cls, lvl, attr, physicalWeapon[0], physicalWeapon[1], physicalPercent, traces.physAtk);
+  const physAtk = physicalAttack(cls, lvl, attr, physicalWeapon[0], physicalWeapon[1], physicalPercent, traces.physAtk, physicalAttribute);
   const baseMp = cls.mp * attr.int + 2 * cls.mp * (lvl - 1) + (flat.mp ?? 0);
   const defenseLevelBeforeSkill = (flat.defense_level ?? 0) + mod("gs_sx") - mod("vh_sx");
   const defenseLevel = defenseLevelBeforeSkill - (mod("vh_sx_min_20_eg") ? Math.max(20, sourceRound(defenseLevelBeforeSkill / 100 * mod("vh_sx_min_20_eg"))) : 0);
   const attackFromDefense = mod("gs_ad_from_sx_eg") ? sourceRound(Math.max(20, sourceRound(defenseLevelBeforeSkill / 100 * 40)) / 100 * mod("gs_ad_from_sx_eg")) : 0;
-  if (mod("wh") || mod("gn")) {
+  if (flat.attack_interval || mod("wh") || mod("gn")) {
     const weaponInterval = Number((1 / atkSpeed).toFixed(2));
-    const interval = 0.05 * sourceRound(weaponInterval * (1 - (mod("wh") - mod("gn")) / 100) / 0.05);
+    const equipmentInterval = (flat.attack_interval ?? 0) <= -weaponInterval ? 0.2 : weaponInterval + (flat.attack_interval ?? 0);
+    const interval = 0.05 * sourceRound(equipmentInterval * (1 - (mod("wh") - mod("gn")) / 100) / 0.05);
     atkSpeed = Math.min(5, Math.max(0, Number((1 / interval).toFixed(2))));
   }
   const sources = explanationSources(attrs, gearSources, titleBonuses, effectSources);
   const values = { hp, physAtk, magAtkRange, physDef, ...elements, magDef };
-  const explanations = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, statExplanation(key, value, traces[key], sources, gearWarnings)]));
+  const explanations = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, statExplanation(key, value, traces[key], sources, gearWarnings, { physicalAttribute })]));
   return {
     level: lvl,
     free,
@@ -207,7 +227,7 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
     equipmentStatus: eligibility.status,
     activeEquipment: eligibility.activeEquipment,
     hp,
-    mp: sourceRound(baseMp * (1 + (mod("vd") - mod("ef")) / 100)),
+    mp: sourceRound(baseMp * (1 + (Math.trunc(flat.mp_percent ?? 0) + mod("vd") - mod("ef")) / 100)),
     physAtk,
     magAtk: magAtkRange[0],
     magAtkRange,
@@ -215,10 +235,10 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
     critDamage: 200 + (flat.crit_damage ?? 0) + Math.trunc(mod("gs_crit_rage_ghk")),
     atkSpeed,
     attackRange: flat.range ?? 0,
-    castTime: Math.max(-100, (flat.cast_time ?? 0) - mod("re") + mod("xj")),
-    accuracy: sourceRound((cls.acc * attr.dex + (flat.accuracy ?? 0) + Math.trunc(mod("gs_ae"))) * (1 + (mod("bx") - mod("yr")) / 100)),
-    evasion: sourceRound((cls.eva * attr.dex + (flat.evasion ?? 0)) * (1 + (mod("br") - mod("na")) / 100)),
-    speed: Number(Math.min(15, (cls.speed + mod("gs_cl")) * (1 + (mod("ln") - mod("la")) / 100) + (flat.speed ?? 0)).toFixed(1)),
+    castTime: Math.trunc(Math.max(-100, (flat.cast_time ?? 0) - mod("re") + mod("xj"))) || 0,
+    accuracy: sourceRound((cls.acc * attr.dex + (flat.accuracy ?? 0) + Math.trunc(mod("gs_ae"))) * (1 + ((flat.accuracy_percent ?? 0) + mod("bx") - mod("yr")) / 100)),
+    evasion: sourceRound((cls.eva * attr.dex + (flat.evasion ?? 0)) * (1 + ((flat.evasion_percent ?? 0) + mod("br") - mod("na")) / 100)),
+    speed: Number(Math.min(15, (cls.speed + mod("gs_cl")) * (1 + ((flat.speed_percent ?? 0) + mod("ln") - mod("la")) / 100) + (flat.speed ?? 0)).toFixed(1)),
     physDef,
     physDefPct: defensePercent(physDef, lvl),
     magDef,
@@ -226,6 +246,10 @@ export function computeStats({ cls: code, level, attrs, reputation = 0, equipmen
     elements,
     attackLevel: (flat.attack_level ?? 0) + mod("gs_ad") - mod("vh_ad") + attackFromDefense,
     defenseLevel,
+    damageReductionPhys: Math.trunc(flat.damage_reduction_phys ?? 0),
+    damageReductionMag: Math.trunc(flat.damage_reduction_mag ?? 0),
+    extraBonuses: { ...flat },
+    equipmentSets: setBonuses.sets,
     spirit: (50 + lvl) * lvl + (flat.spirit ?? 0),
     stealth: (flat.stealth ?? 0) + (mod("uu") ? lvl + mod("uu") : 0),
     detection: lvl + (flat.detection ?? 0) + mod("uu_detect"),

@@ -44,7 +44,7 @@ test("все десять классов: объяснения совпадаю�
       titles: { hp: 13, phys_def: 7, mag_def: 11, phys_atk: 9, mag_atk: 15 } }))));
   const results = inputs.map(computeStats);
   // Снимок всех прежних полей снят до добавления объяснений: 50 состояний.
-  const oldFields = results.map(({ explanations, ...stats }) => stats);
+  const oldFields = results.map(({ explanations, damageReductionPhys, damageReductionMag, extraBonuses, equipmentSets, ...stats }) => stats);
   assert.equal(createHash("sha256").update(JSON.stringify(oldFields)).digest("hex"), "accebf1da4e18d717a474667c6d23dd90d3fe6b024c954f8758b8ed7c79703a5");
   results.forEach(assertExact);
 });

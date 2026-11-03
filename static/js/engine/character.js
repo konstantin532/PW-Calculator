@@ -1,4 +1,4 @@
-import { CLASSES } from "./stats.js?v=20261103-explanations";
+import { CLASSES } from "./stats.js?v=20261103-bonuses";
 
 export function normalizeGender(cls, gender = "male") {
   if (cls === "ya") return "male";

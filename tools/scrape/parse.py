@@ -135,7 +135,77 @@ def parse_item(html: str, item_id: int | None = None) -> dict[str, Any]:
             item["refine"] = _parse_refine(pane)
         elif "комплект" in title.lower() or "set" in pane_id:
             item["set"] = [_clean(li.get_text(" ")) for li in pane.find_all("li")]
+            item["set_bonus"] = parse_set_bonus(pane, item_id)
     return item
+
+
+def validate_set_bonus(value: Any, item_id: int | None = None) -> dict[str, Any]:
+    """Validate a numeric-threshold set descriptor without interpreting its effects."""
+    if not isinstance(value, dict) or not isinstance(value.get("name"), str) or not value["name"].strip():
+        raise ValueError("комплект: отсутствует название")
+    members = value.get("members")
+    if (not isinstance(members, list) or len(members) < 2
+            or any(type(member) is not int or member <= 0 for member in members)
+            or len(set(members)) != len(members)):
+        raise ValueError("комплект: неверные ID частей")
+    members = sorted(members)
+    if item_id is not None and item_id not in members:
+        raise ValueError(f"комплект: предмет {item_id} отсутствует среди частей")
+    identity = "146:" + "-".join(map(str, members))
+    if value.get("id", identity) != identity:
+        raise ValueError("комплект: ID не соответствует частям")
+    bonuses = value.get("bonuses")
+    if not isinstance(bonuses, list) or not bonuses:
+        raise ValueError("комплект: отсутствуют бонусы")
+    normalized = []
+    seen = set()
+    for bonus in bonuses:
+        if not isinstance(bonus, dict):
+            raise ValueError("комплект: неверная запись бонуса")
+        pieces, texts = bonus.get("pieces"), bonus.get("texts")
+        if type(pieces) is not int or not 1 <= pieces <= len(members) or pieces in seen:
+            raise ValueError("комплект: неверный или повторный числовой порог")
+        if (not isinstance(texts, list) or not texts
+                or any(not isinstance(text, str) or not text.strip() or len(text) > 500
+                       or any(ord(char) < 32 for char in text) for text in texts)
+                or len(set(texts)) != len(texts)):
+            raise ValueError("комплект: неверное описание бонуса")
+        seen.add(pieces)
+        normalized.append({"pieces": pieces, "texts": sorted(texts)})
+    return {"id": identity, "name": _clean(value["name"]), "members": members,
+            "bonuses": sorted(normalized, key=lambda entry: entry["pieces"])}
+
+
+def parse_set_bonus(pane: Tag, item_id: int | None = None) -> dict[str, Any]:
+    """Keep source member IDs and every threshold, alongside legacy names."""
+    tables = pane.select("table.table-union")
+    if len(tables) != 1:
+        raise ValueError("комплект: ожидается одна таблица числовых бонусов")
+    table = tables[0]
+    body = table.find_parent("div", class_="itemchar_body")
+    if body is None:
+        raise ValueError("комплект: отсутствует блок описания")
+    heading = body.find("h6")
+    members = []
+    for link in body.select("ul a[href]"):
+        match = re.fullmatch(r"(?:https://comeback\.pw)?/db/146/item/([1-9]\d*)", link["href"])
+        if match is None:
+            raise ValueError("комплект: часть ссылается не на предмет 146")
+        members.append(int(match[1]))
+    grouped: dict[int, list[str]] = {}
+    for row in table.select("tbody tr"):
+        cells = row.find_all("td", recursive=False)
+        if len(cells) != 2 or re.fullmatch(r"[1-9]\d*", cells[0].get_text(strip=True)) is None:
+            raise ValueError("комплект: неверный числовой порог таблицы")
+        pieces = int(cells[0].get_text(strip=True))
+        texts = [_clean(addon.get_text(" ")) for addon in cells[1].select(".addon")]
+        if not texts:
+            texts = [_clean(cells[1].get_text(" "))]
+        grouped.setdefault(pieces, []).extend(texts)
+    return validate_set_bonus({"name": _clean(heading.get_text(" ")) if heading else "",
+                               "members": members,
+                               "bonuses": [{"pieces": pieces, "texts": texts}
+                                           for pieces, texts in grouped.items()]}, item_id)
 
 
 def _parse_spec_line(li: Tag, item: dict[str, Any]) -> None:
